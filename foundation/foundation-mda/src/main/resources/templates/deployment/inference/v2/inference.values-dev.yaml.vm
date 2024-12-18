@@ -8,3 +8,4 @@ aissemble-inference-chart:
     image:
       imagePullPolicy: IfNotPresent
       repo: ''
+      tag: '${version}'

@@ -1,0 +1,12 @@
+# Dev values for aissemble-machine-learning-inference.
+image:
+  imagePullPolicy: IfNotPresent
+  tag: "1.0.0-SNAPSHOT"
+  dockerRepo: ""
+
+service:
+  spec:
+    type: LoadBalancer
+
+ingress:
+  enabled: false

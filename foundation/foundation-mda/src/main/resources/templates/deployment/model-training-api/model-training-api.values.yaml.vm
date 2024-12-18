@@ -26,7 +26,6 @@ configMap:
     image_tag=${version}
     image_pull_policy=Always
   trainingApiConfigDev: |
-    image_tag=latest
     docker_registry=
     image_pull_policy=IfNotPresent
 
