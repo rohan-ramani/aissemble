@@ -1,6 +1,8 @@
 # Dev values for ${appName}.
 image:
   dockerRepo: ""
+  imagePullPolicy: IfNotPresent
+  tag: "${version}"
 
 service:
   spec:
