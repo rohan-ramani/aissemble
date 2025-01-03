@@ -57,6 +57,7 @@
                     <outputDirectory>${dockerbuild.jars.directory}</outputDirectory>
                     <includeTypes>jar</includeTypes>
                     <excludeTransitive>true</excludeTransitive>
+                    <includeArtifactIds>delta-hive_2.12,mysql-connector-java</includeArtifactIds>
                 </configuration>
                 <executions>
                     <execution>

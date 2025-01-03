@@ -22,6 +22,11 @@ RUN groupadd -rf hive --gid=1000 && \
 
 ADD ${JARS_DIR}/* $HIVE_HOME/lib/
 
+# Remove jars with open vulnerabilities. These jars are included in the apache hive image but not necessary
+# when running the hive metastore only
+RUN rm ${HIVE_HOME}/lib/avatica-1.12.0.jar ${HIVE_HOME}/lib/htrace-core-3.1.0-incubating.jar \
+    ${HADOOP_HOME}/share/hadoop/yarn/timelineservice/lib/htrace-core-3.1.0-incubating.jar  
+
 USER hive
 
 ENTRYPOINT ["/opt/hive/bin/hive", "--skiphadoopversion", "--skiphbasecp", "--verbose", "--service", "metastore"]
