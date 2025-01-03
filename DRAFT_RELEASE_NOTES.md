@@ -1,5 +1,8 @@
 # Major Additions
 
+## Service account support for spark-infrastructure
+To have more flexible and secure way to authenticate AWS service, we add service account support for spark-infrastructure helm chart to enable the AWS IRSA (IAM Roles Service Account) authentication. See _**How to Upgrade**_ for more information.
+
 ## Path to Production Alignment
 To better align development processes with processes in CI/CD and higher environments, we no longer recommend using Tilt live-reloading.  As such, upgrading projects should consider narrowing the scope of their Tiltfile. See _**How to Upgrade**_ for more information.
 
@@ -93,6 +96,32 @@ To start your aiSSEMBLE upgrade, update your project's pom.xml to use the 1.11.0
 To avoid duplicate docker builds, remove all the related `docker_build()` and `local_resources()` functions from your Tiltfile. Also, the `spark-worker-image.yaml` is no longer used so the `-deploy/src/main/resources/apps/spark-worker-image` directory and the related `k8s_yaml()` function from your Tiltfile can be removed.
 
 ## Conditional Steps
+
+## AWS IRSA (IAM Roles Service Account) Authentication
+This is not a required step but a recommended way to authenticate AWS service
+1. [Create an IAM OIDC provider for your cluster](https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html)
+2. Follow the [Assign IAM roles to Kubernetes service accounts](https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html) document but **skip** the step that creates the service account
+3. In the spark-infrastructure chart template, add the service account create configuration as below:
+   
+aissemble-spark-history-chart
+```yaml
+aissemble-spark-history-chart:
+  serviceAccount:
+    name: service-account-name
+    enabled: true
+    metadata:
+      annotations:
+        # Ref: IAM roles arn from step 2
+        eks.amazonaws.com/role-arn: arn:aws:iam::aws-id:role/iam-role-name 
+```
+
+aissemble-thrift-server-chart:
+```yaml
+aissemble-thrift-server-chart:
+  deployment:
+    # service account name must match the service account name specified in the IAM roles trust relationships
+    serviceAccountName: service-account-name
+```
 
 ## Final Steps - Required for All Projects
 ### Finalizing the Upgrade

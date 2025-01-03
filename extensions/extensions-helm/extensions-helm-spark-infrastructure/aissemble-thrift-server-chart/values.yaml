@@ -45,3 +45,10 @@ ingress:
 sparkConf: |-
 
 hiveSite: |-
+
+serviceAccount:
+  create: false
+  name: "aissemble-thrift-server-chart-sa"
+  metadata:
+    annotations: {}
+
