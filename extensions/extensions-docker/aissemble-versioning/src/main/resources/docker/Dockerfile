@@ -4,7 +4,7 @@ FROM docker.io/python:3.11 AS habushu_builder
 RUN python -m ensurepip --upgrade && \
     pip install poetry && \
     poetry self add poetry-monorepo-dependency-plugin && \
-    poetry self add poetry-plugin-bundle@1.3.0
+    poetry self add poetry-plugin-bundle
 
 WORKDIR /work-dir
 COPY --chown=1001 target/containerize-support ./containerize-support/
