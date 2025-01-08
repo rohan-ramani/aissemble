@@ -35,6 +35,11 @@ spec:
         {{ toYaml .Values.deployment.labels }}
         {{- end }}
     spec:
+      {{- if .Values.deployment.serviceAccountName }}
+      serviceAccountName: {{ .Values.deployment.serviceAccountName }}
+      {{- else if .Values.serviceAccount.create }}
+      serviceAccountName: {{ .Values.serviceAccount.name | default .Chart.Name }}
+      {{- end }}
       {{- if or (not (empty .Values.dependencies.packages)) (not (empty .Values.dependencies.jars)) }}
       initContainers:
         - name: "populate-thrift-service-jar-volume"

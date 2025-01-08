@@ -62,3 +62,9 @@ eventVolume:
   volumePathOnNode: /tmp
 
 sparkConf: |-
+
+serviceAccount:
+  create: false
+  name: "aissemble-spark-history-chart-sa"
+  metadata:
+    annotations: {}
