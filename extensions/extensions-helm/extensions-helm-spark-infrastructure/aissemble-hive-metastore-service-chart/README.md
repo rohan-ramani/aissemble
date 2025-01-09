@@ -44,10 +44,13 @@ helm install hive-metastore-service oci://ghcr.io/boozallen/aissemble-hive-metas
 See [the official bitnami documentation](https://github.com/bitnami/charts/tree/main/bitnami/mysql) for full
 configuration options.
 
-| Property         | Default             |
-|------------------|---------------------|
-| fullnameOverride | "hive-metastore-db" |
-| auth.database    | "metastore"         |
+| Property         | Default                                                                            |
+|------------------|------------------------------------------------------------------------------------|
+| fullnameOverride | "hive-metastore-db"                                                                |
+| auth.database    | "metastore"                                                                        |
+
+**Note**: 
+Injected Config value except Secret will not show as out of sync as we enabled [Server-Side Diff Strategies.](https://argo-cd.readthedocs.io/en/stable/user-guide/diff-strategies/#server-side-diff)
 
 # Migration from aiSSEMBLE v1 Helm Charts
 
@@ -76,7 +79,6 @@ In the table below, the notation `env[KEY]` refers the `env` list item whose `na
 | configMap.metastoreServiceConfig.configuration.property[metastore.expression.proxy]            | configMap.metastoreServiceConfig.baseProperties[metastore.expression.proxy]            |                                                        |
 | configMap.metastoreServiceConfig.configuration.property[javax.jdo.option.ConnectionDriverName] | configMap.metastoreServiceConfig.baseProperties[javax.jdo.option.ConnectionDriverName] |                                                        |
 | configMap.metastoreServiceConfig.configuration.property[javax.jdo.option.ConnectionURL]        | configMap.metastoreServiceConfig.baseProperties[javax.jdo.option.ConnectionURL]        |                                                        |
-
 ## Property Removed
 
 The following properties no longer exist.
