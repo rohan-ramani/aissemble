@@ -54,7 +54,10 @@ public abstract class AbstractModelInstanceSteps {
 
     private static final String AIOPS_MDA = "aiops-mda";
     protected static final String DICTIONARY_TYPE_TEST_STRING = "testString";
+    protected static final String DICTIONARY_TYPE_TEST_LIST = "testList";
     protected static final String DATA_FLOW_PIPELINE = "DataFlowPipeline";
+    protected static final String TEST_RECORD = "TestRecord";
+    protected static final String TEST_RECORD_WITH_FIELD_LIST = "TestRecordWithFieldList";
 
     protected File dictionariesDirectory = new File(GENERATED_METADATA_DIRECTORY, "dictionaries");
     protected File compositesDirectory = new File(GENERATED_METADATA_DIRECTORY, "composites");
@@ -176,7 +179,7 @@ public abstract class AbstractModelInstanceSteps {
 
     protected void createSampleRecord(List<RecordFieldElement> fieldElements) {
         RecordElement record = new RecordElement();
-        record.setName("TestRecordWithFieldList");
+        record.setName(TEST_RECORD_WITH_FIELD_LIST);
         record.setPackage(BOOZ_ALLEN_PACKAGE);
 
         for(RecordFieldElement fieldElement: fieldElements) {
@@ -350,5 +353,55 @@ public abstract class AbstractModelInstanceSteps {
         step.setName(stepName);
         step.setType(stepType);
         return step;
+    }
+
+    protected static StepDataCollectionTypeElement createSampleStepDataCollectionType() {
+        StepDataCollectionTypeElement collectionTypeElement = new StepDataCollectionTypeElement();
+        collectionTypeElement.setName(DICTIONARY_TYPE_TEST_LIST);
+        collectionTypeElement.setPackage(BOOZ_ALLEN_PACKAGE);
+        return collectionTypeElement;
+    }
+
+    protected static StepDataRecordTypeElement createSampleStepDataRecordType() {
+        StepDataRecordTypeElement stepDataRecordTypeElement = new StepDataRecordTypeElement();
+        stepDataRecordTypeElement.setName(TEST_RECORD_WITH_FIELD_LIST);
+        stepDataRecordTypeElement.setPackage(BOOZ_ALLEN_PACKAGE);
+        return stepDataRecordTypeElement;
+    }
+
+    protected static StepElement createPipelineNativeStepWithSampleRecord(String stepName, String stepType) {
+        StepElement step = new StepElement();
+        step.setName(stepName);
+        step.setType(stepType);
+        StepDataBindingElement stepDataBinding = new StepDataBindingElement();
+        stepDataBinding.setNativeCollectionType(createSampleStepDataCollectionType());
+        stepDataBinding.setRecordType(createSampleStepDataRecordType());
+        stepDataBinding.setType("native");
+        step.setInbound(stepDataBinding);
+        return step;
+    }
+
+
+    protected void createSampleDictionary() throws Exception {
+        DictionaryTypeElement listType = new DictionaryTypeElement();
+        DictionaryTypeElement recordType = new DictionaryTypeElement();
+
+        listType.setName(DICTIONARY_TYPE_TEST_LIST);
+        listType.setSimpleType("set");
+        listType.setPackage(BOOZ_ALLEN_PACKAGE);
+        recordType.setName(TEST_RECORD);
+        recordType.setSimpleType("string");
+        recordType.setPackage(BOOZ_ALLEN_PACKAGE);
+        createSampleDictionary(List.of(listType, recordType));
+    }
+
+    protected void createSampleRecord() {
+        RecordFieldElement recordElement = new RecordFieldElement();
+        recordElement.setName(TEST_RECORD_WITH_FIELD_LIST);
+        RecordFieldTypeElement recordType = new RecordFieldTypeElement();
+        recordType.setName(TEST_RECORD);
+        recordType.setPackage(BOOZ_ALLEN_PACKAGE);
+        recordElement.setType(recordType);
+        createSampleRecord(List.of(recordElement));
     }
 }

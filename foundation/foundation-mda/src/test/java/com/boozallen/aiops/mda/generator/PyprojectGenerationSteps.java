@@ -65,7 +65,7 @@ public class PyprojectGenerationSteps extends AbstractModelInstanceSteps {
                 pipeline.addStep(pipelineStep);
             } catch (Exception e) {
                 logger.error("Failed to add new step to test pipeline", e);
-            };
+            }
 
             });
     }
@@ -74,7 +74,7 @@ public class PyprojectGenerationSteps extends AbstractModelInstanceSteps {
     public void a_record_model_with_a_corresponding_dictionary_type_defined() throws Exception {
         createSampleDictionaryType();
         record = new RecordElement();
-        record.setName("TestRecord");
+        record.setName(TEST_RECORD);
         record.setPackage(BOOZ_ALLEN_PACKAGE);
         saveRecordToFile(record);
     }

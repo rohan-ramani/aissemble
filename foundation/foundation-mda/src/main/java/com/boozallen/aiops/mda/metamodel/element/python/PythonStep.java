@@ -30,7 +30,7 @@ import java.util.TreeSet;
 public class PythonStep extends BaseStepDecorator {
 
     private boolean isRecordGenerationInPipelineModule;
-    private String rootArtifactId;
+    private String pythonDataRecordPackage;
     protected static final String DATAFRAME_TYPE = "pysparkDataFrame";
     private static final String NONE = "None";
     private static final String STRING = "str";
@@ -145,9 +145,8 @@ public class PythonStep extends BaseStepDecorator {
                     importsSet.add(moduleImport.replace("from ",
                             isImplModule ? "from .." : "from ..."));
                 }else{
-                    String rootArtifact = PipelineUtils.deriveLowerSnakeCaseNameFromHyphenatedString(rootArtifactId);
                     importsSet.add(moduleImport.replace("from ",
-                            "from " + rootArtifact + "_data_records."));
+                            "from " + PipelineUtils.deriveLowerSnakeCaseNameFromHyphenatedString(pythonDataRecordPackage) + "."));
                 }
             } else {
                 importsSet.add(moduleImport);
@@ -225,8 +224,8 @@ public class PythonStep extends BaseStepDecorator {
         this.isRecordGenerationInPipelineModule = isRecordGenerationInPipelineModule;
     }
 
-    public void setRootArtifactId(String rootArtifactId){
-        this.rootArtifactId = rootArtifactId;
+    public void setPythonDataRecordPackage(String pythonDataRecordPackage) {
+        this.pythonDataRecordPackage = pythonDataRecordPackage;
     }
 
     private String createSignature(String methodName, String inputType, String outputType, boolean asyncMethod) {

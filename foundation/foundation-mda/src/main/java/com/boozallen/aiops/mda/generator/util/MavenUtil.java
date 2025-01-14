@@ -138,18 +138,40 @@ public class MavenUtil {
         }
     }
 
-    public static String getChildModuleName(final File rootDirectory, final String childRegex) {
+    /**
+     * get the NodeList from the pom file with given directory and tag name
+     * @param rootDirectory the pom file directory
+     * @param tagName the tag name
+     * @return
+     */
+    public static NodeList getPomFileElements(final File rootDirectory, final String tagName) {
 
         File pomFile = new File(rootDirectory.getPath() + File.separator + "pom.xml");
 
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            
+
             Document doc = dBuilder.parse(pomFile);
             doc.getDocumentElement().normalize();
+            //Get all fields with given tag name
+            return doc.getElementsByTagName(tagName);
+        } catch (Exception e){
+            throw new RuntimeException(String.format("No %s element identified within: %s ", tagName, pomFile.getPath()));
+        }
+    }
+
+    /**
+     * get the module name from given file and regex condition
+     *
+     * @param rootDirectory
+     * @param childRegex
+     * @return the module name
+     */
+    public static String getChildModuleName(final File rootDirectory, final String childRegex) {
+        try {
             //Get all fields with tag <module>
-            NodeList nodeList = doc.getElementsByTagName("module");
+            NodeList nodeList = getPomFileElements(rootDirectory, "module");
             //Iterate through the list and get deploy-module name
             for (int i = 0; i < nodeList.getLength(); i++){
                 Node node = nodeList.item(i);
@@ -163,7 +185,7 @@ public class MavenUtil {
             }
         } catch (Exception e){
             logger.error("Unable to find deploy-module", e);
-            throw new NoSuchElementException("No deploy module identified within " + pomFile.getPath());
+            throw new NoSuchElementException("No deploy module identified within pom file at "+ rootDirectory.getPath());
         }
         return null;
     }

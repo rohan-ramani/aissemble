@@ -82,7 +82,7 @@ public class DataRecordsModuleStep extends AbstractModelInstanceSteps {
     public void a_dictionary_and_0_or_more_record_models() throws Exception {
         createSampleDictionaryType();
         record = new RecordElement();
-        record.setName("TestRecord");
+        record.setName(TEST_RECORD);
         record.setPackage(BOOZ_ALLEN_PACKAGE);
         saveRecordToFile(record);
     }
@@ -319,7 +319,7 @@ public class DataRecordsModuleStep extends AbstractModelInstanceSteps {
         return nodeList;
     }
     @When("the pipelines are validated")
-    public void the_pipelines_are_validated() throws Exception {
+    public void the_pipelines_are_validated() {
         pipelineFile = getPipelineFileByName(DATA_FLOW_PIPELINE);
         pipeline = JsonUtils.readAndValidateJson(pipelineFile, PipelineElement.class);
         pipeline.validate();

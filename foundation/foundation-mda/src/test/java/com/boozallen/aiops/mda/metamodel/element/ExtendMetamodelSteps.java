@@ -98,7 +98,7 @@ public class ExtendMetamodelSteps extends AbstractModelInstanceSteps {
                 this.validateExtension(metamodelType, dictionaryTypeElementExtension.simpleField, dictionaryTypeElementExtension.person);
                 break;
             case "record":
-                Record record = this.metadataRepo.getRecord("TestRecordWithFieldList");
+                Record record = this.metadataRepo.getRecord(TEST_RECORD_WITH_FIELD_LIST);
                 RecordFieldElementExtension recordFieldElementExtension = (RecordFieldElementExtension) record.getFields().get(0);
                 this.validateExtension(metamodelType, recordFieldElementExtension.simpleField, recordFieldElementExtension.person);
                 break;

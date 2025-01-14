@@ -8,8 +8,6 @@ package com.boozallen.aiops.mda.generator;/*-
  * #L%
  */
 
-import com.boozallen.aiops.mda.generator.util.PipelineUtils;
-
 import com.boozallen.aiops.mda.metamodel.element.*;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
@@ -25,6 +23,7 @@ import org.technologybrewery.fermenter.mda.element.ExpandedProfile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,15 +32,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 public class SparkApplicationStep extends AbstractModelInstanceSteps {
     private static final Logger logger = LoggerFactory.getLogger(SparkApplicationStep.class);
+    private boolean hasSparkPipeline;
 
     @Before("@spark-application-generation")
     public void setup(Scenario scenario) throws IOException {
         this.scenario = scenario.getName();
         FileUtils.deleteDirectory(GENERATED_METADATA_DIRECTORY);
+        hasSparkPipeline = false;
     }
 
     @Given("a spark project named {string}")
@@ -74,13 +74,36 @@ public class SparkApplicationStep extends AbstractModelInstanceSteps {
         saveFileStores(createFileStores(fileStoreNames));
     }
 
+    @Given("a project has pyspark and {string} data models")
+    public void a_pyspark_with_the_name_example(String other) throws Exception {
+        createProject("example", "shared");
+        addPysparkPipeline();
+        if ("spark".equals(other)) {
+            addSparkPipeline();
+            hasSparkPipeline = true;
+        }
+    }
+
+    @Given("the pipeline step uses data record with {string} profile")
+    public void the_pipeline_steps_import_data_record_from(String dataRecordProfile) {
+        addTestSharedPomFile(dataRecordProfile);
+    }
+
     @When("the profile data-delivery-spark-pipeline is generated")
     public void the_profile_data_delivery_spark_pipeline_is_generated() throws Exception {
         readMetadata(projectName);
+        generateSparkPipeline(loadProfiles());
+    }
+
+    @When("the pipeline is generated")
+    public void the_profile_data_delivery_pyspark_pipeline_is_generated() throws Exception {
+        readMetadata(projectName);
         Map<String, ExpandedProfile> profiles = loadProfiles();
-        GenerateSourcesHelper.performSourceGeneration("data-delivery-spark-pipeline", profiles, this::createGenerationContext, (missingProfile, foundProfiles) -> {
-            throw new RuntimeException("Missing profile: " + missingProfile);
-        }, new Slf4jDelegate(logger), projectDir.toFile());
+        generatePysparkPipeline(profiles);
+
+        if (hasSparkPipeline) {
+            generateSparkPipeline(profiles);
+        }
     }
 
     @Then("the {string}, {string}, and {string} configurations {string} generated")
@@ -113,6 +136,11 @@ public class SparkApplicationStep extends AbstractModelInstanceSteps {
         assertEquals("File Store Env variable \"" + fsAccessKeyId + "\" found in " + pipelineSparkBaseValuesYamlFile, hasFsSecretAccessKeyEnvVar.get(), expectation.equals("are"));
     }
 
+    @Then("the pipeline steps are generated with correct {string} to import data")
+    public void the_pipeline_steps_are_generated_with_correct_data_record_package_to_import_data(String dataRecordPackage) throws IOException {
+        assertDataRecordPackageImport(dataRecordPackage);
+    }
+
     /**
      * Create list of file store based on a list of file store names
      *
@@ -130,5 +158,100 @@ public class SparkApplicationStep extends AbstractModelInstanceSteps {
     protected void saveFileStores(List<FileStore> fileStores) throws IOException  {
         this.pipeline.setFileStores(fileStores);
         savePipelineToFile(pipeline);
+    }
+
+    private void addPipeline(boolean isPySparkPipeline) throws Exception {
+        String pipelineName = isPySparkPipeline? "PysparkPipeline": "SparkPipeline";
+        String impleName = isPySparkPipeline? "data-delivery-pyspark": "data-delivery-spark";
+        String pipelineStepName = "exampleStep";
+        createSampleDictionary();
+        createSampleRecord();
+
+        createAndSavePipeline(pipelineName, "data-flow", impleName, pipeline -> {
+            try {
+                StepElement pipelineStep = createPipelineNativeStepWithSampleRecord(pipelineStepName, "synchronous");
+                pipeline.addStep(pipelineStep);
+            } catch (Exception e) {
+                logger.error("Failed to add step to test pipeline", e);
+            }
+        });
+    }
+
+    private void addPysparkPipeline() throws Exception {
+        addPipeline(true);
+    }
+
+    private void addSparkPipeline() throws Exception {
+        addPipeline(false);
+    }
+
+    private void generatePysparkPipeline(Map<String, ExpandedProfile> profiles) throws Exception {
+        GenerateSourcesHelper.performSourceGeneration("data-delivery-pyspark-pipeline", profiles, this::createGenerationContext, (missingProfile, foundProfiles) -> {
+            throw new RuntimeException("Missing profile: " + missingProfile);
+        }, new Slf4jDelegate(logger), projectDir.toFile());
+    }
+
+    private void generateSparkPipeline(Map<String, ExpandedProfile> profiles) throws Exception {
+        GenerateSourcesHelper.performSourceGeneration("data-delivery-spark-pipeline", profiles, this::createGenerationContext, (missingProfile, foundProfiles) -> {
+            throw new RuntimeException("Missing profile: " + missingProfile);
+        }, new Slf4jDelegate(logger), projectDir.toFile());
+    }
+
+    private void addTestSharedPomFile(String dataRecordProfile) {
+        String content = """
+                <project>
+                      <build>
+                        <plugins>
+                            <plugin>
+                                <groupId>org.technologybrewery.fermenter</groupId>
+                                <artifactId>fermenter-mda</artifactId>
+                                <inherited>false</inherited>
+                                <executions>
+                                    <execution>
+                                        <id>generate-data-records</id>
+                                        <phase>generate-sources</phase>
+                                        <goals>
+                                            <goal>generate-sources</goal>
+                                        </goals>
+                                        <configuration>
+                                            <basePackage>com.boozallen</basePackage>
+                                            <profile>%s</profile>
+                                        </configuration>
+                                    </execution>
+                                </executions>
+                            </plugin>
+                        </plugins>
+                    </build>
+                </project>""";
+
+        String directoryPath = this.projectDir.toAbsolutePath() + File.separator + this.projectDir.getFileName() + "-shared";
+        String filePath = directoryPath + File.separator + "pom.xml";
+        try {
+            Path directory = Paths.get(directoryPath);
+            if (!Files.exists(directory)) {
+                Files.createDirectories(directory);
+            }
+
+            // Write to file
+            Path file = Paths.get(filePath);
+            Files.write(file, String.format(content, dataRecordProfile).getBytes());
+        } catch (IOException e) {
+            logger.error("Failed create the shared module pom file", e);
+        }
+    }
+
+    private void assertDataRecordPackageImport(String dataRecordPackage) throws IOException {
+        boolean foundImport = false;
+        String importLine = String.format("from %s.record.test_record_with_field_list import TestRecordWithFieldList", dataRecordPackage);
+        String generatedFile = File.separator + "generated" + File.separator + "step" + File.separator + "example_step_base.py";
+        List<String> lines = Files.readAllLines(new File(this.projectDir.toAbsolutePath() + File.separator + generatedFile).toPath());
+        for (String line: lines) {
+            line = line.trim();
+            if (line.equals(importLine)){
+                foundImport = true;
+                break;
+            }
+        }
+        assertTrue("The generated step has incorrect data record import.", foundImport);
     }
 }

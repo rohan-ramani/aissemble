@@ -25,3 +25,20 @@ Feature: Generating spark application pipeline resources
     Then the "s3TestModelOne_FS_PROVIDER", "s3TestModelOne_FS_ACCESS_KEY_ID", and "s3TestModelOne_FS_SECRET_ACCESS_KEY" configurations "are" generated
     And the "s3TestModelTwo_FS_PROVIDER", "s3TestModelTwo_FS_ACCESS_KEY_ID", and "s3TestModelTwo_FS_SECRET_ACCESS_KEY" configurations "are" generated
 
+  @pipeline-generation @code-generation
+  Scenario: Pyspark pipeline with data record steps generated with data-record-package import
+    Given a project has pyspark and "<other>" data models
+    And the pipeline step uses data record with "<generate-data-record-profile>" profile
+    When the pipeline is generated
+    Then the pipeline steps are generated with correct "<data-record-package>" to import data
+
+    Examples:
+    	 | other       | generate-data-record-profile                    | data-record-package               |
+    	 | no other    | aissemble-data-records-combined-module          | example_data_records              |
+    	 | spark       | aissemble-data-records-combined-module          | example_data_records_python       |
+    	 | no other    | aissemble-data-records-separate-module          | example_data_records_core         |
+    	 | spark       | aissemble-data-records-separate-module          | example_data_records_core_python  |
+
+
+
+
