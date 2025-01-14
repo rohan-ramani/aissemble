@@ -55,7 +55,8 @@ spec:
           imagePullPolicy: {{ .Values.deployment.image.imagePullPolicy | default "IfNotPresent" }}
           # Uses the Ivy jar packaged with spark to download dependency packages (and their transitive dependencies) to /tmp/jars/...
           # Specifically downloads the binaries-- Does not download supplemental classifiers, ie sources
-          command: ["java", "-Divy.cache.dir=/tmp/", "-Divy.home=/tmp/", "-jar", "/opt/spark/jars/ivy-2.5.1.jar", "-confs", "default", "-retrieve", "/tmp/jars/[artifact].[ext]", {{ include "deps.packages.ivy" . }}]
+          command: ["sh", "-c"]
+          args: ["java -Divy.cache.dir=/tmp/ -Divy.home=/tmp/ -cp '/opt/spark/jars/*' org.apache.ivy.Main -confs default -retrieve /tmp/jars/[artifact].[ext] {{ include "deps.packages.ivy" . }}"]
           volumeMounts:
             - mountPath: /tmp/jars
               name: sts-jars

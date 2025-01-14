@@ -4,7 +4,7 @@ Create the list of ivy dependencies to be installed on the spark history server
 {{- define "deps.packages.ivy" -}}
 {{- if .Values.enable -}}
     {{- range .Values.dependencies.packages }}
-        {{- $dep := printf "-dependency, %s," . | replace ":" ", " -}}
+        {{- $dep := printf " -dependency %s" . | replace ":" " " -}}
         {{ default $dep -}}
     {{- end }}
 {{- else -}}

@@ -215,8 +215,8 @@ tests:
           path: spec.template.spec.initContainers[1].volumeMounts[0].mountPath
           value: "/tmp/jars"
       - matchRegex:
-          path: spec.template.spec.initContainers[1].command[8]
-          pattern: /tmp/jars/.*
+          path: spec.template.spec.initContainers[1].args[0]
+          pattern: java .* -retrieve /tmp/jars/.*
 
   - it: The jar installation initContainer command appropriately references the mount point.
     set:
@@ -288,27 +288,22 @@ tests:
         - some_jar.jar
         - another_jar.jar
     asserts:
-      - equal:
-          path: spec.template.spec.initContainers[1].command[-2]
-          value: some_jar.jar
-      - equal:
-          path: spec.template.spec.initContainers[1].command[-1]
-          value: another_jar.jar
+      - contains:
+          path: spec.template.spec.initContainers[1].command
+          content: some_jar.jar
+      - contains:
+          path: spec.template.spec.initContainers[1].command
+          content: another_jar.jar
 
   - it: When specifying package dependencies, each dependency is properly listed for download
     set:
       dependencies.packages:
-        - group:artifact:version
+        - groupA:artifactA:versionA
+        - groupB:artifactB:versionB
     asserts:
-      - equal:
-          path: spec.template.spec.initContainers[1].command[-3]
-          value: group
-      - equal:
-          path: spec.template.spec.initContainers[1].command[-2]
-          value: artifact
-      - equal:
-          path: spec.template.spec.initContainers[1].command[-1]
-          value: version
+      - matchRegex:
+          path: spec.template.spec.initContainers[1].args[0]
+          pattern: .* -dependency groupA artifactA versionA -dependency groupB artifactB versionB$
 
   - it: When a command is unspecified, the default is applied
     asserts:
