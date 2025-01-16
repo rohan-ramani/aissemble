@@ -1,7 +1,11 @@
 FROM registry.access.redhat.com/ubi9/openjdk-17-runtime:1.20 AS builder
 USER root
+
+# Configures the desired version of Helm to install
+ARG HELM_VERSION=v3.17.0
+
 RUN microdnf install -y openssl gzip && \
-    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash -s -- -v ${HELM_VERSION}
 
 FROM @docker.baseline.repo.id@/boozallen/aissemble-quarkus:@project.version@ AS final
 
