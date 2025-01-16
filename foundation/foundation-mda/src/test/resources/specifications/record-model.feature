@@ -181,17 +181,6 @@ Feature: Specify record of semantically defined types
       | singleSlaInDays              | oneZScorePlusAveragePolicy |
       | doubleSlaInDays              | noOpPolicy                 |
 
-  Scenario Outline: A record field can refer to a composite instance
-    Given a composite named "<compositeType>" with multiple fields
-    And a record with a field that has a field with a composite type of "<compositeType>"
-    When records are read
-    Then the record field is available and has a field with a composite type of "<compositeType>" containing multiple fields
-
-    Examples: 
-      | compositeType |
-      | Address       |
-      | Leaf          |
-
   Scenario: Data Access is enabled by default for a record
     Given a valid record with data access configuration
     When records are read
@@ -211,3 +200,11 @@ Feature: Specify record of semantically defined types
     Given a valid record with no pyspark support
     When records are read for a Python project
     Then the record is available and has Pyspark support disabled
+
+  Scenario: A record can reference another record as a field
+    Given record B
+    Given record A has a relation to record B
+    When records are read
+    Then the records are successfully created
+    And you can reference record B from record A
+    And you can reference record A from record B

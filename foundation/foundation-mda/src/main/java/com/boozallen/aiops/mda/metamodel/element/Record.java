@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * Defines the contract for a record with one or more fields. A record field can refer to a dictionary type or a
- * composite type.
+ * Defines the contract for a record with one or more fields and zero or more relations.
+ * A record field refers to a dictionary type.
  */
 public interface Record extends NamespacedMetamodel {
     /**
@@ -56,6 +56,15 @@ public interface Record extends NamespacedMetamodel {
     List<Framework> getFrameworks();
 
     /**
+     * Returns relations for this instance.
+     *
+     * @return list of relations
+     */
+    List<Relation> getRelations();
+
+    Relation getRelation(String type);
+
+    /**
      * Loops over all records until a record is found that tests true with predicate.
      * Otherwise, returns false.
      *
@@ -77,5 +86,14 @@ public interface Record extends NamespacedMetamodel {
 
         return result;
     }
+
+    /**
+     * Returns the entities that have specified this entity as a relation
+     *
+     * @param type
+     * @return
+     */
+    List<Record> getInverseRelations();
+
 
 }

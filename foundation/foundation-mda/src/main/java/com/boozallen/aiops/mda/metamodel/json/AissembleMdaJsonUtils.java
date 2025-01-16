@@ -20,14 +20,10 @@ import org.technologybrewery.fermenter.mda.util.JsonUtils;
 
 import com.boozallen.aiops.mda.metamodel.element.Alerting;
 import com.boozallen.aiops.mda.metamodel.element.AlertingElement;
-import com.boozallen.aiops.mda.metamodel.element.Composite;
-import com.boozallen.aiops.mda.metamodel.element.CompositeElement;
 import com.boozallen.aiops.mda.metamodel.element.Dictionary;
 import com.boozallen.aiops.mda.metamodel.element.DictionaryElement;
 import com.boozallen.aiops.mda.metamodel.element.DictionaryType;
 import com.boozallen.aiops.mda.metamodel.element.DictionaryTypeElement;
-import com.boozallen.aiops.mda.metamodel.element.CompositeField;
-import com.boozallen.aiops.mda.metamodel.element.CompositeFieldElement;
 import com.boozallen.aiops.mda.metamodel.element.DataAccess;
 import com.boozallen.aiops.mda.metamodel.element.DataAccessElement;
 import com.boozallen.aiops.mda.metamodel.element.DataProfiling;
@@ -48,6 +44,8 @@ import com.boozallen.aiops.mda.metamodel.element.Provenance;
 import com.boozallen.aiops.mda.metamodel.element.ProvenanceElement;
 import com.boozallen.aiops.mda.metamodel.element.Record;
 import com.boozallen.aiops.mda.metamodel.element.RecordElement;
+import com.boozallen.aiops.mda.metamodel.element.Relation;
+import com.boozallen.aiops.mda.metamodel.element.RelationElement;
 import com.boozallen.aiops.mda.metamodel.element.RecordField;
 import com.boozallen.aiops.mda.metamodel.element.RecordFieldElement;
 import com.boozallen.aiops.mda.metamodel.element.RecordFieldType;
@@ -105,11 +103,9 @@ public final class AissembleMdaJsonUtils {
         module.addAbstractTypeMapping(Record.class, RecordElement.class);
         module.addAbstractTypeMapping(RecordField.class, RecordFieldElement.class);
         module.addAbstractTypeMapping(RecordFieldType.class, RecordFieldTypeElement.class);
+        module.addAbstractTypeMapping(Relation.class, RelationElement.class);
         module.addAbstractTypeMapping(DataAccess.class, DataAccessElement.class);
         module.addAbstractTypeMapping(Framework.class, FrameworkElement.class);
-
-        module.addAbstractTypeMapping(Composite.class, CompositeElement.class);
-        module.addAbstractTypeMapping(CompositeField.class, CompositeFieldElement.class);
 
         ObjectMapper localMapper = new ObjectMapper();
         localMapper.registerModule(module);

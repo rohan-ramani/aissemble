@@ -78,6 +78,29 @@
 					"name", "type"
 				]
 			}
+		},
+		"relations": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"package": {
+						"type": "string"
+					},
+					"documentation": {
+						"type": "string"
+					},
+					"multiplicity": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name","package"
+				]
+			}
 		}
 	},
 	"required": [

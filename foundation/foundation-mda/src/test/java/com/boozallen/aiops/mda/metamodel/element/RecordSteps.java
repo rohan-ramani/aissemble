@@ -14,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,6 +24,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.technologybrewery.fermenter.mda.util.MessageTracker;
+import org.technologybrewery.fermenter.mda.metamodel.ModelInstanceRepositoryManager;
 
 import com.boozallen.aiops.mda.metamodel.json.AissembleMdaJsonUtils;
 import com.google.common.collect.Maps;
@@ -31,9 +33,12 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+//import org.apache.commons.lang3.RandomStringUtils;
+//import org.technologybrewery.fermenter.mda.metamodel.element.FieldElement;
 
 public class RecordSteps extends AbstractModelInstanceSteps {
 
+    public static final String TEST_RECORD_RELATIONS = "test.record.relations";
     protected String recordPackageName;
     protected Record record;
     protected boolean encounteredError;
@@ -176,35 +181,6 @@ public class RecordSteps extends AbstractModelInstanceSteps {
         saveRecordToFile(newRecord);
     }
 
-    @Given("a composite named {string} with multiple fields")
-    public void a_composite_named_with_multiple_fields(String compositeName) {
-        CompositeElement composite = new CompositeElement();
-        composite.setName(compositeName);
-        composite.setPackage(BOOZ_ALLEN_PACKAGE);
-        for (int i = 0; i < RandomUtils.insecure().randomInt(2, 5); i++) {
-            CompositeFieldElement field = new CompositeFieldElement();
-            field.setName("field" + i);
-            DictionaryTypeElement type = new DictionaryTypeElement();
-            type.setName("ssn");
-            field.setType(type);
-            composite.addField(field);
-        }
-        saveCompositeToFile(composite);
-    }
-
-    @Given("a record with a field that has a field with a composite type of {string}")
-    public void a_record_with_a_field_that_has_a_field_with_a_composite_type_of(String compositeType) {
-        RecordElement newRecord = createNewRecordWithNameAndPackage("CompositeTypedFieldTest", BOOZ_ALLEN_PACKAGE);
-        RecordFieldElement field = new RecordFieldElement();
-        field.setName("testPolicyOverride");
-        RecordFieldTypeElement type = new RecordFieldTypeElement();
-        type.setPackage(BOOZ_ALLEN_PACKAGE);
-        type.setName(compositeType);
-        field.setType(type);
-        newRecord.addField(field);
-        saveRecordToFile(newRecord);
-    }
-
     @Given("a valid record with data access configuration")
     public void a_valid_record_with_data_access_configuration() {
         RecordElement newRecord = createNewRecordWithNameAndPackage("DataAccessEnabledTest", BOOZ_ALLEN_PACKAGE);
@@ -334,18 +310,6 @@ public class RecordSteps extends AbstractModelInstanceSteps {
                 foundField.getDriftPolicy());
     }
 
-    @Then("the record field is available and has a field with a composite type of {string} containing multiple fields")
-    public void the_record_field_is_available_and_has_a_field_with_a_composite_type_of_containing_multiple_fields(
-            String expectedCompositeType) {
-        
-        RecordField foundField = getAndValidateSingleField();
-        assertTrue("Expected to encounter a composite typed field!", foundField.getType().isCompositeTyped());
-        Composite foundComposite = foundField.getType().getCompositeType();
-        assertEquals("Unexpected composite type found!", expectedCompositeType, foundComposite.getName());
-        assertTrue("Expected multiple fields on the found composite!", foundComposite.getFields().size() > 1);
-
-    }
-
     @Then("the record is available and has data access enabled")
     public void the_record_is_available_and_has_data_access_enabled() {
         assertTrue("Expected data access to be enabled for the record!", record.getDataAccess().isEnabled());
@@ -457,4 +421,79 @@ public class RecordSteps extends AbstractModelInstanceSteps {
         assertFalse("Record does not contain the pyspark framework", found.isPresent());
     }
 
+    @Given("record B")
+    public void record_b() {
+        RecordElement newRecord = createNewRecordWithNameAndPackage("RecordB", RELATION_PACKAGE);
+        RecordFieldElement field = new RecordFieldElement();
+        field.setName("FieldB");
+        RecordFieldTypeElement type = new RecordFieldTypeElement();
+        type.setName("phoneNumber");
+        field.setType(type);
+        newRecord.addField(field);
+        saveRecordToFile(newRecord);
+    }
+
+    @Given("record A has a relation to record B")
+    public void record_a_references_record_b() throws IOException {
+        RelationInput relationInput = new RelationInput();
+        relationInput.type = "RecordB";
+        relationInput.relationPackage = RELATION_PACKAGE;
+        relationInput.documentation = "Relation between Record A and Record B";
+        createRecordWithRelation("RecordA", TEST_RECORD_RELATIONS, relationInput);
+    }
+
+    /**
+     * Uses to pass relation-level information into test steps
+     */
+    private static class RelationInput {
+        public String documentation;
+        public String type;
+        public String relationPackage;
+        public String multiplicity;
+        public String localColumn;
+    }
+
+    @Then("the records are successfully created")
+    public void the_records_are_successfully_created() {
+        Record ARecord = this.metadataRepo.getRecord(TEST_RECORD_RELATIONS,"RecordA");
+        Record BRecord = this.metadataRepo.getRecord(RELATION_PACKAGE,"RecordB");
+
+        assertTrue("Parent record file was not generated", ARecord != null);
+        assertTrue("Child record file was not generated", BRecord != null);
+    }
+
+    @Then("you can reference record B from record A")
+    public void you_can_reference_record_b_from_record_a() {
+        Record ARecord = this.metadataRepo.getRecord(TEST_RECORD_RELATIONS,"RecordA");
+        assertTrue("Parent record did not have a child", ARecord.getRelations().size() > 0);
+        Relation relationToRecordB = ARecord.getRelations().get(0);
+        assertTrue("Child record was not of type RecordB",
+                relationToRecordB.getName().equalsIgnoreCase("RecordB"));
+
+    }
+    @Then("you can reference record A from record B")
+    public void you_can_reference_record_a_from_record_b() {
+        Record BRecord = this.metadataRepo.getRecord(RELATION_PACKAGE,"RecordB");
+        List<Record> BRecordInverseRelations = BRecord.getInverseRelations();
+        assertTrue("Child record did not have a parent", BRecordInverseRelations.size() > 0);
+        assertTrue("Parent record was not of type RecordA",
+                BRecordInverseRelations.get(0).getTitle().equalsIgnoreCase("RecordA"));
+    }
+
+    private RecordElement createRecordWithRelation(String name, String packageName, RelationInput relation)
+            throws IOException {
+        RecordElement newRecord = createNewRecordWithNameAndPackage(name, packageName);
+
+        RelationElement recordRelation = new RelationElement();
+        recordRelation.setName(relation.type);
+        recordRelation.setPackage(relation.relationPackage);
+        recordRelation.setDocumentation(relation.documentation);
+        recordRelation.setMultiplicity(relation.multiplicity);
+
+        newRecord.addRelation(recordRelation);
+        saveRecordToFile(newRecord);
+        return newRecord;
+    }
+
 }
+
