@@ -3,6 +3,9 @@ templates:
   - configuration-store-pvc.yaml
 tests:
   - it: Should contain correct default values
+    set:
+      persistentVolumeProperties:
+        enabled: true
     asserts:
       - isAPIVersion:
           of: v1
@@ -20,7 +23,8 @@ tests:
 
   - it: Should set values appropriately
     set:
-      configurationVolume:
+      persistentVolumeProperties:
+        enabled: true
         name: test-store
         storageType: local
         size: 2Gi

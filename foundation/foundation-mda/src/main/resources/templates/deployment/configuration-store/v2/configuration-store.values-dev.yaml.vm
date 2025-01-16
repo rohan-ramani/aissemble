@@ -10,11 +10,4 @@ aissemble-configuration-store-chart:
       image:
         imagePullPolicy: IfNotPresent
 
-  # Update 'volumePathOnNode' with the absolute path of the config files to be loaded into the configuration store. 
-  # Example '/Users/MyUser/my-project/resources/configs'
-  #
-  # For WSL users, the configuration files need to be in an accessible path.
-  # Example: '/mnt/c' or '/mnt/wsl/rancher-desktop'
-  configurationVolume:
-    storageType: "local"
-    volumePathOnNode: "/update/this/path"
+

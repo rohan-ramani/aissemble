@@ -1,0 +1,44 @@
+suite: quarkus
+templates:
+  - envConfigmap.yaml
+tests:
+  - it: Should contain correct default values
+    asserts:
+      - isKind:
+          of: ConfigMap
+
+  - it: Should override default properties appropriately when enabled
+    set:
+      configMapProperties:
+        enabled: true
+        name: configuration-store-config
+        baseConfigFiles:
+          spark.properties: |-
+            test.username=test
+            test.password=test
+        envConfigFiles:
+          spark.properties: |-
+            test.username=testenv
+            test.password=testenv
+    asserts:
+      - equal:
+          path: data
+          value:
+            spark.properties: |-
+              test.username=testenv
+              test.password=testenv
+
+  - it: Should not generate configMap when disabled
+    set:
+      configMapProperties:
+        enabled: false
+        name: configuration-store-config
+        baseConfigFiles:
+          spark.properties: |-
+            test.username=test
+            test.password=test
+        envConfigFiles:
+          spark.properties: |-
+    asserts:
+      - notExists:
+          path: data

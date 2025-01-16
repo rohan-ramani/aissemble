@@ -1,23 +1,25 @@
+{{- if .Values.persistentVolumeProperties.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    app.kubernetes.io/instance: {{ .Values.configurationVolume.name }}
-    app.kubernetes.io/name: {{ .Values.configurationVolume.name }}
-  name: {{ .Values.configurationVolume.name }}-claim
+    app.kubernetes.io/instance: {{ .Values.persistentVolumeProperties.name }}
+    app.kubernetes.io/name: {{ .Values.persistentVolumeProperties.name }}
+  name: {{ .Values.persistentVolumeProperties.name }}-claim
 spec:
-  {{- with .Values.configurationVolume.accessModes }}
+  {{- with .Values.persistentVolumeProperties.accessModes }}
   accessModes:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   resources:
     requests:
-      storage: {{ .Values.configurationVolume.size | default "200Mi" }}
-  {{- if eq .Values.configurationVolume.storageType "local" }}
+      storage: {{ .Values.persistentVolumeProperties.size | default "200Mi" }}
+  {{- if eq .Values.persistentVolumeProperties.storageType "local" }}
   storageClassName: ""
-  volumeName: {{ .Values.configurationVolume.name }}-pv
-  {{- else if eq .Values.configurationVolume.storageType "custom" }}
-  storageClassName: {{ .Values.configurationVolume.storageClass }}
+  volumeName: {{ .Values.persistentVolumeProperties.name }}-pv
+  {{- else if eq .Values.persistentVolumeProperties.storageType "custom" }}
+  storageClassName: {{ .Values.persistentVolumeProperties.storageClass }}
   {{- else }}
   storageClassName: ""
   {{- end }}
+{{- end }}

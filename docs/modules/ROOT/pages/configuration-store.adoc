@@ -63,15 +63,21 @@ NOTE: When deploying a project locally, the Configuration Store must be manually
 create a https://github.com/boozallen/aissemble/issues[Github Issue,role=external,window=_blank] if additional assistance is required.
 
 ==== Mounting Properties Files
+
+===== Properties Files from Config Maps
+The simplest way to mount properties files onto the Configuration Store deployment is to use ConfigMaps.  To support this case, one can provide configurations by
+https://github.com/boozallen/aissemble/blob/dev/extensions/extensions-helm/aissemble-configuration-store-chart/README.md[defining properties files,role=external,window=_blank] as part of the Helm chart's values.
+
+===== Properties Files from Volumes
 Properties files are attached to the local file system of the Configuration Store within Kubernetes through a mounted volume. To mount
-a volume to the Configuration Store, one must set the Helm chart's https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-configuration-store-chart/README.md#persistent-volume-properties[persistent volume properties,role=external,window=_blank]. Then the Helm chart's https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-configuration-store-chart/README.md#environment-variables[environment 
+a volume to the Configuration Store, one must set the Helm chart's https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-configuration-store-chart/README.md#persistent-volume-properties[persistent volume properties,role=external,window=_blank]. Then the Helm chart's https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-configuration-store-chart/README.md#defining-file-locations[environment
 variables,role=external,window=_blank] must be updated with the corresponding location(s) of the properties files within that volume. It is required to specify 
 a base property location that houses the base/default property configurations. In addition to the base location, one can optionally specify a
 secondary location for properties files that house the environment specific configurations. 
 
 NOTE: Multiple configuration properties files can be stored at either location.
 
-=== Backend Storage Types
+==== Backend Storage Types
 By default, the Configuration Store uses Krausening for it backend property storage. This provides a more light weight but still robust 
 storage option perfect for smaller applications.
 
