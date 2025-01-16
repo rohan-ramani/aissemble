@@ -11,9 +11,6 @@
 
     <name>aiSSEMBLE::Extensions::Security::Authzforce</name>
     <description>Authzforce implementation of a Policy Decision Point (PDP)</description>
-    <properties>
-        <version.jjwt>0.11.2</version.jjwt>
-    </properties>
 
     <dependencyManagement>
         <dependencies>

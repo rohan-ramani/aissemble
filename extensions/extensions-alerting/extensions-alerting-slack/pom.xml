@@ -17,6 +17,7 @@
         <dependency>
             <groupId>com.boozallen.aissemble</groupId>
             <artifactId>foundation-alerting</artifactId>
+            <version>${version.aissemble}</version>
         </dependency>
         <dependency>
             <groupId>org.technologybrewery.krausening</groupId>

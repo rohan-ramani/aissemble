@@ -41,15 +41,14 @@
             <artifactId>foundation-drift-detection-core-java</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- Remove Jackson version 2.15 to allow the Quarkus BOM to select the upgraded version 2.17 necessary for Quarkus dependencies-->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>${version.jackson}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${version.jackson}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.ws.rs</groupId>

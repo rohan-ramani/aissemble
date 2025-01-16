@@ -12,6 +12,7 @@ package com.boozallen.aiops.metadata;
 
 import com.boozallen.aissemble.core.cdi.CdiContext;
 import io.smallrye.reactive.messaging.memory.InMemoryConnector;
+import io.smallrye.reactive.messaging.providers.connectors.ExecutionHolder;
 
 import jakarta.enterprise.inject.spi.Extension;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class TestCdiContext implements CdiContext {
     public List<Class<?>> getCdiClasses() {
         List<Class<?>> classes = new ArrayList<>();
         classes.add(InMemoryConnector.class);
+        classes.add(ExecutionHolder.class);
         return classes;
     }
 

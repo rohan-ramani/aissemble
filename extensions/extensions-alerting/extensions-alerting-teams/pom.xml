@@ -34,10 +34,12 @@
         <dependency>
             <groupId>com.boozallen.aissemble</groupId>
             <artifactId>foundation-alerting</artifactId>
+            <version>${version.aissemble}</version>
         </dependency>
         <dependency>
             <groupId>com.boozallen.aissemble</groupId>
             <artifactId>extensions-messaging-quarkus</artifactId>
+            <version>${version.aissemble}</version>
         </dependency>
         <dependency>
             <groupId>io.smallrye.config</groupId>

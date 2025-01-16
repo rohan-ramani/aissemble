@@ -54,15 +54,9 @@
             <artifactId>quarkus-logging-gelf</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.boozallen.aissemble</groupId>
-            <artifactId>foundation-pdp-client-java</artifactId>
-            <exclusions>
-                <exclusion>
-                    <!-- Quarkus REST and JBoss RESTEasy are incompatible. (See https://quarkus.io/guides/rest-migration) -->
-                    <groupId>org.jboss.resteasy</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${version.jjwt}</version>
         </dependency>
         <dependency>
             <groupId>com.auth0</groupId>
