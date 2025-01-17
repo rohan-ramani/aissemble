@@ -31,7 +31,7 @@ public class HelmVersionHelper {
     private static final Logger logger = LoggerFactory.getLogger(HelmVersionHelper.class);
 
     private static final String HELM_COMMAND = "helm";
-    private static final String EXTRACT_VERSION_REGEX = "\"v((\\d\\.?)+)\"";
+    private static final String EXTRACT_VERSION_REGEX = "Version:\"v(.*?)\"";
 
     private final File workingDirectory;
 

@@ -18,7 +18,7 @@ ARG VERSION_AISSEMBLE
 
 FROM docker.io/kubeflow/spark-operator:v1beta2-1.6.2-3.5.0 AS builder
 
-# We would be able to use the kubeflow image directly, except that it is on Spark 3.5 instead of 3.4
+# Use our image as a base to ensure Spark version alignment and take advantage of image hardening
 FROM ${DOCKER_BASELINE_REPO_ID}boozallen/aissemble-spark:${VERSION_AISSEMBLE}
 
 LABEL org.opencontainers.image.source="https://github.com/boozallen/aissemble"

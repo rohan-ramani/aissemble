@@ -79,7 +79,7 @@
         <version.javax.servlet>3.1.0</version.javax.servlet>
 
         <!-- Spark Default Dependencies.  See `spark-*` profiles below for alternative sets -->
-        <version.spark>3.5.2</version.spark>
+        <version.spark>3.5.4</version.spark>
         <version.scala>2.12.20</version.scala>
         <version.scala.minor>2.12</version.scala.minor>
         <version.delta>3.2.1</version.delta>
@@ -1038,33 +1038,6 @@ To suppress enforce-helm-version rule, you must add following plugin to the root
                                 <addPypiRepoAsPackageSources>false</addPypiRepoAsPackageSources>
                                 <useDevRepository>true</useDevRepository>
                             </configuration>
-                        </plugin>
-                        <plugin>
-                            <groupId>${group.fabric8.plugin}</groupId>
-                            <artifactId>docker-maven-plugin</artifactId>
-                            <version>${version.fabric8.docker.maven.plugin}</version>
-                            <executions>
-                                <execution>
-                                    <id>default-build</id>
-                                    <phase>package</phase>
-                                    <goals>
-                                        <goal>build</goal>
-                                    </goals>
-                                    <configuration>
-                                        <!-- Deploy will build all platforms, so skip build phase in this case: -->
-                                        <buildArchiveOnly>true</buildArchiveOnly>
-                                        <images>
-                                            <image>
-                                                <build>
-                                                    <buildx>
-                                                        <builderName>maven</builderName>
-                                                    </buildx>
-                                                </build>
-                                            </image>
-                                        </images>
-                                    </configuration>
-                                </execution>
-                            </executions>
                         </plugin>
                     </plugins>
                 </pluginManagement>
