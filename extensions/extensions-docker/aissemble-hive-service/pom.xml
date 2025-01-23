@@ -15,8 +15,9 @@
     <packaging>docker-build</packaging>
 
     <properties>
-        <dockerbuild.jars.directory>target/dockerbuild/jars</dockerbuild.jars.directory>
-        <version.hive.metastore>4.0.0</version.hive.metastore>
+        <dockerbuild.jars.directory>target/dockerbuild/lib</dockerbuild.jars.directory>
+        <dockerbuild.bin.directory>target/dockerbuild/bin</dockerbuild.bin.directory>
+        <dockerbuild.patch.directory>target/dockerbuild/patch</dockerbuild.patch.directory>
     </properties>
 
     <dependencies>
@@ -26,9 +27,73 @@
             <version>3.2.0</version>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${version.mysql-connector}</version>
+            <groupId>org.apache.hive</groupId>
+            <artifactId>hive-standalone-metastore-server</artifactId>
+            <version>${version.hive}</version>
+            <classifier>bin</classifier>
+            <type>tar.gz</type>
+        </dependency>
+
+        <!-- Patch JARs -->
+        <dependency>
+            <groupId>io.airlift</groupId>
+            <artifactId>aircompressor</artifactId>
+            <version>0.27</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>1.11.4</version>
+        </dependency>
+        <dependency>
+            <groupId>dnsjava</groupId>
+            <artifactId>dnsjava</artifactId>
+            <version>3.6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-protobuf</artifactId>
+            <version>1.70.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.4.0-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.18.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-io</artifactId>
+            <version>9.4.57.v20241219</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http2</artifactId>
+            <version>4.1.117.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>9.48</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>3.25.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.xerial.snappy</groupId>
+            <artifactId>snappy-java</artifactId>
+            <version>1.1.10.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>3.9.3</version>
         </dependency>
     </dependencies>
 
@@ -42,34 +107,99 @@
                         <image>
                             <build>
                                 <args>
-                                    <METASTORE_VERSION>${version.hive.metastore}</METASTORE_VERSION>
+                                    <METASTORE_VERSION>${version.hive}</METASTORE_VERSION>
+                                    <HADOOP_VERSION>${version.hadoop}</HADOOP_VERSION>
                                     <JARS_DIR>${dockerbuild.jars.directory}</JARS_DIR>
+                                    <BIN_DIR>${dockerbuild.bin.directory}</BIN_DIR>
+                                    <PATCH_DIR>${dockerbuild.patch.directory}</PATCH_DIR>
                                 </args>
                             </build>
                         </image>
                     </images>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>test-image</id>
+                        <phase>integration-test</phase>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <run>
+                                        <network>
+                                            <!-- bridged mode (the default) does not work reliably for direct tcp verification.
+                                            See https://github.com/fabric8io/docker-maven-plugin/issues/1234#issuecomment-2609924715 -->
+                                            <mode>host</mode>
+                                        </network>
+                                        <wait>
+                                            <tcp>
+                                                <ports>
+                                                    <port>9083</port>
+                                                </ports>
+                                            </tcp>
+                                        </wait>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>test-image-cleanup</id>
+                        <phase>post-integration-test</phase>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <configuration>
-                    <outputDirectory>${dockerbuild.jars.directory}</outputDirectory>
-                    <includeTypes>jar</includeTypes>
                     <excludeTransitive>true</excludeTransitive>
-                    <includeArtifactIds>delta-hive_2.12,mysql-connector-java</includeArtifactIds>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>unpack</id>
+                        <id>get-extra-libs</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
+                        <configuration>
+                            <outputDirectory>${dockerbuild.jars.directory}</outputDirectory>
+                            <includeTypes>jar</includeTypes>
+                            <includeArtifactIds>delta-hive_2.12</includeArtifactIds>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>get-patch-jars</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${dockerbuild.patch.directory}</outputDirectory>
+                            <includeTypes>jar</includeTypes>
+                            <excludeArtifactIds>delta-hive_2.12,fermenter-mda,baton-maven-plugin,habushu-maven-plugin</excludeArtifactIds>
+                            <useRepositoryLayout>true</useRepositoryLayout>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>get-metastore</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${dockerbuild.bin.directory}</outputDirectory>
+                            <includeArtifactIds>hive-standalone-metastore-server</includeArtifactIds>
+                            <stripVersion>true</stripVersion>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
-
 </project>

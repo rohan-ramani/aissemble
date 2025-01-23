@@ -29,8 +29,8 @@ tests:
       - contains:
           path: spec.template.spec.containers[0].env
           content:
-            name: JAVA_HOME
-            value: /opt/jre
+            name: DB_DRIVER
+            value: mysql
       - contains:
           path: spec.template.spec.containers[0].volumeMounts
           content:

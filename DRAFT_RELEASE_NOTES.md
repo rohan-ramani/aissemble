@@ -24,6 +24,7 @@ _Note: instructions for adapting to these changes are outlined in the upgrade in
    | `AIOpsModelInstanceRepostory` | `AissembleModelInstanceRepository` |
    | `AiopsMdaJsonUtils`           | `AissembleMdaJsonUtils`            |
  - To improve the development cycle and docker build consistency, we have deprecated the docker_build() and local_resources() functions in the Tilt and enable maven docker build for the docker modules. Follow the instruction in the `Finalizing the Upgrade` to avoid duplicated docker image build.
+ - In an attempt to harden the `aissemble-hive-service` image, several changes were made that may impact projects with Hive customization
 
 
 # Known Issues
@@ -104,7 +105,14 @@ To avoid duplicate docker builds, remove all the related `docker_build()` and `l
 
 ## Conditional Steps
 
-## AWS IRSA (IAM Roles Service Account) Authentication
+### For projects that have customized the Hive service
+Several changes were made to both the Hive service Docker image and the Hive service chart included as part of the Spark Infrastructure chart of a project. The defaults have been adjusted so that these changes should be transparent, however due to the nature of some possible customizations this may not always hold true. The following changes may impact the function of your customizations and may need to be accounted for:
+ - The image is now only the Hive Standalone Metastore service and cannot function as a full [Hive Server](https://hive.apache.org/development/quickstart/)
+ - The Java installation at `/opt/java` is no longer symlinked to `/opt/jre` -- `JAVA_HOME` has been adjusted accordingly by default
+ - The default working directory for the `aissemble-hive-service` image was changed from `/opt` to `/opt/hive`
+ - Schema initialization is no longer done as part of an `initContainer` in the `aissemble-hive-service-chart` and is instead done in a new `entrypoint` script. This is consistent with the [official `apache/hive` Docker image](https://hub.docker.com/r/apache/hive).
+
+### AWS IRSA (IAM Roles Service Account) Authentication
 This is not a required step but a recommended way to authenticate AWS service
 1. [Create an IAM OIDC provider for your cluster](https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html)
 2. Follow the [Assign IAM roles to Kubernetes service accounts](https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html) document but **skip** the step that creates the service account
