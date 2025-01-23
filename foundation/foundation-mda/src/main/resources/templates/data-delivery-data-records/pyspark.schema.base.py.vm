@@ -48,7 +48,7 @@ class ${record.capitalizedName}SchemaBase(ABC):
       #end
   #end
 
-
+  #if ($record.hasFields())
     def cast(self, dataset: DataFrame) -> DataFrame:
         """
         Returns the given dataset cast to this schema.
@@ -61,6 +61,7 @@ class ${record.capitalizedName}SchemaBase(ABC):
         #foreach ($field in $record.fields)
             .withColumn(${record.capitalizedName}SchemaBase.${field.upperSnakecaseName}_COLUMN, dataset[${record.capitalizedName}SchemaBase.${field.upperSnakecaseName}_COLUMN].cast(${field.snakeCaseName}_type))#if ($foreach.hasNext) \\#end
         #end
+  #end
 
 
     @property

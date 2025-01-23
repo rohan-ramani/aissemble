@@ -13,28 +13,20 @@ package com.boozallen.aiops.mda.metamodel.element;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.base.MoreObjects;
 import org.apache.commons.lang3.StringUtils;
+import org.technologybrewery.fermenter.mda.metamodel.element.NamespacedMetamodelElement;
 import org.technologybrewery.fermenter.mda.util.MessageTracker;
 
 /**
- * Represents a reference on an record.
+ * Represents a reference on a record.
  */
-@JsonPropertyOrder({ "type", "package", "multiplicity" })
-public class RelationElement implements Relation {
-    protected static final String PACKAGE = "package";
+@JsonPropertyOrder({ "name", "package", "multiplicity" })
+public class RelationElement extends NamespacedMetamodelElement implements Relation {
 
     @JsonIgnore
-    private static MessageTracker messageTracker = MessageTracker.getInstance();
-
-    @JsonInclude(Include.NON_NULL)
-    @JsonProperty(value = PACKAGE)
-    protected String packageName;
-
-    @JsonInclude(Include.NON_NULL)
-    protected String name;
+    private static final MessageTracker messageTracker = MessageTracker.getInstance();
 
     @JsonInclude(Include.NON_NULL)
     protected String documentation;
@@ -42,29 +34,6 @@ public class RelationElement implements Relation {
     @JsonInclude(Include.NON_NULL)
     protected Multiplicity multiplicity;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getPackage() {
-        return packageName;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @JsonIgnore
-    public String getFileName() {
-        throw new UnsupportedOperationException("This method is not implemented.");
-    }
 
     /**
      * {@inheritDoc}
@@ -91,26 +60,11 @@ public class RelationElement implements Relation {
         if (multiplicity == null) {
             multiplicity = Multiplicity.ONE_TO_MANY;
         }
-    }
-
-    /**
-     * Sets the relation type package.
-     * 
-     * @param packageName
-     *            relation type packageName
-     */
-    public void setPackage(String packageName) {
-        this.packageName = packageName;
-    }
-
-    /**
-     * Sets the relation type.
-     * 
-     * @param name
-     *            relation type
-     */
-    public void setName(String name) {
-        this.name = name;
+        super.validate();
+        //TODO: this can be removed when upgrade to fermenter 2.10.6
+        if (getPackage() == null) {
+            messageTracker.addErrorMessage("Package is a required attribute!");
+        }
     }
 
     /**
@@ -146,4 +100,8 @@ public class RelationElement implements Relation {
         return MoreObjects.toStringHelper(this).add("name", name).toString();
     }
 
+    @Override
+    public String getSchemaFileName() {
+        return null;
+    }
 }

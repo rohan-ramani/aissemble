@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.boozallen.aiops.mda.metamodel.element.Relation;
 import org.apache.commons.lang3.StringUtils;
 import org.technologybrewery.fermenter.mda.TypeManager;
 import org.technologybrewery.fermenter.mda.generator.GenerationException;
@@ -29,7 +30,7 @@ import com.boozallen.aiops.mda.metamodel.element.util.JavaElementUtils;
  */
 public class JavaRecord extends BaseRecordDecorator {
 
-    private Set<String> imports = new TreeSet<>();
+    private final Set<String> imports = new TreeSet<>();
 
     /**
      * {@inheritDoc}
@@ -65,6 +66,8 @@ public class JavaRecord extends BaseRecordDecorator {
 
         imports.add(JavaElementUtils.MAP_IMPORT);
         imports.add(JavaElementUtils.HASH_MAP_IMPORT);
+
+        addRelationImports();
 
         return imports;
     }
@@ -148,6 +151,30 @@ public class JavaRecord extends BaseRecordDecorator {
         if (JavaElementUtils.isImportNeeded(simpleTypeImport)) {
             imports.add(dictionaryType.getFullyQualifiedType());
         }
+    }
+
+    private void addRelationImports() {
+        for (Relation relation: wrapped.getRelations()) {
+            JavaRecordRelation relationDecorator = new JavaRecordRelation(relation);
+            String classImport = relationDecorator.getGeneratedClassImport();
+            if (classImport !=null) {
+                imports.add(classImport);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Relation> getRelations() {
+        List<Relation> wrappedRelations = new ArrayList<>();
+        for (Relation relation : wrapped.getRelations()) {
+            JavaRecordRelation wrappedRelation = new JavaRecordRelation(relation);
+            wrappedRelations.add(wrappedRelation);
+        }
+
+        return wrappedRelations;
     }
 
 }

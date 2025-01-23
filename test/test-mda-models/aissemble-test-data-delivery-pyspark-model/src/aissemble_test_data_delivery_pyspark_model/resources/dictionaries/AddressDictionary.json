@@ -1,0 +1,22 @@
+{
+  "name": "AddressDictionary",
+  "package": "com.boozallen.aiops.mda.pattern.dictionary",
+  "dictionaryTypes": [
+    {
+      "name": "street",
+      "simpleType": "string"
+    },
+    {
+      "name": "city",
+      "simpleType": "string"
+    },
+    {
+      "name": "zipcode",
+      "simpleType": "integer"
+    },
+    {
+      "name": "state",
+      "simpleType": "string"
+    }
+  ]
+}

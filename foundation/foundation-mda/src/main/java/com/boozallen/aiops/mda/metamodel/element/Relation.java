@@ -12,28 +12,12 @@ package com.boozallen.aiops.mda.metamodel.element;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.apache.commons.lang3.StringUtils;
-import org.technologybrewery.fermenter.mda.metamodel.element.Validatable;
-//import org.technologybrewery.fermenter.mda.metamodel.element.Field;
 import org.technologybrewery.fermenter.mda.metamodel.element.NamespacedMetamodel;
 
 /**
  * Defines the contract for a record that has a child of another record.
  */
 public interface Relation extends NamespacedMetamodel {
-
-	/**
-	 * Returns the type package of relation.
-	 *
-	 * @return relation type package
-	 */
-//	String getPackage();
-
-	/**
-	 * Returns the type of relation.
-	 *
-	 * @return relation type
-	 */
-//	String getName();
 
 	/**
 	 * Returns relation-level documentation.
@@ -52,13 +36,13 @@ public interface Relation extends NamespacedMetamodel {
 	/**
 	 * Enumerated values representing multiplicity options.
 	 */
-	public enum Multiplicity {
+	enum Multiplicity {
 
-		ONE_TO_MANY("1-M"), ONE_TO_ONE("1-1"), MANY_TO_MANY("M-M");
+		ONE_TO_MANY("1-M"), ONE_TO_ONE("1-1"), MANY_TO_ONE("M-1");
 
-		private String value;
+		private final String value;
 
-		private Multiplicity(String value) {
+		Multiplicity(String value) {
 			this.value = value;
 		}
 
@@ -82,9 +66,9 @@ public interface Relation extends NamespacedMetamodel {
 						|| ("one-to-one".equals(lowerCasedValue)) || ("one-one".equals(lowerCasedValue))) {
 					matchedMultiplicity = ONE_TO_ONE;
 
-				} else if ((MANY_TO_MANY.toString().equalsIgnoreCase(lowerCasedValue))
-						|| ("many-to-many".equals(lowerCasedValue)) || ("many-many".equals(lowerCasedValue))) {
-					matchedMultiplicity = MANY_TO_MANY;
+				} else if ((MANY_TO_ONE.toString().equalsIgnoreCase(lowerCasedValue))
+						|| ("many-to-one".equals(lowerCasedValue)) || ("many-one".equals(lowerCasedValue))) {
+					matchedMultiplicity = MANY_TO_ONE;
 
 				}
 			}

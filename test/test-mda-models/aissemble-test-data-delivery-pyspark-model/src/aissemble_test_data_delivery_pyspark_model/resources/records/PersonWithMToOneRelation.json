@@ -1,0 +1,13 @@
+{
+  "name": "PersonWithMToOneRelation",
+  "package": "com.boozallen.aiops.mda.pattern.record",
+  "description": "Person custom record",
+  "relations": [
+    {
+      "package":"com.boozallen.aiops.mda.pattern.record",
+      "multiplicity":"m-1",
+      "name":"Address",
+      "documentation":"Many to One Relation between Person and Address"
+    }
+  ]
+}
