@@ -15,13 +15,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.boozallen.aiops.mda.metamodel.element.Relation;
 import org.apache.commons.lang3.StringUtils;
-import org.technologybrewery.fermenter.mda.generator.GenerationException;
 
 import com.boozallen.aiops.mda.metamodel.element.BaseRecordDecorator;
 import com.boozallen.aiops.mda.metamodel.element.Record;
 import com.boozallen.aiops.mda.metamodel.element.RecordField;
-import com.boozallen.aiops.mda.metamodel.element.java.JavaRecordField;
 import com.boozallen.aiops.mda.metamodel.element.util.PythonElementUtils;
 
 /**
@@ -29,7 +28,7 @@ import com.boozallen.aiops.mda.metamodel.element.util.PythonElementUtils;
  */
 public class PythonRecord extends BaseRecordDecorator {
 
-    private Set<String> imports = new TreeSet<>();
+    private final Set<String> imports = new TreeSet<>();
 
     /**
      * {@inheritDoc}
@@ -73,6 +72,8 @@ public class PythonRecord extends BaseRecordDecorator {
             addFieldImports(pythonField, false);
         }
 
+        addRelationImports();
+
         return imports;
     }
 
@@ -112,6 +113,13 @@ public class PythonRecord extends BaseRecordDecorator {
         }
     }
 
+    private void addRelationImports() {
+        for (Relation relation: wrapped.getRelations()) {
+            PythonRecordRelation relationDecorator = new PythonRecordRelation(relation);
+            imports.addAll(relationDecorator.getGeneratedClassImport());
+        }
+    }
+
     private void addDictionaryTypeImports(PythonDictionaryType dictionaryType, boolean forEnum) {
         if (dictionaryType.isComplex()) {
             String generatedClassImport = dictionaryType.getGeneratedClassImport();
@@ -124,6 +132,20 @@ public class PythonRecord extends BaseRecordDecorator {
                 imports.add(simpleTypeImport);
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Relation> getRelations() {
+        List<Relation> wrappedRelations = new ArrayList<>();
+        for (Relation relation : wrapped.getRelations()) {
+            PythonRecordRelation wrappedRelation = new PythonRecordRelation(relation);
+            wrappedRelations.add(wrappedRelation);
+        }
+
+        return wrappedRelations;
     }
 
 }

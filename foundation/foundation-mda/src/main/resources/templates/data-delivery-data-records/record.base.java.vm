@@ -22,6 +22,12 @@ public abstract class ${record.capitalizedName}Base {
   #foreach ($field in $record.fields)
     private ${field.shortType} ${field.name};
   #end
+#if ($record.hasRelations())
+    // record relation properties
+  #foreach ($relation in $record.relations)
+    ${relation.RelationPropDeclaration}
+  #end
+#end
 
     /**
      * Default constructor for this record.
@@ -39,6 +45,18 @@ public abstract class ${record.capitalizedName}Base {
     }
 
   #end
+
+#if ($record.hasRelations())
+  #foreach ($relation in $record.relations)
+    ${relation.relationSetterSignature} {
+        this.${relation.lowercaseName} = ${relation.lowercaseName};
+    }
+
+    ${relation.relationGetterSignature} {
+        return this.${relation.lowercaseName};
+    }
+  #end
+#end
 
     /**
      * Performs the validation for this record.

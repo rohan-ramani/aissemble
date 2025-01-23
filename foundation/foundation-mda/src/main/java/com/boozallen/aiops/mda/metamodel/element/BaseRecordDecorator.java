@@ -118,8 +118,8 @@ public class BaseRecordDecorator implements Record {
      * {@inheritDoc}
      */
     @Override
-    public Relation getRelation(String type) {
-        return wrapped.getRelation(type);
+    public Relation getRelation(String name) {
+        return wrapped.getRelation(name);
     }
 
     /**
@@ -171,7 +171,7 @@ public class BaseRecordDecorator implements Record {
     /**
      * Get a JSON representation of the record's fields
      * @return a JSON representation of the record's fields
-     * @throws JsonProcessingException
+     * @throws JsonProcessingException the JsonProcessingException
      */
     public String getSchema() throws JsonProcessingException {
         final ObjectMapper mapper = new ObjectMapper();
@@ -194,6 +194,22 @@ public class BaseRecordDecorator implements Record {
         }
 
         return wrappedInverseRelations;
+    }
+
+    /**
+     * check if the records have any relations
+     * @return true or false value
+     */
+    public boolean hasRelations() {
+        return !wrapped.getRelations().isEmpty();
+    }
+
+    /**
+     * check if the records have any fields
+     * @return true or false value
+     */
+    public boolean hasFields() {
+        return !wrapped.getFields().isEmpty();
     }
 
 

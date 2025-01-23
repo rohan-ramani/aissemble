@@ -23,6 +23,11 @@ class ${record.capitalizedName}Base(ABC):
     #foreach ($field in $record.fields)
         self._${field.snakeCaseName}: ${field.shortType} = None
     #end
+    #if ($record.hasRelations())
+    #foreach ($relation in $record.relations)
+        ${relation.relationPropDeclaration}
+    #end
+    #end
 
     #if ($pysparkSupport)
     @classmethod
@@ -72,6 +77,7 @@ class ${record.capitalizedName}Base(ABC):
         """
         Creates a record with the given dictionary's data.
         """
+      #if ($record.hasFields())
         record = cls()
         if dict_obj is not None:
         #foreach ($field in $record.fields)
@@ -85,8 +91,22 @@ class ${record.capitalizedName}Base(ABC):
             #end
 
         #end
-        return record
+            return record
+      #else
+        pass
+      #end
 
+    #if ($record.hasRelations())
+    #foreach($relation in $record.relations)
+    @property
+    ${relation.relationGetterSignature}
+        return self._${relation.snakeCaseName}
+
+    @${relation.snakeCaseName}.setter
+    ${relation.relationSetterSignature}
+        self._${relation.snakeCaseName} = ${relation.snakeCaseName}
+    #end
+    #end
 
     def as_dict(self) -> Dict[str, Any]:
         """

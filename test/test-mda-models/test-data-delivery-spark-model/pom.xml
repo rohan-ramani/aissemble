@@ -33,9 +33,11 @@
                                 <exclude>main/resources/records/</exclude>
                                 <exclude>test/java/com/boozallen/aiops/mda/pattern/RecordTest.java</exclude>
                                 <exclude>test/java/com/boozallen/aiops/mda/pattern/LineageTest.java</exclude>
+                                <exclude>test/java/com/boozallen/aiops/mda/pattern/RelationTest.java</exclude>
                                 <exclude>test/resources/config/</exclude>
                                 <exclude>test/resources/specifications/record.feature</exclude>
                                 <exclude>test/resources/specifications/lineage.feature</exclude>
+                                <exclude>test/resources/specifications/relation.feature</exclude>
                                 <exclude>test/resources/krausening/base/</exclude>
                                 <exclude>test/resources/apps</exclude>
                             </excludes>
