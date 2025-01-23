@@ -12,6 +12,8 @@ package com.boozallen.aiops.mda.metamodel.element;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -495,5 +497,39 @@ public class RecordSteps extends AbstractModelInstanceSteps {
         return newRecord;
     }
 
+    @Given("a record with a relation that does not define the required fields")
+    public void aRecordWithARelationThatDoesNotDefineRequired() {
+        RecordElement childRecord = createNewRecordWithNameAndPackage("ChildRecord", RELATION_PACKAGE);
+        RecordFieldElement field = new RecordFieldElement();
+        field.setName("FieldB");
+        RecordFieldTypeElement type = new RecordFieldTypeElement();
+        type.setName("phoneNumber");
+        field.setType(type);
+        childRecord.addField(field);
+        saveRecordToFile(childRecord);
+
+        RelationElement recordRelation = new RelationElement();
+        recordRelation.setName("ChildRecord");
+        recordRelation.setPackage(RELATION_PACKAGE);
+
+        RecordElement parentRecord = createNewRecordWithNameAndPackage("ParentRecord", TEST_RECORD_RELATIONS);
+        parentRecord.addRelation(recordRelation);
+        saveRecordToFile(parentRecord);
+    }
+
+    @Then("the relation has the correct default values")
+    public void theRelationHasTheCorrectDefaultValues() {
+        Record parentRecord = this.metadataRepo.getRecord(TEST_RECORD_RELATIONS,"ParentRecord");
+        assertNotNull("Parent Record with relation was not created successfully", parentRecord);
+        assertNotNull("Parent record does not have the appropriate relation",
+                parentRecord.getRelations());
+        for(Relation childRelation : parentRecord.getRelations()) {
+            assertNull("Child relation should not be required", childRelation.isRequired());
+            assertNull("Child relation should not have a description", childRelation.getDocumentation());
+            assertNull("Child relation should not have a column", childRelation.getColumn());
+            assertEquals("Child relation should default multiplicity to 1-M", Relation.Multiplicity.ONE_TO_MANY,
+                    childRelation.getMultiplicity());
+        }
+    }
 }
 

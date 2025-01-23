@@ -13,7 +13,10 @@ Data access through [GraphQL](https://graphql.org/) has been deprecated and repl
 Spark and PySpark have been upgraded from version 3.5.2 to 3.5.4.
 
 ## Record Relation
-To enable nested data records, we have added a new relation feature to the record metamodel. This allows records to reference other records. For more details, refer to the [Record Relation Options].(https://boozallen.github.io/aissemble/aissemble/current-dev/record-metamodel.html#_record_relation_options)
+To enable nested data records, we have added a new relation feature to the record metamodel. This allows records to reference other records. For more details, refer to the [Record Relation Options](https://boozallen.github.io/aissemble/aissemble/current-dev/record-metamodel.html#_record_relation_options).
+Several features are still a work in progress:
+- Spark-based validation for records with a One to Many multiplicity. (POJO validation is available.)
+- PySpark schema generation for records with any multiplicity
 
 ## Helm Charts Resource Specification
 The following Helm charts have been updated to include the configuration options for specifying container resource requests/limits:

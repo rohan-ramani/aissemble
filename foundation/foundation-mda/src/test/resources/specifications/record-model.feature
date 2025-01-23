@@ -208,3 +208,8 @@ Feature: Specify record of semantically defined types
     Then the records are successfully created
     And you can reference record B from record A
     And you can reference record A from record B
+
+  Scenario: A records relation is not required by default
+    Given a record with a relation that does not define the required fields
+    When records are read
+    Then the relation has the correct default values

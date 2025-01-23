@@ -22,7 +22,7 @@ import org.technologybrewery.fermenter.mda.util.MessageTracker;
 /**
  * Represents a reference on a record.
  */
-@JsonPropertyOrder({ "name", "package", "multiplicity" })
+@JsonPropertyOrder({ "name", "package", "multiplicity", "column", "required" })
 public class RelationElement extends NamespacedMetamodelElement implements Relation {
 
     @JsonIgnore
@@ -34,6 +34,11 @@ public class RelationElement extends NamespacedMetamodelElement implements Relat
     @JsonInclude(Include.NON_NULL)
     protected Multiplicity multiplicity;
 
+    @JsonInclude(Include.NON_NULL)
+    protected Boolean required;
+
+    @JsonInclude(Include.NON_NULL)
+    protected String column;
 
     /**
      * {@inheritDoc}
@@ -49,6 +54,16 @@ public class RelationElement extends NamespacedMetamodelElement implements Relat
     @Override
     public Multiplicity getMultiplicity() {
         return multiplicity;
+    }
+
+    @Override
+    public Boolean isRequired() {
+        return required;
+    }
+
+    @Override
+    public String getColumn() {
+        return column;
     }
 
 

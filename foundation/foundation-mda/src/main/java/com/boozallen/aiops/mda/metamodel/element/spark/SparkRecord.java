@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.boozallen.aiops.mda.metamodel.element.Relation;
 import com.boozallen.aiops.mda.metamodel.element.java.JavaRecordFieldType;
 import com.boozallen.aiops.mda.metamodel.element.util.JavaElementUtils;
 import org.technologybrewery.fermenter.mda.TypeManager;
@@ -61,6 +62,18 @@ public class SparkRecord extends JavaRecord {
         }
 
         return fields;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Relation> getRelations() {
+        List<Relation> relations = new ArrayList<>();
+        for (Relation relation: super.getRelations()){
+            relations.add(new SparkRecordRelation(relation));
+        }
+        return relations;
     }
 
     /**

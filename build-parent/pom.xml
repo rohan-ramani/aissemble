@@ -48,7 +48,7 @@
         <version.smallrye.graphql>2.9.1</version.smallrye.graphql>
         <version.smallrye.reactive.messaging>4.24.0</version.smallrye.reactive.messaging>
         <version.orphedomos.plugin>0.10.1</version.orphedomos.plugin>
-        <version.janino>3.0.8</version.janino>
+        <version.janino>3.1.12</version.janino>
         <version.jackson>2.15.0</version.jackson>
         <version.jclouds>2.6.0</version.jclouds>
         <version.maven.core>3.8.6</version.maven.core>

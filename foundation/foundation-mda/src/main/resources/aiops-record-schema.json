@@ -95,6 +95,12 @@
 					},
 					"multiplicity": {
 						"type": "string"
+					},
+					"required": {
+						"type": "boolean"
+					},
+					"column": {
+						"type": "string"
 					}
 				},
 				"required": [
