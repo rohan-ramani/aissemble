@@ -215,12 +215,23 @@ public class ConfigLoader {
         try (Stream<Path> walk = Files.walk(Paths.get(uri))) {
             return walk
                     .filter(Files::isRegularFile)
+                    .filter(path -> !hasHiddendirectories(path))
                     .filter(path -> path.toString().endsWith(".properties"))
                     .map(Path::toFile)
                     .collect(Collectors.toList());
         } catch (IOException | InvalidPathException e) {
             throw new RuntimeException("Error accessing configuration files at " + uri, e);
         }
+    }
+
+    private boolean hasHiddendirectories(Path path) {
+        String[] paths = path.toString().split("/");
+        for(String pathStr : paths) {
+            if(pathStr.startsWith("..")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

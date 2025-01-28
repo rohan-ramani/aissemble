@@ -1,0 +1,8 @@
+{{- if .Values.configMapProperties.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env-{{ .Values.configMapProperties.name }}
+data:
+  {{- toYaml $.Values.configMapProperties.envConfigFiles | nindent 2}}
+{{- end }}

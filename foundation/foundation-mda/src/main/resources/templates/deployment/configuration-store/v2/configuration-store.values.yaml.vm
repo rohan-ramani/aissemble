@@ -14,14 +14,3 @@ aissemble-configuration-store-chart:
           value: /configurations/base
         - name: ENVIRONMENT_PROPERTY
           value: /configurations/env
-      supplementalVolumes:
-        - name: configurations
-          persistentVolumeClaim:
-            claimName: configuration-store-claim
-      supplementalVolumeMounts:
-        - name: configurations
-          mountPath: "/configurations"
-
-  configurationVolume:
-    storageType: "custom"
-    storageClass: ""
