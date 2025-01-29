@@ -9,9 +9,6 @@ aissemble-spark-history-chart:
 aissemble-thrift-server-chart:
   app:
     name: "thrift-server"
-  dependencies:
-    packages:
-      - org.apache.hadoop:hadoop-aws:3.3.4
 
   sparkConf: |
     spark.hadoop.fs.s3a.endpoint=http://s3-local:4566

@@ -74,20 +74,12 @@
                     <execution>
                         <id>test-image</id>
                         <phase>integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
                         <configuration>
-                            <showLogs>true</showLogs>
                             <images>
                                 <image>
                                     <run>
-                                        <containerNamePattern>${project.artifactId}-test</containerNamePattern>
-                                        <!-- If autoRemove is true and wait is specified, the build will fail. See https://github.com/fabric8io/docker-maven-plugin/issues/1622 -->
-                                        <autoRemove>false</autoRemove>
                                         <entrypoint>sh -c /tmp/test/image-test.sh</entrypoint>
                                         <wait>
-                                            <time>60000</time>
                                             <http>
                                                 <!-- History server check -->
                                                 <url>http://localhost:18080</url>
@@ -114,15 +106,15 @@
                     <execution>
                         <id>test-image-cleanup</id>
                         <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-image-cleanup-db</id>
+                        <phase>post-integration-test</phase>
                         <configuration>
                             <executable>docker</executable>
                             <arguments>
                                 <argument>rm</argument>
                                 <argument>-f</argument>
-                                <argument>${project.artifactId}-test</argument>
                                 <argument>hive-metastore-db</argument>
                             </arguments>
                         </configuration>

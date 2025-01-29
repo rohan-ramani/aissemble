@@ -32,8 +32,6 @@ deployment:
   baseEnv:
     - name: HADOOP_CLASSPATH
       value: $HADOOP_CLASSPATH:/opt/hadoop/share/hadoop/tools/lib/*.jar
-    - name: JAVA_HOME
-      value: /opt/jre
   env: []
   restartPolicy: Always
   volumeMounts:

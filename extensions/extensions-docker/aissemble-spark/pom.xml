@@ -72,16 +72,11 @@
                             <goal>start</goal>
                         </goals>
                         <configuration>
-                            <showLogs>true</showLogs>
                             <images>
                                 <image>
                                     <run>
-                                        <containerNamePattern>${project.artifactId}-test</containerNamePattern>
-                                        <!-- If autoRemove is true, the build will fail. See https://github.com/fabric8io/docker-maven-plugin/issues/1622 -->
-                                        <autoRemove>false</autoRemove>
                                         <cmd>/opt/spark/bin/spark-submit /opt/spark/examples/src/main/python/pi.py</cmd>
                                         <wait>
-                                            <time>60000</time>
                                             <exit>0</exit>
                                         </wait>
                                     </run>
@@ -98,13 +93,6 @@
                     <execution>
                         <id>test-image-cleanup</id>
                         <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>docker</executable>
-                            <commandlineArgs>rm ${project.artifactId}-test</commandlineArgs>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

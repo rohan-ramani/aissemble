@@ -86,6 +86,58 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>${group.fabric8.plugin}</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>test-image</id>
+                            <!-- Images with tests should set the phase of this execution to `integration-test` to activate it -->
+                            <phase>none</phase>
+                            <goals>
+                                <goal>start</goal>
+                            </goals>
+                            <configuration>
+                                <showLogs>true</showLogs>
+                                <images>
+                                    <image>
+                                        <run>
+                                            <containerNamePattern>${project.artifactId}-test</containerNamePattern>
+                                            <!-- If autoRemove is true, the build will fail.
+                                            See https://github.com/fabric8io/docker-maven-plugin/issues/1622 -->
+                                            <autoRemove>false</autoRemove>
+                                            <wait>
+                                                <time>60000</time>
+                                            </wait>
+                                        </run>
+                                    </image>
+                                </images>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>test-image-cleanup</id>
+                            <!-- Images with tests should set the phase of this execution to `post-integration-test` to activate it -->
+                            <phase>none</phase>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                            <configuration>
+                                <executable>docker</executable>
+                                <arguments>
+                                    <argument>rm</argument>
+                                    <argument>-f</argument>
+                                    <argument>${project.artifactId}-test</argument>
+                                </arguments>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
