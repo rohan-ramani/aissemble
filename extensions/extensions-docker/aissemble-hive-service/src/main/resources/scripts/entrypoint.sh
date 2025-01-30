@@ -36,7 +36,7 @@ function initialize_hive {
      COMMAND="-initSchema"
   fi
   # Don't honor verbose mode and dump errors because the 4.0.0 mysql schema generates a ton of deprecation warnings
-  if "$HIVE_HOME/bin/schematool" -dbType $DB_DRIVER $COMMAND; then
+  if "$HIVE_HOME/bin/schematool" -dbType $DB_DRIVER $COMMAND 2>/dev/null; then
     echo "Initialized schema successfully.."
   else
     echo "Schema initialization failed!"

@@ -38,7 +38,7 @@ update_jars() {
   echo "Updating jars in $target with jars from $updated"
   echo
 
-  find "$updated" -type f -name '*.jar' | while read -r jarpath; do
+  while read -r jarpath; do
     #Parse GAV into separate variables, classifier may or may not be present as the last item
     group=$(echo "$jarpath" | cutr -d / -f 4-)
     group=$(echo "${group#$updated/}" | tr / .)
@@ -73,9 +73,10 @@ update_jars() {
     fi
     echo
     if [ $REPLACED -ne 0 ]; then
-      echo "$jar" >> /tmp/FAILED.txt
+      echo "No replacement candidates found for $jar"
+      exit 1
     fi
-  done
+  done < <(find "$updated" -type f -name '*.jar')
 }
 
 #---
@@ -92,8 +93,3 @@ download_jackson() {
 }
 
 update_jars "$1" "/opt"
-if [ -f /tmp/FAILED.txt ]; then
-  echo 'ERROR: The following jars were not patched into the image'
-  cat /tmp/FAILED.txt
-  exit 1
-fi

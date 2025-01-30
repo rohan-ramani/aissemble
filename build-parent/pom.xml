@@ -88,7 +88,7 @@
         <version.sedona>1.4.0</version.sedona>
         <version.geotools.wrapper>1.4.0-28.2</version.geotools.wrapper>
         <version.mysql-connector>8.0.30</version.mysql-connector>
-        <version.hadoop>3.4.1</version.hadoop>
+        <version.hadoop>3.3.4</version.hadoop>
         <version.neo4j>4.1.5_for_spark_3</version.neo4j>
         <version.aws.sdk.bundle>1.12.780</version.aws.sdk.bundle>
         <version.baton>1.1.1</version.baton>

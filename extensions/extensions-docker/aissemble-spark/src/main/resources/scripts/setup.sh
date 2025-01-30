@@ -121,7 +121,7 @@ update_maven_jars "com.google.code.gson:gson:2.8.9 \
                    org.apache.derby:derbytools:10.16.1.1 \
                    org.apache.derby:derbyshared:10.16.1.1 \
                    org.apache.hadoop.thirdparty:hadoop-shaded-guava:1.3.0 \
-                   org.apache.hadoop:hadoop-client-runtime:3.4.1 \
+                   org.apache.hadoop:hadoop-client-runtime:3.3.6 \
                    org.apache.hive:hive-exec:2.3.10:core \
                    org.apache.ivy:ivy:2.5.3 \
                    org.apache.thrift:libthrift:0.13.0 \

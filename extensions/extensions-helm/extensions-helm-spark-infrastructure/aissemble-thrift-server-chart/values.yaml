@@ -11,7 +11,7 @@ deployment:
   labels: {}
   replicas: 1
   image:
-    repository: "ghcr.io/boozallen/aissemble-spark"
+    repository: "ghcr.io/boozallen/aissemble-spark-infrastructure"
     imagePullPolicy: IfNotPresent
     tag: ""
   command: ["/opt/spark/sbin/start-thriftserver.sh"]

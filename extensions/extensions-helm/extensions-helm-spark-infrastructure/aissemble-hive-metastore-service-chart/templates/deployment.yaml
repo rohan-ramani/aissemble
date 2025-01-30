@@ -63,6 +63,14 @@ spec:
           {{- if .Values.deployment.command }}
           command: {{ .Values.deployment.command }}
           {{- end }}
+          {{- with (index .Values.deployment.ports 0) }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .containerPort }}
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            failureThreshold: 0
+          {{- end }}
       hostname: {{ .Values.hostname }}
       restartPolicy: {{ .Values.deployment.restartPolicy }}
       {{- with .Values.deployment.securityContext }}
