@@ -32,6 +32,12 @@
             <version>${version.hive}</version>
             <classifier>bin</classifier>
             <type>tar.gz</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>jdk.tools</groupId>
+                    <artifactId>jdk.tools</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Patch JARs -->
