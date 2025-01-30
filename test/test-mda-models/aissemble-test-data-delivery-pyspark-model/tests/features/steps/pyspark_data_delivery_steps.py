@@ -21,9 +21,6 @@ import nose.tools as nt
 import ast
 import sys
 from pathlib import Path
-from aissemble_test_data_delivery_pyspark_model.schema.custom_data_schema import (
-    CustomDataSchema,
-)
 
 
 @given("python files are generated")

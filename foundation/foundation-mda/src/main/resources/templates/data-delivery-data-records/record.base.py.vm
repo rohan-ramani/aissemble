@@ -24,12 +24,13 @@ class ${record.capitalizedName}Base(ABC):
         self._${field.snakeCaseName}: ${field.shortType} = None
     #end
     #if ($record.hasRelations())
-    #foreach ($relation in $record.relations)
+        #foreach ($relation in $record.relations)
         ${relation.relationPropDeclaration}
-    #end
+        #end
     #end
 
     #if ($pysparkSupport)
+
     @classmethod
     def from_row(cls, row: Row):
         """
@@ -70,6 +71,7 @@ class ${record.capitalizedName}Base(ABC):
                 #end
             #end
         )
+
     #end
 
     @classmethod
@@ -77,7 +79,7 @@ class ${record.capitalizedName}Base(ABC):
         """
         Creates a record with the given dictionary's data.
         """
-      #if ($record.hasFields())
+      #if ($record.hasFields() || $record.hasRelations())
         record = cls()
         if dict_obj is not None:
         #foreach ($field in $record.fields)
@@ -89,24 +91,19 @@ class ${record.capitalizedName}Base(ABC):
             #else
             record.${field.snakeCaseName} = dict_obj.get('${field.fieldName}')
             #end
-
+        #end
+        #foreach ($relation in $record.relations)
+            #if ($relation.isOneToManyRelation())
+            record.${relation.snakeCaseName} = [${relation.name}.from_dict(${relation.snakeCaseName}) for ${relation.snakeCaseName} in dict_obj.get('${relation.name}')]
+            #else
+            record.${relation.snakeCaseName} = ${relation.name}.from_dict(dict_obj.get('${relation.name}'))
+            #end
         #end
             return record
       #else
         pass
       #end
 
-    #if ($record.hasRelations())
-    #foreach($relation in $record.relations)
-    @property
-    ${relation.relationGetterSignature}
-        return self._${relation.snakeCaseName}
-
-    @${relation.snakeCaseName}.setter
-    ${relation.relationSetterSignature}
-        self._${relation.snakeCaseName} = ${relation.snakeCaseName}
-    #end
-    #end
 
     def as_dict(self) -> Dict[str, Any]:
         """
@@ -124,7 +121,13 @@ class ${record.capitalizedName}Base(ABC):
         dict_obj['${field.fieldName}'] = self.${field.snakeCaseName}
         #end
     #end
-
+    #foreach ($relation in $record.relations)
+        #if ($relation.isOneToManyRelation())
+        dict_obj['${relation.name}'] = [${relation.snakeCaseName}.as_dict() for ${relation.snakeCaseName} in self.${relation.snakeCaseName}]
+        #else
+        dict_obj['${relation.name}'] = self.${relation.snakeCaseName}.as_dict()
+        #end
+    #end
         return dict_obj
 
 
@@ -153,6 +156,20 @@ class ${record.capitalizedName}Base(ABC):
     @${field.snakeCaseName}.setter
     def ${field.snakeCaseName}(self, ${field.snakeCaseName}: ${field.shortType}) -> None:
         self._${field.snakeCaseName} = ${field.snakeCaseName}
+#end
+#if ($record.hasRelations())
+    #foreach($relation in $record.relations)
+
+
+    @property
+    ${relation.relationGetterSignature}
+        return self._${relation.snakeCaseName}
+
+
+    @${relation.snakeCaseName}.setter
+    ${relation.relationSetterSignature}
+        self._${relation.snakeCaseName} = ${relation.snakeCaseName}
+    #end
 #end
 
 
@@ -185,7 +202,6 @@ class ${record.capitalizedName}Base(ABC):
         #end
     #end
 #end
-
 
     def get_value_by_field(self, field: ${record.capitalizedName}Field) -> any:
         """
