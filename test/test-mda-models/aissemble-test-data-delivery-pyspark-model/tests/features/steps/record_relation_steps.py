@@ -21,6 +21,9 @@ from aissemble_test_data_delivery_pyspark_model.record.person_with_one_to_one_re
 from aissemble_test_data_delivery_pyspark_model.record.person_with_one_to_m_relation import (
     PersonWithOneToMRelation,
 )
+from aissemble_test_data_delivery_pyspark_model.record.address import (
+    Address,
+)
 
 
 def initialize(context):
@@ -30,16 +33,79 @@ def initialize(context):
         "M-1": PersonWithMToOneRelation,
     }
 
+    context.relation_json_map = {
+        "1-1": '{"Address": {"street": "123 Test St", "city": "Testville", "zipcode": 12345, "state": "Test"}}',
+        "1-M": '{"Address": [{"street": "123 Test St", "city": "Testville", "zipcode": 12345, "state": "Test"}, {"street": "123 Test St", "city": "Testville", "zipcode": 12345, "state": "Test"}]}',
+        "M-1": '{"customField": "Test Field", "Address": {"street": "123 Test St", "city": "Testville", "zipcode": 12345, "state": "Test"}}',
+    }
+
+    address = Address()
+    address.street = "123 Test St"
+    address.city = "Testville"
+    address.state = "Test"
+    address.zipcode = 12345
+    context.address = address
+
 
 @given('a record "Person" that has a "{multiplicity}" relation to a record "Address"')
 def step_impl(context, multiplicity):
     initialize(context)
     context.multiplicity = multiplicity
 
+    match multiplicity:
+        case "1-1":
+            context.person_with_one_to_one_relation = PersonWithOneToOneRelation()
+            context.person_with_one_to_one_relation.address = context.address
+        case "1-M":
+            context.person_with_one_to_m_relation = PersonWithOneToMRelation()
+            context.person_with_one_to_m_relation.address = [
+                context.address,
+                context.address,
+            ]
+        case "M-1":
+            context.person_with_m_to_one_relation = PersonWithMToOneRelation()
+            context.person_with_m_to_one_relation.address = context.address
+            context.person_with_m_to_one_relation.custom_field = "Test Field"
+
+
+@given('a JSON string that has a "{multiplicity}" record relation encoded')
+def step_impl(context, multiplicity):
+    initialize(context)
+    context.multiplicity = multiplicity
+    context.json_string = context.relation_json_map.get(context.multiplicity)
+
 
 @when('the "Person" class is generated')
 def step_impl(context):
     context.person = context.relation_class_name_map.get(context.multiplicity)
+
+
+@when("the record is serialized")
+def step_impl(context):
+    match context.multiplicity:
+        case "1-1":
+            context.json_string = context.person_with_one_to_one_relation.as_json()
+        case "1-M":
+            context.json_string = context.person_with_one_to_m_relation.as_json()
+        case "M-1":
+            context.json_string = context.person_with_m_to_one_relation.as_json()
+
+
+@when("the JSON string is deserialized")
+def step_impl(context):
+    match context.multiplicity:
+        case "1-1":
+            context.person_with_one_to_one_relation = (
+                PersonWithOneToOneRelation.from_json(context.json_string)
+            )
+        case "1-M":
+            context.person_with_one_to_m_relation = PersonWithOneToMRelation.from_json(
+                context.json_string
+            )
+        case "M-1":
+            context.person_with_m_to_one_relation = PersonWithMToOneRelation.from_json(
+                context.json_string
+            )
 
 
 @then('"Person" has a method address which returns "{type}"')
@@ -53,3 +119,58 @@ def step_impl(context, type):
         str(return_type),
     )
     nt.assert_true(return_type == type)
+
+
+@then("the record relations are maintained as JSON string")
+def step_impl(context):
+    expected_json_string = context.relation_json_map.get(context.multiplicity)
+
+    nt.assert_equal(
+        expected_json_string,
+        context.json_string,
+        msg="Serialized JSON string did not match the expected JSON string",
+    )
+
+
+@then("the record relations are maintained as a Record object")
+def step_impl(context):
+    match context.multiplicity:
+        case "1-1":
+            assert_address(
+                context.address, context.person_with_one_to_one_relation.address
+            )
+        case "M-1":
+            assert_address(
+                context.address, context.person_with_m_to_one_relation.address
+            )
+            nt.assert_equal(
+                "Test Field",
+                context.person_with_m_to_one_relation.custom_field,
+                msg="Deserialized JSON string did not have the expected Custom Field",
+            )
+        case "1-M":
+            for deserialized_address in context.person_with_one_to_m_relation.address:
+                assert_address(context.address, deserialized_address)
+
+
+def assert_address(expected_address, actual_address):
+    nt.assert_equal(
+        expected_address.street,
+        actual_address.street,
+        msg="Deserialized JSON string did not have the expected Street",
+    )
+    nt.assert_equal(
+        expected_address.city,
+        actual_address.city,
+        msg="Deserialized JSON string did not have the expected City",
+    )
+    nt.assert_equal(
+        expected_address.state,
+        actual_address.state,
+        msg="Deserialized JSON string did not have the expected State",
+    )
+    nt.assert_equal(
+        expected_address.zipcode,
+        actual_address.zipcode,
+        msg="Deserialized JSON string did not have the expected Zipcode",
+    )

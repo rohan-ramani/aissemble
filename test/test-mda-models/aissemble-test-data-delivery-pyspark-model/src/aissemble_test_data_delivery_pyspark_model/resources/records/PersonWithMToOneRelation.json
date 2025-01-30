@@ -2,6 +2,15 @@
   "name": "PersonWithMToOneRelation",
   "package": "com.boozallen.aiops.mda.pattern.record",
   "description": "Person custom record",
+  "fields": [
+    {
+      "name": "customField",
+      "type": {
+        "name": "customType",
+        "package": "com.boozallen.aiops.mda.pattern.dictionary"
+      }
+    }
+  ],
   "relations": [
     {
       "package":"com.boozallen.aiops.mda.pattern.record",

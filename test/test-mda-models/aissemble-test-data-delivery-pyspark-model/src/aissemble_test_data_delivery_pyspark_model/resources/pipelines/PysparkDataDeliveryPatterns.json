@@ -252,7 +252,7 @@
 					"package": "com.boozallen.aiops.mda.pattern.dictionary"
 				},
 				"recordType": {
-					"name": "CustomData",
+					"name": "PersonWithMToOneRelation",
 					"package": "com.boozallen.aiops.mda.pattern.record"
 				}
 			}
@@ -282,7 +282,7 @@
 					"package": "com.boozallen.aiops.mda.pattern.dictionary"
 				},
 				"recordType": {
-					"name": "CustomData",
+					"name": "PersonWithOneToMRelation",
 					"package": "com.boozallen.aiops.mda.pattern.record"
 				}
 			}
@@ -315,7 +315,7 @@
 			"inbound": {
 				"type": "native",
 				"recordType": {
-					"name": "CustomData",
+					"name": "PersonWithOneToOneRelation",
 					"package": "com.boozallen.aiops.mda.pattern.record"
 				}
 			}
@@ -326,7 +326,7 @@
 			"inbound": {
 				"type": "native",
 				"recordType": {
-					"name": "CustomData",
+					"name": "PersonWithMToOneRelation",
 					"package": "com.boozallen.aiops.mda.pattern.record"
 				}
 			}
@@ -341,7 +341,7 @@
 					"package": "com.boozallen.aiops.mda.pattern.dictionary"
 				},
 				"recordType": {
-					"name": "CustomData",
+					"name": "PersonWithOneToMRelation",
 					"package": "com.boozallen.aiops.mda.pattern.record"
 				}
 			}
