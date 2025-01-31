@@ -43,6 +43,10 @@ spec:
           env:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- with .Values.deployment.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.deployment.startupProbe }}
           startupProbe:
             {{- toYaml . | nindent 12 }}

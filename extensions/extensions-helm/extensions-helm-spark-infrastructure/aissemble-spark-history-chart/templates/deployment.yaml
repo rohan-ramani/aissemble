@@ -92,6 +92,10 @@ spec:
                   name: {{ $v.secretName }}
                   key: {{ $v.key }}
             {{- end }}
+          {{- with .Values.deployment.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           ports:
             - containerPort: {{ .Values.service.port.port }}
               name: {{ .Values.service.port.name }}
