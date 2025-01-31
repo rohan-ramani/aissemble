@@ -13,7 +13,7 @@ ENV HIVE_VER=$METASTORE_VERSION
 
 # Install hadoop
 RUN cd /tmp \
-    && wget https://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}-lean.tar.gz -O - \
+    && wget https://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz -O - \
        | tar -xzf - \
     && mv hadoop-${HADOOP_VERSION} $HADOOP_HOME
 
