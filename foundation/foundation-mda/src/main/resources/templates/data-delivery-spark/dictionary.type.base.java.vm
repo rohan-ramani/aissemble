@@ -51,6 +51,8 @@ public abstract class ${dictionaryType.capitalizedName}Base {
         setValue(value);
     }
 
+    public ${dictionaryType.capitalizedName}Base() {}
+
     public void setValue(${dictionaryType.shortType} value) {
     #if ($dictionaryType.hasScaleValidation())
         if (value != null) {

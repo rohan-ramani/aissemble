@@ -7,7 +7,8 @@
       "package":"com.boozallen.aiops.mda.pattern.record",
       "multiplicity":"1-1",
       "name":"Address",
-      "documentation":"One to One Relation between Person and Address"
+      "documentation":"One to One Relation between Person and Address",
+      "required": true
     }
   ]
 }

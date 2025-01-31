@@ -18,7 +18,7 @@ Scenario Outline: Records with relations can be serialized as JSON strings
 
   Examples:
    | multiplicity |
-   | 1-1          |  
+   | 1-1          |
    | 1-M          |
    | M-1          |
 

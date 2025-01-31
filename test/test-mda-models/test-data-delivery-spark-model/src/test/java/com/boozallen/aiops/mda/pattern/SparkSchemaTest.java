@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.boozallen.aiops.mda.pattern.dictionary.Zipcode;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.spark.sql.Dataset;
@@ -238,9 +239,9 @@ public class SparkSchemaTest {
 
     private Address createAddress(){
         Address address = new Address();
-        address.setZipcode(12);
+        address.setZipcode(new Zipcode("12345-1234"));
         address.setCity("City");
-        address.setState("State");
+        address.setState(new com.boozallen.aiops.mda.pattern.dictionary.State("CA"));
         address.setStreet("Street");
         return address;
     }

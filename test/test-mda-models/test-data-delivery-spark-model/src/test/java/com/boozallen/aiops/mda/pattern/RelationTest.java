@@ -28,6 +28,9 @@ import com.boozallen.aiops.mda.pattern.record.Address;
 import com.boozallen.aiops.mda.pattern.record.PersonWithMToOneRelation;
 import com.boozallen.aiops.mda.pattern.record.PersonWithOneToMRelation;
 import com.boozallen.aiops.mda.pattern.record.PersonWithOneToOneRelation;
+import com.boozallen.aiops.mda.pattern.dictionary.Zipcode;
+import com.boozallen.aiops.mda.pattern.dictionary.State;
+
 
 /**
  * Test record generation for relation.feature
@@ -55,15 +58,15 @@ public class RelationTest {
         relationClassNameMap.put("M-1", "PersonWithMToOneRelation");
 
         relationJsonMap = new HashMap<>();
-        relationJsonMap.put("1-1", "{\"address\":{\"street\":\"123 Test St\",\"city\":\"Testville\",\"zipcode\":12345,\"state\":\"Test\"}}");
-        relationJsonMap.put("1-M", "{\"address\":[{\"street\":\"123 Test St\",\"city\":\"Testville\",\"zipcode\":12345,\"state\":\"Test\"},{\"street\":\"123 Test St\",\"city\":\"Testville\",\"zipcode\":12345,\"state\":\"Test\"}]}");
-        relationJsonMap.put("M-1", "{\"customField\":\"Test Field\",\"address\":{\"street\":\"123 Test St\",\"city\":\"Testville\",\"zipcode\":12345,\"state\":\"Test\"}}");
+        relationJsonMap.put("1-1", "{\"address\":{\"street\":\"123 Test St\",\"city\":\"Testville\",\"zipcode\":{\"value\":\"12345\"},\"state\":{\"value\":\"Test\"}}}");
+        relationJsonMap.put("1-M", "{\"address\":[{\"street\":\"123 Test St\",\"city\":\"Testville\",\"zipcode\":{\"value\":\"12345\"},\"state\":{\"value\":\"Test\"}},{\"street\":\"123 Test St\",\"city\":\"Testville\",\"zipcode\":{\"value\":\"12345\"},\"state\":{\"value\":\"Test\"}}],\"customData\":null}");
+        relationJsonMap.put("M-1", "{\"customField\":\"Test Field\",\"address\":{\"street\":\"123 Test St\",\"city\":\"Testville\",\"zipcode\":{\"value\":\"12345\"},\"state\":{\"value\":\"Test\"}},\"customData\":null}");
 
         address = new Address();
         address.setStreet("123 Test St");
         address.setCity("Testville");
-        address.setState("Test");
-        address.setZipcode(12345);
+        address.setState(new State("Test"));
+        address.setZipcode(new Zipcode("12345"));
     }
 
     @Given("a record \"Person\" that has a {string} relation to a record \"Address\"")
@@ -71,20 +74,20 @@ public class RelationTest {
         this.multiplicity = multiplicity;
         className = relationClassNameMap.get(multiplicity);
 
-        switch(multiplicity) {
-            case "1-1":
+        switch (multiplicity) {
+            case "1-1" -> {
                 this.personWithOneToOneRelation = new PersonWithOneToOneRelation();
                 this.personWithOneToOneRelation.setAddress(this.address);
-                break;
-            case "1-M":
+            }
+            case "1-M" -> {
                 this.personWithOneToMRelation = new PersonWithOneToMRelation();
                 this.personWithOneToMRelation.setAddress(Arrays.asList(this.address, this.address));
-                break;
-            case "M-1":
+            }
+            case "M-1" -> {
                 this.personWithMToOneRelation = new PersonWithMToOneRelation();
                 this.personWithMToOneRelation.setAddress(this.address);
                 this.personWithMToOneRelation.setCustomField("Test Field");
-                break;
+            }
         }
     }
 
@@ -101,31 +104,19 @@ public class RelationTest {
 
     @When("the record is serialized")
     public void the_record_is_serialized() {
-        switch(this.multiplicity) {
-            case "1-1":
-                this.jsonString = this.personWithOneToOneRelation.toJson();
-                break;
-            case "1-M":
-                this.jsonString = this.personWithOneToMRelation.toJson();
-                break;
-            case "M-1":
-                this.jsonString = this.personWithMToOneRelation.toJson();
-                break;
+        switch (this.multiplicity) {
+            case "1-1" -> this.jsonString = this.personWithOneToOneRelation.toJson();
+            case "1-M" -> this.jsonString = this.personWithOneToMRelation.toJson();
+            case "M-1" -> this.jsonString = this.personWithMToOneRelation.toJson();
         }
     }
 
     @When("the JSON string is deserialized")
     public void the_json_string_is_deserialized() {
-        switch(this.multiplicity) {
-            case "1-1":
-                this.personWithOneToOneRelation = PersonWithOneToOneRelation.fromJson(this.jsonString);
-                break;
-            case "1-M":
-                this.personWithOneToMRelation = PersonWithOneToMRelation.fromJson(this.jsonString);
-                break;
-            case "M-1":
-                this.personWithMToOneRelation = PersonWithMToOneRelation.fromJson(this.jsonString);
-                break;
+        switch (this.multiplicity) {
+            case "1-1" -> this.personWithOneToOneRelation = PersonWithOneToOneRelation.fromJson(this.jsonString);
+            case "1-M" -> this.personWithOneToMRelation = PersonWithOneToMRelation.fromJson(this.jsonString);
+            case "M-1" -> this.personWithMToOneRelation = PersonWithMToOneRelation.fromJson(this.jsonString);
         }
     }
 
@@ -167,7 +158,6 @@ public class RelationTest {
                 for (Address deserializedAddress: this.personWithOneToMRelation.getAddress()) {
                     assertAddress(this.address, deserializedAddress);
                 }
-                break;
         }
 
     }
@@ -180,7 +170,7 @@ public class RelationTest {
     private void assertAddress(Address expectedAddress, Address actualAddress) {
         assertEquals("Deserialized JSON string did not have the expected Street", expectedAddress.getStreet(), actualAddress.getStreet());
         assertEquals("Deserialized JSON string did not have the expected City", expectedAddress.getCity(), actualAddress.getCity());
-        assertEquals("Deserialized JSON string did not have the expected State", expectedAddress.getState(), actualAddress.getState());
-        assertEquals("Deserialized JSON string did not have the expected Zipcode", expectedAddress.getZipcode(), actualAddress.getZipcode());
+        assertEquals("Deserialized JSON string did not have the expected State", expectedAddress.getState().getValue(), actualAddress.getState().getValue());
+        assertEquals("Deserialized JSON string did not have the expected Zipcode", expectedAddress.getZipcode().getValue(), actualAddress.getZipcode().getValue());
     }
 }
