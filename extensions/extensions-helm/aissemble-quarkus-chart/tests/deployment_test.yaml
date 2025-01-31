@@ -39,6 +39,8 @@ tests:
           content:
             name: quarkus-application-properties
           any: true
+      - notExists:
+          path: spec.template.spec.containers[0].resources
   - it: Should set values appropriately
     set:
       deployment:
@@ -127,3 +129,26 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].startupProbe.httpGet.port
           value: http
+  - it: When specifying container resources requests and limits, appropriate requests and limits are configured
+    set:
+      deployment:
+        resources:
+          requests:
+            memory: 300Mi
+            cpu: 100m
+          limits:
+            memory: 500Mi
+            cpu: 200m
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.memory
+          value: 300Mi
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.cpu
+          value: 100m
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.memory
+          value: 500Mi
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.cpu
+          value: 200m
