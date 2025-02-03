@@ -37,6 +37,7 @@ class ${record.capitalizedName}Base(ABC):
         Creates a record with the given PySpark dataframe row's data.
         """
         record = cls()
+        #if($record.hasFields() || $record.hasRelations())
         if row is not None:
         #foreach ($field in $record.fields)
             #set ($rowField = "#if($field.column)${field.column}#else${field.name}#end")
@@ -46,7 +47,15 @@ class ${record.capitalizedName}Base(ABC):
             #else
             record.${field.snakeCaseName} = ${field.snakeCaseName}_value
             #end
-
+        #end
+        #foreach ($relation in $record.relations)
+            ${relation.snakeCaseName}_value = cls.get_row_value(row, '${relation.columnName}')
+            #if($relation.isOneToManyRelation())
+            record.${relation.snakeCaseName} = [${relation.name}.from_row($relation.snakeCaseName) for $relation.snakeCaseName in ${relation.snakeCaseName}_value]
+            #else
+            record.${relation.snakeCaseName} = ${relation.name}.from_row(${relation.snakeCaseName}_value)
+            #end
+        #end
         #end
         return record
 
@@ -58,18 +67,26 @@ class ${record.capitalizedName}Base(ABC):
         """
         return row[field] if field in row else None
 
+
     def as_row(self) -> Row:
         """
         Returns this record as a PySpark dataframe row.
         """
         return Row(
-            #foreach ($field in $record.fields)
-                #if ($field.type.dictionaryType.isComplex())
-                    self.${field.snakeCaseName}.value if self.${field.snakeCaseName} is not None else None#if ($foreach.hasNext),#end
-                #else
-                    self.${field.snakeCaseName}#if ($foreach.hasNext),#end
-                #end
+        #foreach ($field in $record.fields)
+            #if ($field.type.dictionaryType.isComplex())
+            self.${field.snakeCaseName}.value if self.${field.snakeCaseName} is not None else None#if ($foreach.hasNext || $record.hasRelations()),#end
+            #else
+            self.${field.snakeCaseName}#if ($foreach.hasNext || $record.hasRelations()),#end
             #end
+        #end
+        #foreach($relation in $record.relations)
+            #if ($relation.isOneToManyRelation())
+            [${relation.snakeCaseName}.as_row() for ${relation.snakeCaseName} in self.${relation.snakeCaseName}] if self.${relation.snakeCaseName} is not None else None#if ($foreach.hasNext),#end
+            #else
+            self.${relation.snakeCaseName}.as_row() if self.${relation.snakeCaseName} is not None else None#if ($foreach.hasNext),#end
+            #end
+        #end
         )
 
     #end

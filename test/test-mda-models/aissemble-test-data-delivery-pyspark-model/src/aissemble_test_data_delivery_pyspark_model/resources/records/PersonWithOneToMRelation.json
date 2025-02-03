@@ -2,6 +2,9 @@
   "name": "PersonWithOneToMRelation",
   "package": "com.boozallen.aiops.mda.pattern.record",
   "description": "Person custom record",
+  "frameworks": [{
+    "name": "pyspark"
+  }],
   "relations": [
     {
       "package":"com.boozallen.aiops.mda.pattern.record",

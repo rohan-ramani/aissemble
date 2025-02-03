@@ -1,9 +1,10 @@
 from abc import ABC
+
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql.column import Column
 from pyspark.sql.types import StructType
 from pyspark.sql.types import DataType
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, lit
 from typing import List
 import types
 #foreach ($import in $record.baseImports)
@@ -34,6 +35,9 @@ class ${record.capitalizedName}SchemaBase(ABC):
 #foreach ($field in $record.fields)
     ${field.upperSnakecaseName}_COLUMN: str = '${field.sparkAttributes.columnName}'
 #end
+#foreach ($relation in $record.relations)
+    ${relation.upperSnakecaseName}_COLUMN: str = '${relation.columnName}'
+#end
 
 
     def __init__(self):
@@ -47,8 +51,16 @@ class ${record.capitalizedName}SchemaBase(ABC):
         self.add(${record.capitalizedName}SchemaBase.${field.upperSnakecaseName}_COLUMN, ${field.shortType}(), ${nullable})
       #end
   #end
+  #foreach ($relation in $record.relations)
+      #set ($nullable = "#if($relation.isNullable())True#{else}False#end")
+      #if ($relation.isOneToManyRelation())
+        self.add(${record.capitalizedName}SchemaBase.${relation.upperSnakecaseName}_COLUMN, ArrayType(${relation.capitalizedName}Schema().struct_type), ${nullable})
+      #else
+        self.add(${record.capitalizedName}SchemaBase.${relation.upperSnakecaseName}_COLUMN, ${relation.capitalizedName}Schema().struct_type, ${nullable})
+      #end
+  #end
 
-  #if ($record.hasFields())
+  #if ($record.hasFields() || $record.hasRelations())
     def cast(self, dataset: DataFrame) -> DataFrame:
         """
         Returns the given dataset cast to this schema.
@@ -56,10 +68,16 @@ class ${record.capitalizedName}SchemaBase(ABC):
     #foreach ($field in $record.fields)
         ${field.snakeCaseName}_type = self.get_data_type(${record.capitalizedName}SchemaBase.${field.upperSnakecaseName}_COLUMN)
     #end
+    #foreach ($relation in $record.relations)
+        ${relation.snakeCaseName}_type = self.get_data_type(${record.capitalizedName}SchemaBase.${relation.upperSnakecaseName}_COLUMN)
+    #end
 
         return dataset \
         #foreach ($field in $record.fields)
-            .withColumn(${record.capitalizedName}SchemaBase.${field.upperSnakecaseName}_COLUMN, dataset[${record.capitalizedName}SchemaBase.${field.upperSnakecaseName}_COLUMN].cast(${field.snakeCaseName}_type))#if ($foreach.hasNext) \\#end
+            .withColumn(${record.capitalizedName}SchemaBase.${field.upperSnakecaseName}_COLUMN, dataset[${record.capitalizedName}SchemaBase.${field.upperSnakecaseName}_COLUMN].cast(${field.snakeCaseName}_type))#if ($foreach.hasNext || $record.hasRelations()) \\#end
+        #end
+        #foreach ($relation in $record.relations)
+            .withColumn(${record.capitalizedName}SchemaBase.${relation.upperSnakecaseName}_COLUMN, dataset[${record.capitalizedName}SchemaBase.${relation.upperSnakecaseName}_COLUMN].cast(${relation.snakeCaseName}_type))#if ($foreach.hasNext) \\#end
         #end
   #end
 
@@ -111,6 +129,9 @@ class ${record.capitalizedName}SchemaBase(ABC):
             self._schema = update
 
     def validate_dataset(self, ingest_dataset: DataFrame) -> DataFrame:
+        return self.validate_dataset_with_prefix(ingest_dataset, "")
+
+    def validate_dataset_with_prefix(self, ingest_dataset: DataFrame, column_prefix: str) -> DataFrame:
         """
         Validates the given dataset and returns the lists of validated records.
         """
@@ -118,29 +139,39 @@ class ${record.capitalizedName}SchemaBase(ABC):
         #foreach ($field in $record.fields)
         #set ( $columnName = "#if($field.column)$field.column#{else}$field.upperSnakecaseName#end" )
         #if (${field.isRequired()})
-        data_with_validations = data_with_validations.withColumn("${field.upperSnakecaseName}_IS_NOT_NULL", col("${columnName}").isNotNull())
+        data_with_validations = data_with_validations.withColumn("${field.upperSnakecaseName}_IS_NOT_NULL", col(column_prefix + "${columnName}").isNotNull())
         #end
         #if (${field.getValidation().getMinValue()})
-        data_with_validations = data_with_validations.withColumn("${field.upperSnakecaseName}_GREATER_THAN_MIN", col("${columnName}").cast('double') >= ${field.getValidation().getMinValue()})
+        data_with_validations = data_with_validations.withColumn("${field.upperSnakecaseName}_GREATER_THAN_MIN", col(column_prefix + "${columnName}").cast('double') >= ${field.getValidation().getMinValue()})
         #end
         #if (${field.getValidation().getMaxValue()})
-        data_with_validations = data_with_validations.withColumn("${field.upperSnakecaseName}_LESS_THAN_MAX", col("${columnName}").cast('double') <= ${field.getValidation().getMaxValue()})
+        data_with_validations = data_with_validations.withColumn("${field.upperSnakecaseName}_LESS_THAN_MAX", col(column_prefix + "${columnName}").cast('double') <= ${field.getValidation().getMaxValue()})
         #end
         #if (${field.getValidation().getScale()})
-        data_with_validations = data_with_validations.withColumn("${field.upperSnakecaseName}_MATCHES_SCALE", col("${columnName}").cast(StringType()).rlike(r"^[0-9]*(?:\.[0-9]{0,${field.getValidation().getScale()}})?$"))
+        data_with_validations = data_with_validations.withColumn("${field.upperSnakecaseName}_MATCHES_SCALE", col(column_prefix + "${columnName}").cast(StringType()).rlike(r"^[0-9]*(?:\.[0-9]{0,${field.getValidation().getScale()}})?$"))
         #end
         #if (${field.getValidation().getMinLength()})
-        data_with_validations = data_with_validations.withColumn("${field.upperSnakecaseName}_GREATER_THAN_MAX_LENGTH", col("${columnName}").rlike("^.{${field.getValidation().getMinLength()},}"))
+        data_with_validations = data_with_validations.withColumn("${field.upperSnakecaseName}_GREATER_THAN_OR_EQUAL_TO_MIN_LENGTH", col(column_prefix + "${columnName}").rlike("^.{${field.getValidation().getMinLength()},}"))
         #end
         #if (${field.getValidation().getMaxLength()})
-        data_with_validations = data_with_validations.withColumn("${field.upperSnakecaseName}_LESS_THAN_MAX_LENGTH", col("${columnName}").rlike("^.{${field.getValidation().getMaxLength()},}").eqNullSafe(False))
+        #set($max = ${field.getValidation().getMaxLength()} + 1)
+        data_with_validations = data_with_validations.withColumn("${field.upperSnakecaseName}_LESS_THAN_OR_EQUAL_TO_MAX_LENGTH", col(column_prefix + "${columnName}").rlike("^.{$max,}").eqNullSafe(False))
         #end
         #foreach ($format in $field.getValidation().getFormats())
         #if ($foreach.first)
-        data_with_validations = data_with_validations.withColumn("${field.upperSnakecaseName}_MATCHES_FORMAT", col("${columnName}").rlike("$format.replace("\","\\")")#if($foreach.last))#end
+        data_with_validations = data_with_validations.withColumn("${field.upperSnakecaseName}_MATCHES_FORMAT", col(column_prefix + "${columnName}").rlike("$format.replace("\","\\")")#if($foreach.last))#end
         #else
-            | col("${columnName}").rlike("$format.replace("\","\\")")#if($foreach.last))#end
+            | col(column_prefix + "${columnName}").rlike("$format.replace("\","\\")")#if($foreach.last))#end
         #end
+        #end
+        #end
+
+        #foreach($relation in $record.relations)
+        #if($relation.isOneToManyRelation())
+        data_with_validations = data_with_validations.withColumn(self.${relation.upperSnakecaseName}_COLUMN + "_VALID", lit(self._validate_with_${relation.snakeCaseName}_schema(data_with_validations.select(col(self.${relation.upperSnakecaseName}_COLUMN)))))
+        #else
+        ${relation.snakeCaseName}_schema = ${relation.name}Schema()
+        data_with_validations = data_with_validations.withColumn(self.${relation.upperSnakecaseName}_COLUMN + "_VALID", lit(not ${relation.snakeCaseName}_schema.validate_dataset_with_prefix(data_with_validations.select(col(self.${relation.upperSnakecaseName}_COLUMN)), '${relation.columnName}.').isEmpty()))
         #end
         #end
 
@@ -160,3 +191,12 @@ class ${record.capitalizedName}SchemaBase(ABC):
             valid_data = data_with_validations.filter(filter_schema)
         valid_data = valid_data.drop(*validation_columns)
         return valid_data
+
+#foreach($relation in $record.relations)
+    #if($relation.isOneToManyRelation())
+    def _validate_with_${relation.snakeCaseName}_schema(self, dataset: DataFrame) -> bool:
+        raise NotImplementedError
+    #end
+#end
+
+
