@@ -17,7 +17,6 @@ import com.boozallen.aiops.data.delivery.messaging.pipeline.steps.InOutTestStep;
 import com.boozallen.aiops.data.delivery.messaging.pipeline.steps.NoChannelTestStep;
 import com.boozallen.aiops.data.delivery.messaging.pipeline.steps.OutOnlyTestStep;
 import com.boozallen.aiops.data.delivery.messaging.pipeline.steps.OverrideTestStep;
-import com.boozallen.aiops.data.delivery.spark.objectstore.ObjectStoreValidator;
 import com.boozallen.aissemble.alerting.core.cdi.AlertingCdiContext;
 
 import io.smallrye.config.inject.ConfigExtension;
@@ -69,8 +68,6 @@ public class TestCdiContext implements CdiContext {
         AlertingCdiContext alertingContext = new AlertingCdiContext();
         List<Class<?>> alertingContextClasses = alertingContext.getCdiClasses();
         customBeans.addAll(alertingContextClasses);
-
-        customBeans.add(ObjectStoreValidator.class);
 
         return customBeans;
     }

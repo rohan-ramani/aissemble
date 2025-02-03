@@ -17,21 +17,6 @@
         <dockerImageName>boozallen/${project.artifactId}</dockerImageName>
     </properties>
 
-    <profiles>
-        <profile>
-            <id>ensure-docker-dependencies</id>
-            <!-- This profile is used to ensure that the docker dependencies are encoded in Maven properly. Because of
-            the way docker works, any missing image will just be downloaded from the repository. This changes the repo
-            such that the image will be missing from the remote.  To fully test the dependencies, you will also need
-            to ensure that all of the `local/*` images are deleted from your docker image cache:
-                `docker rmi -f $(docker images -q 'local/boozallen/*')`
-            -->
-            <properties>
-                <docker.baseline.repo.id>local</docker.baseline.repo.id>
-            </properties>
-        </profile>
-    </profiles>
-
     <modules>
         <module>aissemble-quarkus</module>
         <module>aissemble-fastapi</module>
@@ -86,59 +71,82 @@
                         </execution>
                     </executions>
                 </plugin>
-                <plugin>
-                    <groupId>${group.fabric8.plugin}</groupId>
-                    <artifactId>docker-maven-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>test-image</id>
-                            <!-- Images with tests should set the phase of this execution to `integration-test` to activate it -->
-                            <phase>none</phase>
-                            <goals>
-                                <goal>start</goal>
-                            </goals>
-                            <configuration>
-                                <showLogs>true</showLogs>
-                                <images>
-                                    <image>
-                                        <run>
-                                            <containerNamePattern>${project.artifactId}-test</containerNamePattern>
-                                            <!-- If autoRemove is true, the build will fail.
-                                            See https://github.com/fabric8io/docker-maven-plugin/issues/1622 -->
-                                            <autoRemove>false</autoRemove>
-                                            <wait>
-                                                <time>60000</time>
-                                            </wait>
-                                        </run>
-                                    </image>
-                                </images>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>test-image-cleanup</id>
-                            <!-- Images with tests should set the phase of this execution to `post-integration-test` to activate it -->
-                            <phase>none</phase>
-                            <goals>
-                                <goal>exec</goal>
-                            </goals>
-                            <configuration>
-                                <executable>docker</executable>
-                                <arguments>
-                                    <argument>rm</argument>
-                                    <argument>-f</argument>
-                                    <argument>${project.artifactId}-test</argument>
-                                </arguments>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
             </plugins>
         </pluginManagement>
     </build>
+    <profiles>
+        <profile>
+            <id>ensure-docker-dependencies</id>
+            <!-- This profile is used to ensure that the docker dependencies are encoded in Maven properly. Because of
+            the way docker works, any missing image will just be downloaded from the repository. This changes the repo
+            such that the image will be missing from the remote.  To fully test the dependencies, you will also need
+            to ensure that all of the `local/*` images are deleted from your docker image cache:
+                `docker rmi -f $(docker images -q 'local/boozallen/*')`
+            -->
+            <properties>
+                <docker.baseline.repo.id>local</docker.baseline.repo.id>
+            </properties>
+        </profile>
+        <profile>
+            <id>integration-test</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>${group.fabric8.plugin}</groupId>
+                            <artifactId>docker-maven-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>test-image</id>
+                                    <!-- Images with tests should set the phase of this execution to `integration-test` to activate it -->
+                                    <phase>none</phase>
+                                    <goals>
+                                        <goal>start</goal>
+                                    </goals>
+                                    <configuration>
+                                        <showLogs>true</showLogs>
+                                        <images>
+                                            <image>
+                                                <run>
+                                                    <containerNamePattern>${project.artifactId}-test</containerNamePattern>
+                                                    <!-- If autoRemove is true, the build will fail.
+                                                    See https://github.com/fabric8io/docker-maven-plugin/issues/1622 -->
+                                                    <autoRemove>false</autoRemove>
+                                                    <wait>
+                                                        <time>60000</time>
+                                                    </wait>
+                                                </run>
+                                            </image>
+                                        </images>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>exec-maven-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>test-image-cleanup</id>
+                                    <!-- Images with tests should set the phase of this execution to `post-integration-test` to activate it -->
+                                    <phase>none</phase>
+                                    <goals>
+                                        <goal>exec</goal>
+                                    </goals>
+                                    <configuration>
+                                        <executable>docker</executable>
+                                        <arguments>
+                                            <argument>rm</argument>
+                                            <argument>-f</argument>
+                                            <argument>${project.artifactId}-test</argument>
+                                        </arguments>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
 </project>
