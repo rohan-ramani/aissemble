@@ -247,13 +247,20 @@ namespacing (e.g., package in Java, namespace in XSD).
 | `relations/relation/documentation`
 | No
 | None
-| A description of the field.
+| A description of the relation.
 
 | `relations/relation/multiplicity`
 | No
 | One to Many (1-M)
 | Defines the multiplicity of the relation.  Options are ONE_TO_MANY (1-M), ONE_TO_ONE (1-1), and MANY_TO_ONE (M-1).
 
-|===
+| `relations/relation/required`
+| No
+| false
+| Setting `required` to `true` will mandate that the relation must be populated for a record to pass validation.
 
-\
+| `relations/relation/column`
+| No
+| None
+| The name of the storage field for data persistence.
+|===

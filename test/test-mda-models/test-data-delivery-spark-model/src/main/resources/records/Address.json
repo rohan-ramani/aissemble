@@ -5,6 +5,7 @@
   "fields": [
     {
       "name": "street",
+      "required": true,
       "type": {
         "name": "street",
         "package": "com.boozallen.aiops.mda.pattern.dictionary"

@@ -12,13 +12,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.spark.sql.Column;
 import org.apache.spark.sql.types.DataTypes;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
+import scala.collection.mutable.WrappedArray;
 
 import com.boozallen.aiops.data.delivery.spark.SparkSchema;
 import com.boozallen.aiops.data.delivery.spark.SparkDatasetUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.apache.spark.sql.functions.col;
 import static org.apache.spark.sql.functions.lit;
@@ -32,10 +38,16 @@ import static org.apache.spark.sql.functions.lit;
  */
 public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
 
+    private static final String ARRAY = "array";
 #set($columnVars = {})
 #foreach ($field in $record.fields)
     #set ($columnVars[$field.name] = "${field.upperSnakecaseName}_COLUMN")
     public static final String ${columnVars[$field.name]} = "${field.sparkAttributes.columnName}";
+#end
+#set($relationVars = {})
+#foreach ($relation in $record.relations)
+    #set ($relationVars[$relation.name] = "${relation.upperSnakecaseName}_COLUMN")
+    public static final String ${relationVars[$relation.name]} = "${relation.columnName}";
 #end
 
     public ${record.capitalizedName}SchemaBase() {
@@ -48,9 +60,16 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
         add(${columnVars[$field.name]}, ${field.shortType}, ${field.sparkAttributes.isNullable()}, "${field.description}");
       #end
   #end
+  #foreach ($relation in $record.relations)
+      #if ($relation.isOneToManyRelation())
+        add(${relationVars[$relation.name]}, DataTypes.createArrayType(new ${relation.name}Schema().getStructType()), ${relation.isNullable()}, "${relation.documentation}");
+      #else
+        add(${relationVars[$relation.name]}, new ${relation.name}Schema().getStructType(), ${relation.isNullable()}, "${relation.documentation}");
+      #end
+  #end
     }
 
-  #if ($record.hasFields())
+  #if (($record.hasFields()) || ($record.hasRelations()))
     /**
      * Casts the given dataset to this schema.
      * 
@@ -62,10 +81,16 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
     #foreach ($field in $record.fields)
         DataType ${field.name}Type = getDataType(${columnVars[$field.name]});
     #end
+    #foreach ($relation in $record.relations)
+        DataType ${relation.uncapitalizeName}Type = getDataType(${relationVars[$relation.name]});
+    #end
 
         return dataset
         #foreach ($field in $record.fields)
-        		.withColumn(${columnVars[$field.name]}, col(${columnVars[$field.name]}).cast(${field.name}Type))#if (!$foreach.hasNext);#end
+                .withColumn(${columnVars[$field.name]}, col(${columnVars[$field.name]}).cast(${field.name}Type))#if((!$foreach.hasNext) && ($relationVars == {}));#end
+        #end
+        #foreach ($relation in $record.relations)
+                .withColumn(${relationVars[$relation.name]}, col(${relationVars[$relation.name]}).cast(${relation.uncapitalizeName}Type))#if(!$foreach.hasNext);#end
         #end
     }
   #end
@@ -90,40 +115,68 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
 
     /***
      * Appends spark validation logic to an unvalidated spark DataFrame (org.apache.spark.sql.Dataset)
+     *
+     * @param data the spark Dataset to perform validation against
      * @return Dataset with appended validation logic
      */
     public Dataset<Row> validateDataFrame(Dataset<Row> data) {
+        return validateDataFrame(data, "");
+    }
+
+    /***
+     * Appends spark validation logic to an unvalidated spark DataFrame (org.apache.spark.sql.Dataset)
+     *
+     * @param data the spark Dataset to perform validation against
+     * @param columnPrefix a prefix to append to the dataset columns that validation is being performed on
+     * @return Dataset with appended validation logic
+     */
+    protected Dataset<Row> validateDataFrame(Dataset<Row> data, String columnPrefix) {
+        for (String headerField : getStructType().fieldNames()) {
+            if (StringUtils.equals(ARRAY, getDataType(headerField).typeName())) {
+                throw new NotImplementedException(
+                        "Validation against relations with One to Many multiplicity is not yet implemented");
+            }
+        }
         Dataset<Row> dataWithValidations = data
             #foreach ($field in $record.fields)
                 #if (${field.isRequired()})
-                    .withColumn(${columnVars[$field.name]} + "_IS_NOT_NULL", col(${columnVars[$field.name]}).isNotNull())
+                    .withColumn(${columnVars[$field.name]} + "_IS_NOT_NULL", col(columnPrefix + ${columnVars[$field.name]}).isNotNull())
                 #end
                 #if (${field.getValidation().getMinValue()})
-                    .withColumn(${columnVars[$field.name]} + "_GREATER_THAN_MIN", col(${columnVars[$field.name]}).gt(lit(${field.getValidation().getMinValue()})).or(col(${columnVars[$field.name]}).equalTo(lit(${field.getValidation().getMinValue()}))))
+                    .withColumn(${columnVars[$field.name]} + "_GREATER_THAN_MIN", col(columnPrefix + ${columnVars[$field.name]}).gt(lit(${field.getValidation().getMinValue()})).or(col(columnPrefix + ${columnVars[$field.name]}).equalTo(lit(${field.getValidation().getMinValue()}))))
                 #end
                 #if (${field.getValidation().getMaxValue()})
-                    .withColumn(${columnVars[$field.name]} + "_LESS_THAN_MAX", col(${columnVars[$field.name]}).lt(lit(${field.getValidation().getMaxValue()})).or(col(${columnVars[$field.name]}).equalTo(lit(${field.getValidation().getMaxValue()}))))
+                    .withColumn(${columnVars[$field.name]} + "_LESS_THAN_MAX", col(columnPrefix + ${columnVars[$field.name]}).lt(lit(${field.getValidation().getMaxValue()})).or(col(columnPrefix + ${columnVars[$field.name]}).equalTo(lit(${field.getValidation().getMaxValue()}))))
                 #end
                 #if (${field.getValidation().getScale()})
-                    .withColumn(${columnVars[$field.name]} + "_MATCHES_SCALE", col(${columnVars[$field.name]}).rlike(("^[0-9]*(?:\\.[0-9]{0,${field.getValidation().getScale()}})?$")))
+                    .withColumn(${columnVars[$field.name]} + "_MATCHES_SCALE", col(columnPrefix + ${columnVars[$field.name]}).rlike(("^[0-9]*(?:\\.[0-9]{0,${field.getValidation().getScale()}})?$")))
                 #end
                 #if (${field.getValidation().getMinLength()})
-                    .withColumn(${columnVars[$field.name]} + "_GREATER_THAN_MAX_LENGTH", col(${columnVars[$field.name]}).rlike(("^.{${field.getValidation().getMinLength()},}")))
+                    .withColumn(${columnVars[$field.name]} + "_GREATER_THAN_MAX_LENGTH", col(columnPrefix + ${columnVars[$field.name]}).rlike(("^.{${field.getValidation().getMinLength()},}")))
                 #end
                 #if (${field.getValidation().getMaxLength()})
-                    .withColumn(${columnVars[$field.name]} + "_LESS_THAN_MAX_LENGTH", col(${columnVars[$field.name]}).rlike(("^.{${field.getValidation().getMaxLength()},}")).equalTo(lit(false)))
+                    .withColumn(${columnVars[$field.name]} + "_LESS_THAN_MAX_LENGTH", col(columnPrefix + ${columnVars[$field.name]}).rlike(("^.{${field.getValidation().getMaxLength()},}")).equalTo(lit(false)))
                 #end
                 #foreach ($format in $field.getValidation().getFormats())
                     #if ($foreach.first)
-                        .withColumn(${columnVars[$field.name]} + "_MATCHES_FORMAT", col(${columnVars[$field.name]}).rlike(("$format.replace("\","\\")"))
+                        .withColumn(${columnVars[$field.name]} + "_MATCHES_FORMAT", col(columnPrefix +${columnVars[$field.name]}).rlike(("$format.replace("\","\\")"))
                     #else
-                        .or(col(${columnVars[$field.name]}).rlike(("$format.replace("\","\\")")))
+                        .or(col(columnPrefix + ${columnVars[$field.name]}).rlike(("$format.replace("\","\\")")))
                     #end
                     #if ($foreach.last)
                         )
                     #end
                 #end
             #end ;
+
+        #foreach($relation in $record.relations)
+            #if($relation.isOneToManyRelation())
+                ## TODO implement validation for records with one to Many relations
+            #else
+            ${relation.capitalizedName}Schema ${relation.uncapitalizeName}Schema = new ${relation.capitalizedName}Schema();
+            dataWithValidations = dataWithValidations.withColumn(${relationVars[$relation.name]} + "_VALID", lit(!${relation.uncapitalizeName}Schema.validateDataFrame(data.select(col(${relationVars[$relation.name]})), ${relationVars[$relation.name]} + ".").isEmpty()));
+            #end
+        #end
 
         Column filterSchema = null;
         List<String> validationColumns = new ArrayList<>();
@@ -159,12 +212,32 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
         return RowFactory.create(
         #foreach ($field in $record.fields)
             #if ($field.type.dictionaryType.isComplex())
-            record.get${field.capitalizedName}() != null ? record.get${field.capitalizedName}().getValue() : null#if ($foreach.hasNext),#end
+            record.get${field.capitalizedName}() != null ? record.get${field.capitalizedName}().getValue() : null#if (($foreach.hasNext) || ($record.hasRelations())),#end
             #else
-            record.get${field.capitalizedName}()#if ($foreach.hasNext),#end
+            record.get${field.capitalizedName}()#if (($foreach.hasNext) || ($record.hasRelations())),#end
+            #end
+        #end
+        #foreach ($relation in $record.relations)
+            #if ($relation.isOneToManyRelation())
+            record.get${relation.capitalizedName}() != null ? ${relation.capitalizedName}Schema.asRows(record.get${relation.capitalizedName}()) : null#if ($foreach.hasNext),#end
+            #else
+            record.get${relation.capitalizedName}() != null ? ${relation.capitalizedName}Schema.asRow(record.get${relation.capitalizedName}()) : null#if ($foreach.hasNext),#end
             #end
         #end
         );
+    }
+
+    /**
+     * Returns a list of given records as Spark dataset rows.
+     *
+     * @return the list of records as Spark dataset rows
+     */
+    public static List<Row> asRows(List<${record.capitalizedName}> records) {
+        List<Row> rows = new ArrayList<>();
+        for(${record.capitalizedName} ${record.name}: records){
+            rows.add(asRow(${record.name}));
+        }
+        return rows;
     }
 
 
@@ -183,7 +256,28 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
         record.set${field.capitalizedName}(${field.name}Value);
         #end
     #end
+    #foreach ($relation in $record.relations)
+        #if ($relation.isOneToManyRelation())
+        Row[] ${relation.uncapitalizeName}Rows = (Row[])((WrappedArray<Row>) SparkDatasetUtils.getRowValue(row, "${relation.columnName}")).array();
+        record.set${relation.capitalizedName}(${relation.capitalizedName}Schema.mapRows(Arrays.asList(${relation.uncapitalizeName}Rows)));
+        #else
+        ${relation.capitalizedName} ${relation.uncapitalizeName}Value = ${relation.capitalizedName}Schema.mapRow((Row) SparkDatasetUtils.getRowValue(row, "${relation.columnName}"));
+        record.set${relation.capitalizedName}(${relation.uncapitalizeName}Value);
+        #end
+    #end
     return record;
     }
 
+    /**
+     * Returns a given list of Spark dataset rows as a list of records.
+     *
+     * @return the row as a record
+     */
+    public static List<${record.capitalizedName}> mapRows(List<Row> rows) {
+        List<${record.capitalizedName}> ${record.name} = new ArrayList<>();
+        for(Row row : rows){
+            ${record.name}.add(mapRow(row));
+        }
+        return ${record.name};
+    }
 }

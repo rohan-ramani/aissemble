@@ -34,6 +34,20 @@ public interface Relation extends NamespacedMetamodel {
 	Multiplicity getMultiplicity();
 
 	/**
+	 * Returns whether the relation is required.
+	 *
+	 * @return required
+	 */
+	Boolean isRequired();
+
+	/**
+	 * Returns the column of the relation.
+	 *
+	 * @return column
+	 */
+	String getColumn();
+
+	/**
 	 * Enumerated values representing multiplicity options.
 	 */
 	enum Multiplicity {

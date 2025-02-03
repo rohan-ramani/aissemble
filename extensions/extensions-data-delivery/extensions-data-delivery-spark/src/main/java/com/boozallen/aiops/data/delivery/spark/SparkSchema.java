@@ -128,6 +128,22 @@ public abstract class SparkSchema {
     }
 
     /**
+     * Adds a field to the schema.
+     *
+     * @param name
+     *            the name of the field to add
+     * @param structType
+     *            the struct type of the field to add
+     * @param nullable
+     *            whether the field is nullable
+     * @param comment
+     *            a description of the field
+     */
+    protected void add(String name, StructType structType, boolean nullable, String comment) {
+        schema = schema.add(name, structType, nullable, comment);
+    }
+
+    /**
      * Updates the data type of a field in the schema.
      * 
      * @param name
