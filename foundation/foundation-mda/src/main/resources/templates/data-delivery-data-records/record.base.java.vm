@@ -65,6 +65,9 @@ public abstract class ${record.capitalizedName}Base {
     #if ($record.hasFieldValidations())
         validateFields();
     #end
+    #if ($record.hasRelations())
+         validateRelations();
+    #end
     }
 #if ($record.hasFieldValidations())
 
@@ -88,6 +91,23 @@ public abstract class ${record.capitalizedName}Base {
             ${field.name}.validate();
         }
 
+        #end
+    #end
+    }
+#end
+
+#if ($record.hasRelations())
+    /**
+     * Validate the reference records fields.
+     */
+    private void validateRelations() {
+    #foreach ($relation in $record.relations)
+        #if (!$relation.isNullable())
+        ${relation.requiredRelationValidate}
+        #else
+        if (this.${relation.lowercaseName} != null) {
+            ${relation.relationValidate}
+        }
         #end
     #end
     }

@@ -24,6 +24,12 @@ from aissemble_test_data_delivery_pyspark_model.record.person_with_one_to_m_rela
 from aissemble_test_data_delivery_pyspark_model.record.address import (
     Address,
 )
+from aissemble_test_data_delivery_pyspark_model.dictionary.zipcode import (
+    Zipcode,
+)
+from aissemble_test_data_delivery_pyspark_model.dictionary.state import (
+    State,
+)
 
 
 def initialize(context):
@@ -34,16 +40,16 @@ def initialize(context):
     }
 
     context.relation_json_map = {
-        "1-1": '{"Address": {"street": "123 Test St", "city": "Testville", "zipcode": 12345, "state": "Test"}}',
-        "1-M": '{"Address": [{"street": "123 Test St", "city": "Testville", "zipcode": 12345, "state": "Test"}, {"street": "123 Test St", "city": "Testville", "zipcode": 12345, "state": "Test"}]}',
-        "M-1": '{"customField": "Test Field", "Address": {"street": "123 Test St", "city": "Testville", "zipcode": 12345, "state": "Test"}}',
+        "1-1": '{"test": null, "Address": {"street": "123 Test St", "city": "Testville", "zipcode": "12345", "state": "Test"}}',
+        "1-M": '{"Address": [{"street": "123 Test St", "city": "Testville", "zipcode": "12345", "state": "Test"}, {"street": "123 Test St", "city": "Testville", "zipcode": "12345", "state": "Test"}]}',
+        "M-1": '{"customField": "Test Field", "Address": {"street": "123 Test St", "city": "Testville", "zipcode": "12345", "state": "Test"}}',
     }
 
     address = Address()
     address.street = "123 Test St"
     address.city = "Testville"
-    address.state = "Test"
-    address.zipcode = 12345
+    address.state = State("Test")
+    address.zipcode = Zipcode("12345")
     context.address = address
 
 
@@ -165,12 +171,12 @@ def assert_address(expected_address, actual_address):
         msg="Deserialized JSON string did not have the expected City",
     )
     nt.assert_equal(
-        expected_address.state,
-        actual_address.state,
+        expected_address.state.value,
+        actual_address.state.value,
         msg="Deserialized JSON string did not have the expected State",
     )
     nt.assert_equal(
-        expected_address.zipcode,
-        actual_address.zipcode,
+        expected_address.zipcode.value,
+        actual_address.zipcode.value,
         msg="Deserialized JSON string did not have the expected Zipcode",
     )

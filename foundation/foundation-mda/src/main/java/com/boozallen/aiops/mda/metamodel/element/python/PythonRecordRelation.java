@@ -95,4 +95,43 @@ public class PythonRecordRelation extends BaseRecordRelationDecorator {
         }
     }
 
+    /**
+     * Returns the reference record validation logic for generating the base record class
+     * @return the reference record validation logic
+     */
+    public String getRelationValidate() {
+        String snakeCaseName = getSnakeCaseName();
+        if (this.isOneToManyRelation()) {
+            String validate = """
+                    for %s in self._%s:
+                                    %s.validate()""";
+            return String.format(validate, snakeCaseName, snakeCaseName, snakeCaseName);
+        } else {
+            return String.format("self._%s.validate()", snakeCaseName);
+        }
+    }
+
+    /**
+     * Returns the required reference record validation logic for generating the base record class
+     * @return the required reference record validation logic
+     */
+    public String getRequiredRelationValidate() {
+        String snakeCaseName = getSnakeCaseName();
+        if (this.isOneToManyRelation()) {
+            String validate = """
+                    if self._%s is None or len(self._%s) == 0:
+                                raise ValueError('Relation record "%s" is required')
+                            else:
+                                %s""";
+            return String.format(validate, snakeCaseName, snakeCaseName, getName(), getRelationValidate());
+        } else {
+            String validate = """
+                    if self._%s is None:
+                                raise ValueError('Relation record "%s" is required')
+                            else:
+                                %s""";
+            return String.format(validate, snakeCaseName, getName(), getRelationValidate());
+        }
+    }
+
 }

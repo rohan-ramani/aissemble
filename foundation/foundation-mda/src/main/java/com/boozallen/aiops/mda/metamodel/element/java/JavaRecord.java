@@ -156,10 +156,7 @@ public class JavaRecord extends BaseRecordDecorator {
     private void addRelationImports() {
         for (Relation relation: wrapped.getRelations()) {
             JavaRecordRelation relationDecorator = new JavaRecordRelation(relation);
-            String classImport = relationDecorator.getGeneratedClassImport();
-            if (classImport !=null) {
-                imports.add(classImport);
-            }
+            imports.addAll(relationDecorator.getGeneratedClassImport());
         }
     }
 

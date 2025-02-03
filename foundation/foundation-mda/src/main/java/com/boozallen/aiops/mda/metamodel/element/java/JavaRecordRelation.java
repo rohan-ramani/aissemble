@@ -13,6 +13,12 @@ package com.boozallen.aiops.mda.metamodel.element.java;
 import com.boozallen.aiops.mda.metamodel.element.BaseRecordRelationDecorator;
 import com.boozallen.aiops.mda.metamodel.element.Relation;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import static com.boozallen.aiops.mda.metamodel.element.util.JavaElementUtils.LIST_IMPORT;
+import static com.boozallen.aiops.mda.metamodel.element.util.JavaElementUtils.VALIDATION_EXCEPTION_IMPORT;
+
 /**
  * Decorates RecordRelation with Java-specific functionality.
  */
@@ -39,10 +45,14 @@ public class JavaRecordRelation extends BaseRecordRelationDecorator {
      * Returns the import for the generating the setters/getters of the reference record.
      * @return generated class import
      */
-    public String getGeneratedClassImport() {
+    public Set<String> getGeneratedClassImport() {
+        Set<String> relationImports = new HashSet();
         if (isOneToManyRelation())
-           return "java.util.List";
-        return null;
+           relationImports.add(LIST_IMPORT);
+        if (!this.isNullable()) {
+            relationImports.add(VALIDATION_EXCEPTION_IMPORT);
+        }
+        return relationImports;
     }
 
     /**
@@ -78,6 +88,47 @@ public class JavaRecordRelation extends BaseRecordRelationDecorator {
     public String getRelationPropDeclaration() {
         String type = String.format(isOneToManyRelation()? "List<%s>": "%s", getName());
         return String.format("private %s %s = null;", type, getLowercaseName());
+    }
+
+    /**
+     * Returns the reference record validation logic for generating the base record class
+     * @return the reference record validation logic
+     */
+    public String getRelationValidate() {
+        if (this.isOneToManyRelation()) {
+            String validate = """
+                    for (%s record : this.%s) {
+                        record.validate();
+                    }""";
+            return String.format(validate, getName(), getLowercaseName());
+        } else {
+            return String.format("this.%s.validate();",getLowercaseName());
+        }
+    }
+
+    /**
+     * Returns the required reference record validation logic for generating the base record class
+     * @return the required reference record validation logic
+     */
+    public String getRequiredRelationValidate() {
+        String lowercaseName = getLowercaseName();
+        if (this.isOneToManyRelation()) {
+            String validate = """
+                    if (this.%s == null || this.%s.size() == 0) {
+                        throw new ValidationException("Relation record '%s' is required");
+                    } else {
+                        %s
+                    }""";
+            return String.format(validate, lowercaseName, lowercaseName, getName(), getRelationValidate());
+        } else {
+            String validate = """
+                    if (this.%s == null) {
+                        throw new ValidationException("Relation record '%s' is required");
+                    } else {
+                        %s
+                    }""";
+            return String.format(validate, lowercaseName, getName(), getRelationValidate());
+        }
     }
 
 }

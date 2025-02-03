@@ -12,11 +12,22 @@
     },
     {
       "name": "zipcode",
-      "simpleType": "integer"
+      "simpleType": "string",
+      "validation": {
+        "maxLength": 10,
+        "minLength": 5,
+        "formats": [
+          "^\\d{5}(?:[-\\s]\\d{4})?$"
+        ]
+      }
     },
     {
       "name": "state",
-      "simpleType": "string"
+      "simpleType": "string",
+      "validation": {
+        "maxLength": 2,
+        "minLength": 2
+      }
     }
   ]
 }

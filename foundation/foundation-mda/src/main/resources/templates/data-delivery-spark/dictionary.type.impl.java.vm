@@ -19,4 +19,8 @@ public class ${dictionaryType.capitalizedName} extends ${dictionaryType.capitali
         super(value);
     }
 
+    public ${dictionaryType.capitalizedName}() {
+        super();
+    }
+
 }

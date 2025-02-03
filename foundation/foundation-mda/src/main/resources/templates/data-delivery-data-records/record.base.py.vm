@@ -94,9 +94,11 @@ class ${record.capitalizedName}Base(ABC):
         #end
         #foreach ($relation in $record.relations)
             #if ($relation.isOneToManyRelation())
-            record.${relation.snakeCaseName} = [${relation.name}.from_dict(${relation.snakeCaseName}) for ${relation.snakeCaseName} in dict_obj.get('${relation.name}')]
+            if dict_obj.get('${relation.name}') is not None:
+                record.${relation.snakeCaseName} = [${relation.name}.from_dict(${relation.snakeCaseName}) for ${relation.snakeCaseName} in dict_obj.get('${relation.name}')]
             #else
-            record.${relation.snakeCaseName} = ${relation.name}.from_dict(dict_obj.get('${relation.name}'))
+            if dict_obj.get('${relation.name}') is not None:
+                record.${relation.snakeCaseName} = ${relation.name}.from_dict(dict_obj.get('${relation.name}'))
             #end
         #end
             return record
@@ -123,9 +125,11 @@ class ${record.capitalizedName}Base(ABC):
     #end
     #foreach ($relation in $record.relations)
         #if ($relation.isOneToManyRelation())
-        dict_obj['${relation.name}'] = [${relation.snakeCaseName}.as_dict() for ${relation.snakeCaseName} in self.${relation.snakeCaseName}]
+        if self.${relation.snakeCaseName} is not None and len(self.${relation.snakeCaseName}) > 0:
+            dict_obj['${relation.name}'] = [${relation.snakeCaseName}.as_dict() for ${relation.snakeCaseName} in self.${relation.snakeCaseName}]
         #else
-        dict_obj['${relation.name}'] = self.${relation.snakeCaseName}.as_dict()
+        if self.${relation.snakeCaseName} is not None:
+            dict_obj['${relation.name}'] = self.${relation.snakeCaseName}.as_dict()
         #end
     #end
         return dict_obj
@@ -177,9 +181,15 @@ class ${record.capitalizedName}Base(ABC):
         """
         Performs the validation for this record.
         """
-    #if ($record.hasFieldValidations())
+    #set($hasFieldValidations = $record.hasFieldValidations())
+    #set($hasRelations = $record.hasRelations())
+    #if ($hasFieldValidations)
         self.validate_fields()
-    #else
+    #end
+    #if ($hasRelations)
+        self.validate_relations()
+    #end
+    #if (!$hasFieldValidations && !$hasRelations)
         pass
     #end
 
@@ -199,6 +209,21 @@ class ${record.capitalizedName}Base(ABC):
         if self.${field.snakeCaseName} is not None:
             self.${field.snakeCaseName}.validate()
 
+        #end
+    #end
+#end
+
+#if ($record.hasRelations())
+    def validate_relations(self) -> None:
+        """
+        Validate the reference records fields.
+        """
+    #foreach ($relation in $record.relations)
+        #if (!$relation.isNullable())
+        ${relation.requiredRelationValidate}
+        #else
+        if self._${relation.snakeCaseName} is not None:
+            ${relation.relationValidate}
         #end
     #end
 #end
