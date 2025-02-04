@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.apache.spark.sql.functions.col;
 import static org.apache.spark.sql.functions.lit;
+import static org.apache.spark.sql.functions.explode;
 
 /**
  * Base implementation of the Spark schema for ${record.capitalizedName}.
@@ -82,7 +83,7 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
         DataType ${field.name}Type = getDataType(${columnVars[$field.name]});
     #end
     #foreach ($relation in $record.relations)
-        DataType ${relation.uncapitalizeName}Type = getDataType(${relationVars[$relation.name]});
+        DataType ${relation.uncapitalizedName}Type = getDataType(${relationVars[$relation.name]});
     #end
 
         return dataset
@@ -90,7 +91,7 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
                 .withColumn(${columnVars[$field.name]}, col(${columnVars[$field.name]}).cast(${field.name}Type))#if((!$foreach.hasNext) && ($relationVars == {}));#end
         #end
         #foreach ($relation in $record.relations)
-                .withColumn(${relationVars[$relation.name]}, col(${relationVars[$relation.name]}).cast(${relation.uncapitalizeName}Type))#if(!$foreach.hasNext);#end
+                .withColumn(${relationVars[$relation.name]}, col(${relationVars[$relation.name]}).cast(${relation.uncapitalizedName}Type))#if(!$foreach.hasNext);#end
         #end
     }
   #end
@@ -131,12 +132,6 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
      * @return Dataset with appended validation logic
      */
     protected Dataset<Row> validateDataFrame(Dataset<Row> data, String columnPrefix) {
-        for (String headerField : getStructType().fieldNames()) {
-            if (StringUtils.equals(ARRAY, getDataType(headerField).typeName())) {
-                throw new NotImplementedException(
-                        "Validation against relations with One to Many multiplicity is not yet implemented");
-            }
-        }
         Dataset<Row> dataWithValidations = data
             #foreach ($field in $record.fields)
                 #if (${field.isRequired()})
@@ -156,7 +151,7 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
                 #end
                 #if (${field.getValidation().getMaxLength()})
                 #set($max = ${field.getValidation().getMaxLength()} + 1)
-                    .withColumn(${columnVars[$field.name]} + "_LESS_THAN_OR_EQUAL_TO_MAX_LENGTH", col(columnPrefix + ${columnVars[$field.name]}).rlike(("^.{$max},}")).equalTo(lit(false)))
+                    .withColumn(${columnVars[$field.name]} + "_LESS_THAN_OR_EQUAL_TO_MAX_LENGTH", col(columnPrefix + ${columnVars[$field.name]}).rlike(("^.{$max,}")).equalTo(lit(false)))
                 #end
                 #foreach ($format in $field.getValidation().getFormats())
                     #if ($foreach.first)
@@ -172,10 +167,10 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
 
         #foreach($relation in $record.relations)
             #if($relation.isOneToManyRelation())
-                ## TODO implement validation for records with one to Many relations
+            dataWithValidations = dataWithValidations.withColumn(${relationVars[$relation.name]} + "_VALID", lit(validateWith${relation.capitalizedName}Schema(data.select(col(${relationVars[$relation.name]})))));
             #else
-            ${relation.capitalizedName}Schema ${relation.uncapitalizeName}Schema = new ${relation.capitalizedName}Schema();
-            dataWithValidations = dataWithValidations.withColumn(${relationVars[$relation.name]} + "_VALID", lit(!${relation.uncapitalizeName}Schema.validateDataFrame(data.select(col(${relationVars[$relation.name]})), ${relationVars[$relation.name]} + ".").isEmpty()));
+            ${relation.capitalizedName}Schema ${relation.uncapitalizedName}Schema = new ${relation.capitalizedName}Schema();
+            dataWithValidations = dataWithValidations.withColumn(${relationVars[$relation.name]} + "_VALID", lit(!${relation.uncapitalizedName}Schema.validateDataFrame(data.select(col(${relationVars[$relation.name]})), ${relationVars[$relation.name]} + ".").isEmpty()));
             #end
         #end
 
@@ -259,11 +254,11 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
     #end
     #foreach ($relation in $record.relations)
         #if ($relation.isOneToManyRelation())
-        Row[] ${relation.uncapitalizeName}Rows = (Row[])((WrappedArray<Row>) SparkDatasetUtils.getRowValue(row, "${relation.columnName}")).array();
-        record.set${relation.capitalizedName}(${relation.capitalizedName}Schema.mapRows(Arrays.asList(${relation.uncapitalizeName}Rows)));
+        Row[] ${relation.uncapitalizedName}Rows = (Row[])((WrappedArray<Row>) SparkDatasetUtils.getRowValue(row, "${relation.columnName}")).array();
+        record.set${relation.capitalizedName}(${relation.capitalizedName}Schema.mapRows(Arrays.asList(${relation.uncapitalizedName}Rows)));
         #else
-        ${relation.capitalizedName} ${relation.uncapitalizeName}Value = ${relation.capitalizedName}Schema.mapRow((Row) SparkDatasetUtils.getRowValue(row, "${relation.columnName}"));
-        record.set${relation.capitalizedName}(${relation.uncapitalizeName}Value);
+        ${relation.capitalizedName} ${relation.uncapitalizedName}Value = ${relation.capitalizedName}Schema.mapRow((Row) SparkDatasetUtils.getRowValue(row, "${relation.columnName}"));
+        record.set${relation.capitalizedName}(${relation.uncapitalizedName}Value);
         #end
     #end
     return record;
@@ -281,4 +276,28 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
         }
         return ${record.name};
     }
+
+#if ($record.hasRelations())
+    #foreach ($relation in $record.relations)
+        #if ($relation.isOneToManyRelation())
+
+    /**
+     * Validate the given ${relation.capitalizedName} 1:M multiplicity relation dataset against ${relation.capitalizedName}Schema
+     * @param ${relation.uncapitalizedName}Dataset
+     * @return boolean value to indicate validation result
+     */
+    private boolean validateWith${relation.capitalizedName}Schema(Dataset<Row> ${relation.uncapitalizedName}Dataset) {
+        ${relation.capitalizedName}Schema ${relation.uncapitalizedName}Schema = new ${relation.capitalizedName}Schema();
+        // flatten ${relation.uncapitalizedName} data
+        Dataset<Row> flattenDataset = ${relation.uncapitalizedName}Dataset.select(explode(col(${relationVars[$relation.name]})));
+
+        // validate ${relation.capitalizedName}Schema
+        Dataset<Row> validData = ${relation.uncapitalizedName}Schema.validateDataFrame(flattenDataset, "col.");
+        return flattenDataset.count() == validData.count();
+    }
+
+
+        #end
+    #end
+#end
 }

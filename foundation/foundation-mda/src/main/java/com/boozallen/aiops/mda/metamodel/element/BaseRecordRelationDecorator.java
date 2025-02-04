@@ -133,7 +133,7 @@ public class BaseRecordRelationDecorator implements Relation {
      *
      * @return uncapitalized name
      */
-    public String getUncapitalizeName() {
+    public String getUncapitalizedName() {
         return StringUtils.uncapitalize(getName());
     }
 }

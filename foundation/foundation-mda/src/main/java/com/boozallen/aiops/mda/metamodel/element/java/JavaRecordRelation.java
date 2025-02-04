@@ -32,16 +32,6 @@ public class JavaRecordRelation extends BaseRecordRelationDecorator {
     }
 
     /**
-     * Returns the reference record name formatted into camelcase but starts with a lowercase letter
-     * @return the reference record name formatted into camelcase but starts with a lowercase letter
-     */
-    public String getLowercaseName() {
-        char[] name = getName().toCharArray();
-        name[0] = Character.toLowerCase(name[0]);
-        return new String(name);
-    }
-
-    /**
      * Returns the import for the generating the setters/getters of the reference record.
      * @return generated class import
      */
@@ -62,9 +52,9 @@ public class JavaRecordRelation extends BaseRecordRelationDecorator {
     public String getRelationSetterSignature() {
         String className = getName();
         if (this.isOneToManyRelation()) {
-            return String.format("public void set%s(List<%s> %s)", className, className, this.getLowercaseName());
+            return String.format("public void set%s(List<%s> %s)", className, className, this.getUncapitalizedName());
         } else {
-            return String.format("public void set%s(%s %s)", className, className, getLowercaseName());
+            return String.format("public void set%s(%s %s)", className, className, getUncapitalizedName());
         }
     }
 
@@ -87,7 +77,7 @@ public class JavaRecordRelation extends BaseRecordRelationDecorator {
      */
     public String getRelationPropDeclaration() {
         String type = String.format(isOneToManyRelation()? "List<%s>": "%s", getName());
-        return String.format("private %s %s = null;", type, getLowercaseName());
+        return String.format("private %s %s = null;", type, getUncapitalizedName());
     }
 
     /**
@@ -100,9 +90,9 @@ public class JavaRecordRelation extends BaseRecordRelationDecorator {
                     for (%s record : this.%s) {
                         record.validate();
                     }""";
-            return String.format(validate, getName(), getLowercaseName());
+            return String.format(validate, getName(), getUncapitalizedName());
         } else {
-            return String.format("this.%s.validate();",getLowercaseName());
+            return String.format("this.%s.validate();",getUncapitalizedName());
         }
     }
 
@@ -111,7 +101,7 @@ public class JavaRecordRelation extends BaseRecordRelationDecorator {
      * @return the required reference record validation logic
      */
     public String getRequiredRelationValidate() {
-        String lowercaseName = getLowercaseName();
+        String uncapitalizedName = getUncapitalizedName();
         if (this.isOneToManyRelation()) {
             String validate = """
                     if (this.%s == null || this.%s.size() == 0) {
@@ -119,7 +109,7 @@ public class JavaRecordRelation extends BaseRecordRelationDecorator {
                     } else {
                         %s
                     }""";
-            return String.format(validate, lowercaseName, lowercaseName, getName(), getRelationValidate());
+            return String.format(validate, uncapitalizedName, uncapitalizedName, getName(), getRelationValidate());
         } else {
             String validate = """
                     if (this.%s == null) {
@@ -127,7 +117,7 @@ public class JavaRecordRelation extends BaseRecordRelationDecorator {
                     } else {
                         %s
                     }""";
-            return String.format(validate, lowercaseName, getName(), getRelationValidate());
+            return String.format(validate, uncapitalizedName, getName(), getRelationValidate());
         }
     }
 
