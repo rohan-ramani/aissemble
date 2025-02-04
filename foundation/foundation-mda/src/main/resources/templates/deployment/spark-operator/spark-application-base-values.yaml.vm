@@ -13,7 +13,7 @@ sparkApp:
         - mysql:mysql-connector-java:${versionMysqlConnector}
         #if (${useS3Local})
         - org.apache.hadoop:hadoop-aws:${versionHadoop}
-        - com.amazonaws:aws-java-sdk-bundle:${versionAwsSdkBundle}
+        - software.amazon.awssdk:bundle:${versionAwsSdkBundle}
         #end
         #if (${enableNeo4jSupport})
         - org.neo4j:neo4j-connector-apache-spark_2.12:${versionNeo4j}

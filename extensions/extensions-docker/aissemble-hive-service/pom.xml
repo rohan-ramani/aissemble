@@ -18,8 +18,6 @@
         <dockerbuild.jars.directory>target/dockerbuild/lib</dockerbuild.jars.directory>
         <dockerbuild.bin.directory>target/dockerbuild/bin</dockerbuild.bin.directory>
         <dockerbuild.patch.directory>target/dockerbuild/patch</dockerbuild.patch.directory>
-        <!-- Hadoop Version can be safely updated in this image, but not in Spark images -->
-        <version.hadoop>3.4.1</version.hadoop>
     </properties>
 
     <dependencies>
@@ -131,7 +129,6 @@
                             <build>
                                 <args>
                                     <METASTORE_VERSION>${version.hive}</METASTORE_VERSION>
-                                    <HADOOP_VERSION>${version.hadoop}</HADOOP_VERSION>
                                     <JARS_DIR>${dockerbuild.jars.directory}</JARS_DIR>
                                     <BIN_DIR>${dockerbuild.bin.directory}</BIN_DIR>
                                     <PATCH_DIR>${dockerbuild.patch.directory}</PATCH_DIR>
@@ -140,42 +137,6 @@
                         </image>
                     </images>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>test-image</id>
-                        <phase>integration-test</phase>
-                        <configuration>
-                            <images>
-                                <image>
-                                    <run>
-                                        <network>
-                                            <!-- bridged mode (the default) does not work reliably for direct tcp verification.
-                                            See https://github.com/fabric8io/docker-maven-plugin/issues/1234#issuecomment-2609924715 -->
-                                            <mode>host</mode>
-                                        </network>
-                                        <wait>
-                                            <tcp>
-                                                <ports>
-                                                    <port>9083</port>
-                                                </ports>
-                                            </tcp>
-                                        </wait>
-                                    </run>
-                                </image>
-                            </images>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>test-image-cleanup</id>
-                        <phase>post-integration-test</phase>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -225,4 +186,54 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>integration-test</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>${group.fabric8.plugin}</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>test-image</id>
+                                <phase>integration-test</phase>
+                                <configuration>
+                                    <images>
+                                        <image>
+                                            <run>
+                                                <network>
+                                                    <!-- bridged mode (the default) does not work reliably for direct tcp verification.
+                                                    See https://github.com/fabric8io/docker-maven-plugin/issues/1234#issuecomment-2609924715 -->
+                                                    <mode>host</mode>
+                                                </network>
+                                                <wait>
+                                                    <tcp>
+                                                        <ports>
+                                                            <port>9083</port>
+                                                        </ports>
+                                                    </tcp>
+                                                </wait>
+                                            </run>
+                                        </image>
+                                    </images>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>test-image-cleanup</id>
+                                <phase>post-integration-test</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

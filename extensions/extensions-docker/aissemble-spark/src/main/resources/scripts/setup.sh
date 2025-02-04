@@ -104,6 +104,7 @@ setup(
 
 SPARK_JARS="$1/jars"
 SPARK_VERSION=$2
+HADOOP_VERSION=$3
 
 update_maven_jars "com.google.code.gson:gson:2.8.9 \
                    com.google.guava:guava:33.3.1-jre \
@@ -121,10 +122,29 @@ update_maven_jars "com.google.code.gson:gson:2.8.9 \
                    org.apache.derby:derbytools:10.16.1.1 \
                    org.apache.derby:derbyshared:10.16.1.1 \
                    org.apache.hadoop.thirdparty:hadoop-shaded-guava:1.3.0 \
-                   org.apache.hadoop:hadoop-client-runtime:3.3.6 \
+                   org.apache.hadoop:hadoop-client-api:$HADOOP_VERSION \
+                   org.apache.hadoop:hadoop-client-runtime:$HADOOP_VERSION \
+                   org.apache.hadoop:hadoop-yarn-server-web-proxy:$HADOOP_VERSION \
+                   org.apache.hive:hive-beeline:2.3.10 \
+                   org.apache.hive:hive-cli:2.3.10 \
+                   org.apache.hive:hive-common:2.3.10 \
                    org.apache.hive:hive-exec:2.3.10:core \
+                   org.apache.hive:hive-jdbc:2.3.10 \
+                   org.apache.hive:hive-llap-common:2.3.10 \
+                   org.apache.hive:hive-metastore:2.3.10 \
+                   org.apache.hive:hive-serde:2.3.10 \
+                   org.apache.hive:hive-shims:2.3.10 \
+                   org.apache.hive.shims:hive-shims-0.23:2.3.10 \
+                   org.apache.hive.shims:hive-shims-common:2.3.10 \
+                   org.apache.hive.shims:hive-shims-scheduler:2.3.10 \
+                   org.apache.thrift:libthrift:0.16.0 \
                    org.apache.ivy:ivy:2.5.3 \
-                   org.apache.thrift:libthrift:0.13.0 \
+                   org.apache.parquet:parquet-column:1.15.0 \
+                   org.apache.parquet:parquet-format-structures:1.15.0 \
+                   org.apache.parquet:parquet-encoding:1.15.0 \
+                   org.apache.parquet:parquet-jackson:1.15.0 \
+                   org.apache.parquet:parquet-hadoop:1.15.0 \
+                   org.apache.parquet:parquet-common:1.15.0 \
                    org.apache.zookeeper:zookeeper-jute:3.9.3 \
                    org.apache.zookeeper:zookeeper:3.9.3"
 update_jackson '1.9.14.jdk17-redhat-00001'

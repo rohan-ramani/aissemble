@@ -6,6 +6,7 @@ FROM docker.io/apache/spark:${SPARK_VERSION}-scala${SCALA_VERSION}-java17-python
 
 #pull var from global scope to build stage
 ARG SPARK_VERSION
+ARG HADOOP_VERSION
 ARG PYTHON_VERSION=3.11
 
 LABEL org.opencontainers.image.source="https://github.com/boozallen/aissemble"
@@ -37,7 +38,8 @@ RUN apt-get update -y && apt-get install --assume-yes \
   && rm -rf /var/lib/apt/lists/* \
   && apt-get clean \
   && ln -s /usr/bin/python${PYTHON_VERSION} /usr/bin/python \
-#Patch for CVE-2023-0286: upgrade cryptography to 39.0.1+ (https://github.com/advisories/GHSA-x4qr-2fvf-3mr5)
+#Patch for CVE-2023-0286: upgrade cryptography to 39.0.1+ (https://github.com/advisories/GHSA-x4qr-2fvf-3mr5) \
+  && apt-get remove python3-cryptography -y \
   && python -m pip install --upgrade cryptography
 
 # Pyspark uses `python3` to execute pyspark pipelines. This links out latest python install to that command.
@@ -49,7 +51,7 @@ COPY --from=docker.io/tianon/gosu:1.17-debian /gosu /usr/sbin/gosu
 
 # Update library jars used by Spark and register PySpark as an available python package
 COPY --chmod=755 ./src/main/resources/scripts/setup.sh $SPARK_HOME/setup.sh
-RUN $SPARK_HOME/setup.sh $SPARK_HOME $SPARK_VERSION
+RUN $SPARK_HOME/setup.sh $SPARK_HOME $SPARK_VERSION $HADOOP_VERSION
 
 ## Add spark configurations
 COPY ./src/main/resources/conf/ $SPARK_HOME/conf/
