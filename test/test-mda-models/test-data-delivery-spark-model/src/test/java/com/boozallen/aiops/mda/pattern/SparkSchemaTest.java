@@ -131,12 +131,6 @@ public class SparkSchemaTest {
                 this.personWithOneToMRelationSchema.getStructType());
     }
 
-    @Given("a valid \"City\" dataSet exists")
-    public void aValidDataSetExists() {
-        List<Row> rows = Collections.singletonList(CitySchema.asRow(createCity()));
-        this.cityDataSet = spark.createDataFrame(rows, this.citySchema.getStructType());
-    }
-
     @Given("a \"City\" dataSet with an invalid relation exists")
     public void aCityDataSetWithAnInvalidRelationExists() {
         IntegerWithValidation integerWithValidation = new IntegerWithValidation(0);
@@ -163,15 +157,6 @@ public class SparkSchemaTest {
         this.cityDataSet = this.spark.createDataFrame(cityRows, this.citySchema.getStructType());
     }
 
-    @When("spark schema validation is performed on the dataSet")
-    public void sparkSchemaValidationIsPerformedOnTheDataSet() {
-        try {
-            this.validatedDataSet = this.citySchema.validateDataFrame(this.cityDataSet);
-        }catch (Exception e) {
-            this.exception = e;
-        }
-    }
-
     @When("spark schema validation is performed on the \"PersonWithOneToOneRelation\" dataSet")
     public void sparkSchemaValidationIsPerformedOnThePersonWithOneToOneRelationDataSet() {
         try {
@@ -193,12 +178,8 @@ public class SparkSchemaTest {
 
     @When("spark schema validation is performed on the \"PersonWithOneToMRelation\" dataSet")
     public void sparkSchemaValidationIsPerformedOnThePersonWithOneToMRelationDataSet() {
-        try {
-            this.validatedDataSet =
+        this.validatedDataSet =
                     this.personWithOneToMRelationSchema.validateDataFrame(this.personWithOneToMRelationDataSet);
-        }catch (Exception e) {
-            this.exception = e;
-        }
     }
 
     @Then("the schema data type for {string} is {string}")
