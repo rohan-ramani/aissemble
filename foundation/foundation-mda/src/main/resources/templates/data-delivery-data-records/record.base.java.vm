@@ -49,11 +49,11 @@ public abstract class ${record.capitalizedName}Base {
 #if ($record.hasRelations())
   #foreach ($relation in $record.relations)
     ${relation.relationSetterSignature} {
-        this.${relation.lowercaseName} = ${relation.lowercaseName};
+        this.${relation.uncapitalizedName} = ${relation.uncapitalizedName};
     }
 
     ${relation.relationGetterSignature} {
-        return this.${relation.lowercaseName};
+        return this.${relation.uncapitalizedName};
     }
   #end
 #end
@@ -105,7 +105,7 @@ public abstract class ${record.capitalizedName}Base {
         #if (!$relation.isNullable())
         ${relation.requiredRelationValidate}
         #else
-        if (this.${relation.lowercaseName} != null) {
+        if (this.${relation.uncapitalizedName} != null) {
             ${relation.relationValidate}
         }
         #end

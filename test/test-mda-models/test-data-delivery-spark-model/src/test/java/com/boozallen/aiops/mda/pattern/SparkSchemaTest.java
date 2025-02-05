@@ -21,8 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.boozallen.aiops.mda.pattern.dictionary.Zipcode;
+import com.boozallen.aiops.mda.pattern.record.PersonWithOneToMRelation;
+import com.boozallen.aiops.mda.pattern.record.PersonWithOneToMRelationSchema;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -32,7 +33,6 @@ import com.boozallen.aiops.mda.pattern.record.Address;
 import com.boozallen.aiops.mda.pattern.record.City;
 import com.boozallen.aiops.mda.pattern.record.CitySchema;
 import com.boozallen.aiops.mda.pattern.record.Mayor;
-import com.boozallen.aiops.mda.pattern.record.MayorSchema;
 import com.boozallen.aiops.mda.pattern.record.PersonWithMToOneRelation;
 import com.boozallen.aiops.mda.pattern.record.PersonWithMToOneRelationSchema;
 import com.boozallen.aiops.mda.pattern.record.PersonWithOneToOneRelation;
@@ -41,7 +41,6 @@ import com.boozallen.aiops.mda.pattern.record.State;
 import com.boozallen.aiops.mda.pattern.record.Street;
 
 import io.cucumber.java.Before;
-import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -50,10 +49,12 @@ public class SparkSchemaTest {
     CitySchema citySchema;
     PersonWithOneToOneRelationSchema personWithOneToOneRelationSchema;
     PersonWithMToOneRelationSchema personWithMToOneRelationSchema;
+    PersonWithOneToMRelationSchema personWithOneToMRelationSchema;
     SparkSession spark;
     Dataset<Row> cityDataSet;
     Dataset<Row> personWithOneToOneRelationDataSet;
     Dataset<Row> personWithMToOneRelationDataSet;
+    Dataset<Row> personWithOneToMRelationDataSet;
     Dataset<Row> validatedDataSet;
     Exception exception;
 
@@ -67,8 +68,8 @@ public class SparkSchemaTest {
         // Handled with MDA generation
     }
 
-    @Given("the spark schema is generate for the \"PersonWithOneToOneRelation\" record")
-    public void theSparkSchemaIsGenerateForThePersonWithOneToOneRelationRecord() {
+    @Given("the spark schema is generated for the \"PersonWithOneToOneRelation\" record")
+    public void theSparkSchemaIsGeneratedForThePersonWithOneToOneRelationRecord() {
         this.personWithOneToOneRelationSchema = new PersonWithOneToOneRelationSchema();
     }
 
@@ -88,8 +89,8 @@ public class SparkSchemaTest {
                 this.personWithOneToOneRelationSchema.getStructType());
     }
 
-    @Given("the spark schema is generate for the \"PersonWithMToOneRelation\" record")
-    public void theSparkSchemaIsGenerateForThePersonWithMToOneRelationRecord() {
+    @Given("the spark schema is generated for the \"PersonWithMToOneRelation\" record")
+    public void theSparkSchemaIsGeneratedForThePersonWithMToOneRelationRecord() {
         this.personWithMToOneRelationSchema = new PersonWithMToOneRelationSchema();
     }
 
@@ -107,6 +108,27 @@ public class SparkSchemaTest {
         List<Row> rows = Collections.singletonList(PersonWithMToOneRelationSchema.asRow(personWithOneToOneRelation));
         this.personWithMToOneRelationDataSet = spark.createDataFrame(rows,
                 this.personWithMToOneRelationSchema.getStructType());
+    }
+
+    @Given("the spark schema is generated for the \"PersonWithOneToMRelation\" record")
+    public void theSparkSchemaIsGeneratedForThePersonWithOneToMRelationRecord() {
+        this.personWithOneToMRelationSchema = new PersonWithOneToMRelationSchema();
+    }
+
+    @Given("a {string} \"PersonWithOneToMRelation\" dataSet exists")
+    public void aValidPersonWithOneToManyRelationDataSetExists(String validity) {
+        PersonWithOneToMRelation personWithOneToMRelation = new PersonWithOneToMRelation();
+        if (StringUtils.equals("valid", validity)){
+            personWithOneToMRelation.setAddress(List.of(createAddress(), createAddress()));
+        } else {
+            Address address = createAddress();
+            address.setZipcode(new Zipcode("0"));
+            personWithOneToMRelation.setAddress(List.of(address, createAddress()));
+        }
+
+        List<Row> rows = Collections.singletonList(PersonWithOneToMRelationSchema.asRow(personWithOneToMRelation));
+        this.personWithOneToMRelationDataSet = spark.createDataFrame(rows,
+                this.personWithOneToMRelationSchema.getStructType());
     }
 
     @Given("a valid \"City\" dataSet exists")
@@ -128,8 +150,8 @@ public class SparkSchemaTest {
         this.cityDataSet = spark.createDataFrame(rows, this.citySchema.getStructType());
     }
 
-    @When("the spark schema is generate for the \"City\" record")
-    public void theSparkSchemaIsGenerateForTheCityRecord() {
+    @When("the spark schema is generated for the \"City\" record")
+    public void theSparkSchemaIsGeneratedForTheCityRecord() {
         this.citySchema = new CitySchema();
     }
 
@@ -169,6 +191,16 @@ public class SparkSchemaTest {
         }
     }
 
+    @When("spark schema validation is performed on the \"PersonWithOneToMRelation\" dataSet")
+    public void sparkSchemaValidationIsPerformedOnThePersonWithOneToMRelationDataSet() {
+        try {
+            this.validatedDataSet =
+                    this.personWithOneToMRelationSchema.validateDataFrame(this.personWithOneToMRelationDataSet);
+        }catch (Exception e) {
+            this.exception = e;
+        }
+    }
+
     @Then("the schema data type for {string} is {string}")
     public void theSchemaDataTypeForIs(String record, String type) {
         assertEquals("The type for record is not correct", type,
@@ -191,13 +223,6 @@ public class SparkSchemaTest {
         }
     }
 
-    @Then("the validation fails with NotYetImplementedException")
-    public void theValidationFailsWithNotYetImplementedException() {
-        assertNotNull("No exception was thrown", this.exception);
-        assertNotNull("Throw exception is not of instance NotImplementedException", this.exception instanceof
-                NotImplementedException ? (this.exception) : null);
-    }
-
     @Then("the dataSet validation {string}")
     public void theDataSetValidationIsSuccessful(String succeed) {
         if(StringUtils.equals("fails", succeed)) {
@@ -209,7 +234,7 @@ public class SparkSchemaTest {
     }
 
     private City createCity(){
-        IntegerWithValidation integerWithValidation = new IntegerWithValidation(0);
+        IntegerWithValidation integerWithValidation = new IntegerWithValidation(100);
 
         List<Street> streets = new ArrayList<>();
         Street street = new Street();
