@@ -39,7 +39,6 @@ import static org.apache.spark.sql.functions.explode;
  */
 public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
 
-    private static final String ARRAY = "array";
 #set($columnVars = {})
 #foreach ($field in $record.fields)
     #set ($columnVars[$field.name] = "${field.upperSnakecaseName}_COLUMN")
@@ -277,12 +276,13 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
         return ${record.name};
     }
 
-#if ($record.hasRelations())
+
     #foreach ($relation in $record.relations)
         #if ($relation.isOneToManyRelation())
 
     /**
-     * Validate the given ${relation.capitalizedName} 1:M multiplicity relation dataset against ${relation.capitalizedName}Schema
+     * Validate the given ${relation.capitalizedName} 1:M multiplicity relation dataset against ${relation.capitalizedName}Schema.
+     * A false will be return if any one of the relation records schema validation is failed.
      * @param ${relation.uncapitalizedName}Dataset
      * @return boolean value to indicate validation result
      */
@@ -299,5 +299,4 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
 
         #end
     #end
-#end
 }
