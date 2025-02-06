@@ -27,8 +27,8 @@ from aissemble_test_data_delivery_pyspark_model.record.address import (
 from aissemble_test_data_delivery_pyspark_model.dictionary.zipcode import (
     Zipcode,
 )
-from aissemble_test_data_delivery_pyspark_model.dictionary.state import (
-    State,
+from aissemble_test_data_delivery_pyspark_model.dictionary.state_address import (
+    StateAddress,
 )
 
 
@@ -48,7 +48,7 @@ def initialize(context):
     address = Address()
     address.street = "123 Test St"
     address.city = "Testville"
-    address.state = State("Test")
+    address.state = StateAddress("Test")
     address.zipcode = Zipcode("12345")
     context.address = address
 

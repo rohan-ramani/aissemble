@@ -22,7 +22,7 @@
       }
     },
     {
-      "name": "state",
+      "name": "stateAddress",
       "simpleType": "string",
       "validation": {
         "maxLength": 2,

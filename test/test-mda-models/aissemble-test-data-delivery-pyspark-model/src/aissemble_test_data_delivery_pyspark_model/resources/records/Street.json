@@ -1,38 +1,32 @@
 {
-  "name": "Address",
+  "name": "Street",
   "package": "com.boozallen.aiops.mda.pattern.record",
-  "description": "Address custom record",
+  "description": "Example Street record for testing Spark Java Data Relations",
   "frameworks": [{
     "name": "pyspark"
   }],
   "fields": [
     {
-      "name": "street",
+      "name": "name",
       "type": {
-        "name": "street",
+        "name": "string",
         "package": "com.boozallen.aiops.mda.pattern.dictionary"
       }
     },
     {
-      "name": "city",
+      "name": "county",
       "type": {
-        "name": "city",
+        "name": "string",
         "package": "com.boozallen.aiops.mda.pattern.dictionary"
       }
     },
     {
-      "name": "zipcode",
+      "name": "integerValidation",
       "type": {
-        "name": "zipcode",
+        "name": "integerWithValidation",
         "package": "com.boozallen.aiops.mda.pattern.dictionary"
-      }
-    },
-    {
-      "name": "state",
-      "type": {
-        "name": "stateAddress",
-        "package": "com.boozallen.aiops.mda.pattern.dictionary"
-      }
+      },
+      "column": "int_v8n"
     }
   ]
 }

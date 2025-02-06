@@ -59,6 +59,10 @@
 		{
 			"name": "binarydata",
 			"simpleType": "bytearray"
+		},
+		{
+			"name": "string",
+			"simpleType": "string"
 		}
 	]
 }

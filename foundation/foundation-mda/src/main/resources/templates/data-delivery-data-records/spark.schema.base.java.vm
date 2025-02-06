@@ -283,17 +283,13 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
     /**
      * Validate the given ${relation.capitalizedName} 1:M multiplicity relation dataset against ${relation.capitalizedName}Schema.
      * A false will be return if any one of the relation records schema validation is failed.
+     * Currently not implemented so it throws a NotImplementedException
      * @param ${relation.uncapitalizedName}Dataset
-     * @return boolean value to indicate validation result
+     * @return NotImplementedException
      */
     private boolean validateWith${relation.capitalizedName}Schema(Dataset<Row> ${relation.uncapitalizedName}Dataset) {
-        ${relation.capitalizedName}Schema ${relation.uncapitalizedName}Schema = new ${relation.capitalizedName}Schema();
-        // flatten ${relation.uncapitalizedName} data
-        Dataset<Row> flattenDataset = ${relation.uncapitalizedName}Dataset.select(explode(col(${relationVars[$relation.name]})));
-
-        // validate ${relation.capitalizedName}Schema
-        Dataset<Row> validData = ${relation.uncapitalizedName}Schema.validateDataFrame(flattenDataset, "col.");
-        return flattenDataset.count() == validData.count();
+        throw new NotImplementedException(
+                "Validation against relations with One to Many multiplicity is not yet implemented");
     }
 
 

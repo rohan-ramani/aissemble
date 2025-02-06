@@ -42,12 +42,8 @@ Feature: Records with relations are generated correctly and function as expected
       | valid    | passes  |
       | invalid  | fails   |
 
-  Scenario Outline: Records with a One to Many relation can be validated using the spark schema
-    Given the spark schema is generated for the "PersonWithOneToMRelation" record
-    And a "<validity>" "PersonWithOneToMRelation" dataSet exists
-    When spark schema validation is performed on the "PersonWithOneToMRelation" dataSet
-    Then the dataSet validation "<success>"
-    Examples:
-      | validity | success |
-      | valid    | passes  |
-      | invalid  | fails   |
+  Scenario: Spark schemas generated fails to validate One to Many relations with not yet implemented exception
+    Given the spark schema is generated for the "City" record
+    And a valid "City" dataSet exists
+    When spark schema validation is performed on the dataSet
+    Then the validation fails with NotYetImplementedException

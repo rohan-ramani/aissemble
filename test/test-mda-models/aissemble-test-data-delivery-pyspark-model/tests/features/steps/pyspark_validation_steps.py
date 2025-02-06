@@ -46,7 +46,9 @@ def step_impl(context, value):
     :type context: behave.runner.Context
     :type value: str
     """
-    if context.type == "float":
+    if value == "None":
+        context.record.integer_validation = None
+    elif context.type == "float":
         validation = FloatWithValidation(str(value))
         context.record.float_validation = validation
     else:

@@ -24,6 +24,7 @@ import com.boozallen.aiops.mda.pattern.dictionary.Zipcode;
 import com.boozallen.aiops.mda.pattern.record.PersonWithOneToMRelation;
 import com.boozallen.aiops.mda.pattern.record.PersonWithOneToMRelationSchema;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -73,6 +74,12 @@ public class SparkSchemaTest {
         this.personWithOneToOneRelationSchema = new PersonWithOneToOneRelationSchema();
     }
 
+    @Given("a valid \"City\" dataSet exists")
+    public void aValidDataSetExists() {
+        List<Row> rows = Collections.singletonList(CitySchema.asRow(createCity()));
+        this.cityDataSet = spark.createDataFrame(rows, this.citySchema.getStructType());
+    }
+
     @Given("a {string} \"PersonWithOneToOneRelation\" dataSet exists")
     public void aValidPersonWithOneToOneRelationDataSetExists(String validity) {
         PersonWithOneToOneRelation personWithOneToOneRelation = new PersonWithOneToOneRelation();
@@ -108,27 +115,6 @@ public class SparkSchemaTest {
         List<Row> rows = Collections.singletonList(PersonWithMToOneRelationSchema.asRow(personWithOneToOneRelation));
         this.personWithMToOneRelationDataSet = spark.createDataFrame(rows,
                 this.personWithMToOneRelationSchema.getStructType());
-    }
-
-    @Given("the spark schema is generated for the \"PersonWithOneToMRelation\" record")
-    public void theSparkSchemaIsGeneratedForThePersonWithOneToMRelationRecord() {
-        this.personWithOneToMRelationSchema = new PersonWithOneToMRelationSchema();
-    }
-
-    @Given("a {string} \"PersonWithOneToMRelation\" dataSet exists")
-    public void aValidPersonWithOneToManyRelationDataSetExists(String validity) {
-        PersonWithOneToMRelation personWithOneToMRelation = new PersonWithOneToMRelation();
-        if (StringUtils.equals("valid", validity)){
-            personWithOneToMRelation.setAddress(List.of(createAddress(), createAddress()));
-        } else {
-            Address address = createAddress();
-            address.setZipcode(new Zipcode("0"));
-            personWithOneToMRelation.setAddress(List.of(address, createAddress()));
-        }
-
-        List<Row> rows = Collections.singletonList(PersonWithOneToMRelationSchema.asRow(personWithOneToMRelation));
-        this.personWithOneToMRelationDataSet = spark.createDataFrame(rows,
-                this.personWithOneToMRelationSchema.getStructType());
     }
 
     @Given("a \"City\" dataSet with an invalid relation exists")
@@ -176,10 +162,20 @@ public class SparkSchemaTest {
         }
     }
 
-    @When("spark schema validation is performed on the \"PersonWithOneToMRelation\" dataSet")
-    public void sparkSchemaValidationIsPerformedOnThePersonWithOneToMRelationDataSet() {
-        this.validatedDataSet =
-                    this.personWithOneToMRelationSchema.validateDataFrame(this.personWithOneToMRelationDataSet);
+    @When("spark schema validation is performed on the dataSet")
+    public void sparkSchemaValidationIsPerformedOnTheDataSet() {
+        try {
+            this.validatedDataSet = this.citySchema.validateDataFrame(this.cityDataSet);
+        }catch (Exception e) {
+            this.exception = e;
+        }
+    }
+
+    @Then("the validation fails with NotYetImplementedException")
+    public void theValidationFailsWithNotYetImplementedException() {
+        assertNotNull("No exception was thrown", this.exception);
+        assertNotNull("Throw exception is not of instance NotImplementedException", this.exception instanceof
+                NotImplementedException ? (this.exception) : null);
     }
 
     @Then("the schema data type for {string} is {string}")
