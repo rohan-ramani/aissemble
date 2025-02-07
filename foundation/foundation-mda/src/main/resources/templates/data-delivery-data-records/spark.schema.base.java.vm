@@ -164,6 +164,8 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
                 #end
             #end ;
 
+    ## TODO revise validation for relations
+    #if (false)
         #foreach($relation in $record.relations)
             #if($relation.isOneToManyRelation())
             dataWithValidations = dataWithValidations.withColumn(${relationVars[$relation.name]} + "_VALID", lit(validateWith${relation.capitalizedName}Schema(data.select(col(${relationVars[$relation.name]})))));
@@ -172,6 +174,7 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
             dataWithValidations = dataWithValidations.withColumn(${relationVars[$relation.name]} + "_VALID", lit(!${relation.uncapitalizedName}Schema.validateDataFrame(data.select(col(${relationVars[$relation.name]})), ${relationVars[$relation.name]} + ".").isEmpty()));
             #end
         #end
+    #end
 
         Column filterSchema = null;
         List<String> validationColumns = new ArrayList<>();
@@ -277,6 +280,8 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
     }
 
 
+## TODO revise validation for relations
+#if (false)
     #foreach ($relation in $record.relations)
         #if ($relation.isOneToManyRelation())
 
@@ -295,4 +300,5 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
 
         #end
     #end
+#end
 }

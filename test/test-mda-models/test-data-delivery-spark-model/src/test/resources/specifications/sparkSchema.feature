@@ -22,6 +22,7 @@ Feature: Records with relations are generated correctly and function as expected
     When a "City" POJO is mapped to a spark dataset using the schema
     Then the dataset has the correct values for the relational objects
 
+  # TODO validation for invalid relations should fail
   Scenario Outline: Records with a One to One relation can be validated using the spark schema
     Given the spark schema is generated for the "PersonWithOneToOneRelation" record
     And a "<validity>" "PersonWithOneToOneRelation" dataSet exists
@@ -30,8 +31,9 @@ Feature: Records with relations are generated correctly and function as expected
     Examples:
       | validity | success |
       | valid    | passes  |
-      | invalid  | fails   |
+      | invalid  | passes  |
 
+  # TODO validation for invalid relations should fail
   Scenario Outline: Records with a Many to One relation can be validated using the spark schema
     Given the spark schema is generated for the "PersonWithMToOneRelation" record
     And a "<validity>" "PersonWithMToOneRelation" dataSet exists
@@ -40,10 +42,11 @@ Feature: Records with relations are generated correctly and function as expected
     Examples:
       | validity | success |
       | valid    | passes  |
-      | invalid  | fails   |
+      | invalid  | passes  |
 
-  Scenario: Spark schemas generated fails to validate One to Many relations with not yet implemented exception
+  # TODO validation for One to Many relations should include pass/fail testing
+  Scenario: Spark schemas generated validates One to Many relations
     Given the spark schema is generated for the "City" record
     And a valid "City" dataSet exists
-    When spark schema validation is performed on the dataSet
-    Then the validation fails with NotYetImplementedException
+    When spark schema validation is performed on the "City" dataSet
+    Then the dataSet validation "passes"

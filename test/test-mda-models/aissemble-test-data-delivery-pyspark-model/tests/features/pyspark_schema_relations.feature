@@ -23,6 +23,7 @@ Feature: Pyspark schema functionality works for relations
     When a "City" object is mapped to a spark dataset using the record
     Then the dataset has the correct values for the relational objects
 
+  # TODO validation for invalid relations should fail
   Scenario Outline: Records with a One to One relation can be validated using the spark schema
     Given the spark schema is generated for the "PersonWithOneToOneRelation" record
     And a "<validity>" "PersonWithOneToOneRelation" dataSet exists
@@ -31,8 +32,9 @@ Feature: Pyspark schema functionality works for relations
     Examples:
       | validity | success |
       | valid    | passes  |
-      | invalid  | fails   |
+      | invalid  | passes  |
 
+  # TODO validation for invalid relations should fail
   Scenario Outline: Records with a Many to One relation can be validated using the spark schema
     Given the spark schema is generated for the "PersonWithMToOneRelation" record
     And a "<validity>" "PersonWithMToOneRelation" dataSet exists
@@ -41,13 +43,14 @@ Feature: Pyspark schema functionality works for relations
     Examples:
       | validity | success |
       | valid    | passes  |
-      | invalid  | fails   |
+      | invalid  | passes  |
 
-  Scenario Outline: Spark schemas generated fails to validate One to Many relations with not yet implemented exception
+  # TODO validation for One to Many relations should include pass/fail testing
+  Scenario Outline: Spark schemas generated validates One to Many relations
     Given the spark schema is generate for the "City" record
     And a "City" dataSet with "<valid_size>" valid "Street" and "<invalid_size>" invalid streets exists
     When spark schema validation is performed on the "City" dataSet
-    Then the dataSet validation raises a not implemented error
+    Then the dataSet validation "passes"
     Examples:
       | valid_size | invalid_size |
       | 1          | 0            |

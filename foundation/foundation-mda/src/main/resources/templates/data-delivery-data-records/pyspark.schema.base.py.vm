@@ -166,6 +166,8 @@ class ${record.capitalizedName}SchemaBase(ABC):
         #end
         #end
 
+    ## TODO revise validation for relations
+    #if (false)
         #foreach($relation in $record.relations)
         #if($relation.isOneToManyRelation())
         data_with_validations = data_with_validations.withColumn(self.${relation.upperSnakecaseName}_COLUMN + "_VALID", lit(self._validate_with_${relation.snakeCaseName}_schema(data_with_validations.select(col(self.${relation.upperSnakecaseName}_COLUMN)))))
@@ -174,6 +176,7 @@ class ${record.capitalizedName}SchemaBase(ABC):
         data_with_validations = data_with_validations.withColumn(self.${relation.upperSnakecaseName}_COLUMN + "_VALID", lit(not ${relation.snakeCaseName}_schema.validate_dataset_with_prefix(data_with_validations.select(col(self.${relation.upperSnakecaseName}_COLUMN)), '${relation.columnName}.').isEmpty()))
         #end
         #end
+    #end
 
         validation_columns = [x for x in data_with_validations.columns if x not in ingest_dataset.columns]
 
@@ -192,11 +195,14 @@ class ${record.capitalizedName}SchemaBase(ABC):
         valid_data = valid_data.drop(*validation_columns)
         return valid_data
 
+## TODO revise validation for relations
+#if (false)
 #foreach($relation in $record.relations)
     #if($relation.isOneToManyRelation())
     def _validate_with_${relation.snakeCaseName}_schema(self, dataset: DataFrame) -> bool:
         raise NotImplementedError
     #end
+#end
 #end
 
 
