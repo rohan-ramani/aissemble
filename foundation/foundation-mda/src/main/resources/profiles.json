@@ -236,7 +236,7 @@
 			}
 		],
 		"deprecated": "true",
-		"warningMessage": "Data Access using GraphQL is deprecated, please see the latest documentation for details on using Trino for Data Access: https://boozallen.github.io/aissemble/aissemble/current/data-access-details.html"
+		"warningMessage": "Data Access using GraphQL is deprecated, please see the latest documentation for details on using Trino for Data Access: https://boozallen.github.io/aissemble/aissemble/current/data-access-details.html\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m Reach out to the aiSSEMBLE team if your usecase is best served by GraphQL."
 	},
 	{
 		"name": "aissemble-data-access-docker",
@@ -245,7 +245,8 @@
 				"name": "dataAccessDockerFile"
 			}
 		],
-		"deprecated": "true"
+		"deprecated": "true",
+		"warningMessage": "Data Access using GraphQL is deprecated, please see the latest documentation for details on using Trino for Data Access: https://boozallen.github.io/aissemble/aissemble/current/data-access-details.html\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m Reach out to the aiSSEMBLE team if your usecase is best served by GraphQL."
 	},
 	{
 		"name": "aissemble-spark-worker-docker",
@@ -262,15 +263,15 @@
 		]
 	},
 	{
-		"name": "aissemble-quarkus-deploy",
+		"name": "quarkus-deploy-v2",
 		"profileReferences": [
 			{
-				"name": "aissemble-quarkus-kubernetes"
+				"name": "quarkus-kubernetes-v2"
 			}
 		]
 	},
 	{
-		"name": "aissemble-quarkus-kubernetes",
+		"name": "quarkus-kubernetes-v2",
 		"targetReferences": [
 			{
 				"name": "aissembleQuarkusHelmChartFile"
@@ -300,7 +301,15 @@
 			}
 		],
 		"deprecated": "true",
-		"warningMessage": "The profile `aissemble-spark-infrastructure-deploy` is deprecated, please follow the migration instructions for upgrading to the V2 charts: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade"
+		"warningMessage": "The profile `aissemble-spark-infrastructure-deploy` is deprecated, please follow the migration instructions for upgrading to the V2 charts: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
+	},
+	{
+		"name": "spark-infrastructure-deploy-v2",
+		"profileReferences": [
+			{
+				"name": "aissemble-spark-infrastructure-deploy-v2"
+			}
+		]
 	},
 	{
 		"name": "aissemble-spark-infrastructure-deploy-v2",
@@ -338,7 +347,15 @@
 			}
 		],
 		"deprecated": "true",
-		"warningMessage": "The profile `aissemble-spark-operator-deploy` is not compatible with release `1.8`, please follow the migration instructions for upgrading to the Spark Operator V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade. If you would like to continue using your existing V1 chart, you must use version '1.7.0' of the 'aissemble-spark-operator' image."
+		"warningMessage": "The profile `aissemble-spark-operator-deploy` is not compatible with release `1.8`, please follow the migration instructions for upgrading to the Spark Operator V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade. If you would like to continue using your existing V1 chart, you must use version '1.7.0' of the 'aissemble-spark-operator' image.\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
+	},
+	{
+		"name": "spark-operator-deploy-v2",
+		"profileReferences": [
+			{
+				"name": "aissemble-spark-operator-deploy-v2"
+			}
+		]
 	},
 	{
 		"name": "aissemble-spark-operator-deploy-v2",
@@ -499,7 +516,7 @@
 			}
 		],
 		"deprecated": "true",
-		"warningMessage": "The profile `aissemble-airflow-deploy` is deprecated, please follow the migration instructions for upgrading to the airflow V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade"
+		"warningMessage": "The profile `aissemble-airflow-deploy` is deprecated, please follow the migration instructions for upgrading to the airflow V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{ 
 		"name": "airflow-deploy-v2",
@@ -540,7 +557,7 @@
 			}
 		],
 		"deprecated": "true",
-		"warningMessage": "The profile `aissemble-mlflow-deploy` is deprecated, please follow the migration instructions for upgrading to the mlflow V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade"
+		"warningMessage": "The profile `aissemble-mlflow-deploy` is deprecated, please follow the migration instructions for upgrading to the mlflow V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{
 		"name": "aissemble-training-docker",
@@ -828,7 +845,9 @@
 			{
 				"name": "jenkins-kubernetes"
 			}
-		]
+		],
+		"deprecated": "true",
+		"warningMessage": "The profile `jenkins-deploy` is deprecated, please follow the migration instructions for upgrading to the V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{
 		"name": "data-access-kubernetes",
@@ -869,7 +888,8 @@
 				"name": "data-access-kubernetes"
 			}
 		],
-		"deprecated": "true"
+		"deprecated": "true",
+		"warningMessage": "The profile `data-access-deploy` is deprecated, please follow the migration instructions for upgrading to the V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{
 		"name": "data-access-deploy-v2",
@@ -878,7 +898,8 @@
 				"name": "data-access-kubernetes-v2"
 			}
 		],
-		"deprecated": "true"
+		"deprecated": "true",
+		"warningMessage": "Data Access using GraphQL is deprecated, please see the latest documentation for details on using Trino for Data Access: https://boozallen.github.io/aissemble/aissemble/current/data-access-details.html\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m Reach out to the aiSSEMBLE team if your usecase is best served by GraphQL."
 	},
 	{
 		"name": "data-access-kubernetes-v2",
@@ -972,7 +993,7 @@
 			}
 		],
 		"deprecated": "true",
-		"warningMessage": "The profile `hive-metastore-db-deploy` is deprecated, please follow the migration instructions for upgrading to the spark-infrastructure V2 charts: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade"
+		"warningMessage": "The profile `hive-metastore-db-deploy` is deprecated, please follow the migration instructions for upgrading to the spark-infrastructure V2 charts: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{
 		"name": "hive-metastore-service-deploy",
@@ -982,7 +1003,7 @@
 			}
 		],
 		"deprecated": "true",
-		"warningMessage": "The profile `hive-metastore-service-deploy` is deprecated, please follow the migration instructions for upgrading to the spark-infrastructure V2 charts: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade"
+		"warningMessage": "The profile `hive-metastore-service-deploy` is deprecated, please follow the migration instructions for upgrading to the spark-infrastructure V2 charts: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{
 		"name": "s3local-deploy-v2",
@@ -1023,7 +1044,7 @@
 			}
 		],
 		"deprecated": "true",
-		"warningMessage": "The profile `s3local-deploy` is deprecated, please follow the migration instructions for upgrading to the s3local V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade"
+		"warningMessage": "The profile `s3local-deploy` is deprecated, please follow the migration instructions for upgrading to the s3local V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{
 		"name": "s3local-kubernetes",
@@ -1114,7 +1135,7 @@
 			}
 		],
 		"deprecated": "true",
-		"warningMessage": "The profile `kafka-deploy` is deprecated, please follow the migration instructions for upgrading to the kafka V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade"
+		"warningMessage": "The profile `kafka-deploy` is deprecated, please follow the migration instructions for upgrading to the kafka V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{
 		"name": "kafka-connect-kubernetes",
@@ -1151,7 +1172,9 @@
 			{
 				"name": "kafka-connect-kubernetes"
 			}
-		]
+		],
+		"deprecated": "true",
+		"warningMessage": "The profile `kafka-connect-deploy` is deprecated, please follow the migration instructions for upgrading to the V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{
 		"name": "policy-decision-point-kubernetes",
@@ -1310,7 +1333,7 @@
 			}
 		],
 		"deprecated": "true",
-		"warningMessage": "The `zookeeper-alert-deploy` profile is deprecated as the v2 Kafka chart now includes Zookeeper. See the instructions for migrating to the v2 Kafka chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade"
+		"warningMessage": "The `zookeeper-alert-deploy` profile is deprecated as the v2 Kafka chart now includes Zookeeper. See the instructions for migrating to the v2 Kafka chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{
 		"name": "zookeeper-alert-kubernetes",
@@ -1347,7 +1370,9 @@
 			{
 				"name": "keycloak-kubernetes"
 			}
-		]
+		],
+		"deprecated": "true",
+		"warningMessage": "The profile `keycloak-deploy` is deprecated, please follow the migration instructions for upgrading to the V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{
 		"name": "keycloak-kubernetes",
@@ -1632,7 +1657,9 @@
 			{
 				"name": "versioning-kubernetes"
 			}
-		]
+		],
+		"deprecated": true,
+		"warningMessage": "The profile `versioning-deploy` is deprecated, please follow the migration instructions for upgrading to the V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{
 		"name": "versioning-kubernetes",
@@ -1732,7 +1759,9 @@
 			{
 				"name": "elasticsearch-kubernetes"
 			}
-		]
+		],
+		"deprecated": true,
+		"warningMessage": "The profile `elasticsearch-deploy` is deprecated, please follow the migration instructions for upgrading to the V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{
 		"name": "elasticsearch-kubernetes-v2",
@@ -1872,7 +1901,7 @@
 			}
 		],
 		"deprecated": "true",
-		"warningMessage": "The profile `metadata-deploy` is deprecated, please follow the migration instructions for upgrading to the metadata V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade"
+		"warningMessage": "The profile `metadata-deploy` is deprecated, please follow the migration instructions for upgrading to the metadata V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{
 		"name": "metadata-kubernetes",
@@ -2047,7 +2076,7 @@
 			}
 		],
 		"deprecated": "true",
-		"warningMessage": "The profile `aissemble-vault-docker` is deprecated, existing vault docker builds within your downstream project must now be maintained on your own. If your current vault docker image does not contain any customizations, the `ghcr.io/boozallen/aissemble-vault` image can be used instead."
+		"warningMessage": "The profile `aissemble-vault-docker` is deprecated, existing vault docker builds within your downstream project must now be maintained on your own. If your current vault docker image does not contain any customizations, the `ghcr.io/boozallen/aissemble-vault` image can be used instead.\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{
 		"name": "vault-deploy",
@@ -2105,7 +2134,7 @@
 			}
 		],
 		"deprecated": "true",
-		"warningMessage": "The profile `aissemble-policy-decision-point-deploy` is deprecated, please follow the migration instructions for upgrading to the policy decision point V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade"
+		"warningMessage": "The profile `aissemble-policy-decision-point-deploy` is deprecated, please follow the migration instructions for upgrading to the policy decision point V2 chart: https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{
 		"name": "integration-test-docker",
@@ -2587,7 +2616,7 @@
 			}
 		],
 		"deprecated": "true",
-		"warningMessage": "The profile `aissemble-data-records-module` is deprecated, please replace it with the new version: aissemble-data-records-combined-module"
+		"warningMessage": "The profile `aissemble-data-records-module` is deprecated, please replace it with the new version: aissemble-data-records-combined-module\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{
 		"name": "data-delivery-spark-data-records",
@@ -2597,7 +2626,7 @@
 			}
 		],
 		"deprecated": "true",
-		"warningMessage": "The profile `data-delivery-spark-data-records` is deprecated, please replace it with the new version: data-delivery-combined-data-records"
+		"warningMessage": "The profile `data-delivery-spark-data-records` is deprecated, please replace it with the new version: data-delivery-combined-data-records\n\u001B[31mThis profile will be **REMOVED** in aiSSEMBLE v1.12.0!\u001B[0m"
 	},
 	{
 		"name": "aissemble-data-records-separate-module",

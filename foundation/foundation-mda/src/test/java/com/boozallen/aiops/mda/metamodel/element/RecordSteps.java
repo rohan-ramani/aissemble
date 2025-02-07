@@ -181,19 +181,25 @@ public class RecordSteps extends AbstractModelInstanceSteps {
         saveRecordToFile(newRecord);
     }
 
+    @Given("a valid record without data access configuration")
+    public void a_valid_record_without_data_access_configuration() {
+        RecordElement newRecord = createNewRecordWithNameAndPackage("DataAccessDefaultTest", BOOZ_ALLEN_PACKAGE);
+        saveRecordToFile(newRecord);
+    }
+
     @Given("a valid record with data access configuration")
     public void a_valid_record_with_data_access_configuration() {
-        RecordElement newRecord = createNewRecordWithNameAndPackage("DataAccessEnabledTest", BOOZ_ALLEN_PACKAGE);
+        RecordElement newRecord = createNewRecordWithNameAndPackage("DataAccessDisabledDefaultTest", BOOZ_ALLEN_PACKAGE);
         DataAccessElement dataAccess = new DataAccessElement();
         newRecord.setDataAccess(dataAccess);
         saveRecordToFile(newRecord);
     }
 
-    @Given("a valid record with data access disabled")
-    public void a_valid_record_with_data_access_disabled() {
-        RecordElement newRecord = createNewRecordWithNameAndPackage("DataAccessDisabledTest", BOOZ_ALLEN_PACKAGE);
+    @Given("a valid record with data access enabled")
+    public void a_valid_record_with_data_access_enabled() {
+        RecordElement newRecord = createNewRecordWithNameAndPackage("DataAccessEnabledTest", BOOZ_ALLEN_PACKAGE);
         DataAccessElement dataAccess = new DataAccessElement();
-        dataAccess.setEnabled(false);
+        dataAccess.setEnabled(true);
         newRecord.setDataAccess(dataAccess);
         saveRecordToFile(newRecord);
     }
@@ -312,12 +318,12 @@ public class RecordSteps extends AbstractModelInstanceSteps {
 
     @Then("the record is available and has data access enabled")
     public void the_record_is_available_and_has_data_access_enabled() {
-        assertTrue("Expected data access to be enabled for the record!", record.getDataAccess().isEnabled());
+        assertTrue("Expected data access to be enabled for the record!", record.isDataAccessEnabled());
     }
 
     @Then("the record is available and has data access disabled")
     public void the_record_is_available_and_has_data_access_disabled() {
-        assertFalse("Expected data access to be disabled for the record!", record.getDataAccess().isEnabled());
+        assertFalse("Expected data access to be disabled for the record!", record.isDataAccessEnabled());
     }
 
     private void assertNoErrorsEncountered() {

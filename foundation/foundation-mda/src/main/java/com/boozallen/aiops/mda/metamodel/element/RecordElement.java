@@ -87,6 +87,15 @@ public class RecordElement extends NamespacedMetamodelElement implements Record 
     /**
      * {@inheritDoc}
      */
+    @JsonIgnore
+    @Override
+    public boolean isDataAccessEnabled() {
+        return getDataAccess() != null && getDataAccess().isEnabled();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @JsonInclude(Include.NON_NULL)
     @Override
     public List<RecordField> getFields() {

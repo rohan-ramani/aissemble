@@ -45,7 +45,7 @@ public class PythonRecordRelation extends BaseRecordRelationDecorator {
      * @return generated class import
      */
     public Set<String> getGeneratedClassImport() {
-        Set<String> relationImports = new HashSet();
+        Set<String> relationImports = new HashSet<>();
         String pythonPackage = "...record." + getSnakeCaseName();
         String generatedClassType = pythonPackage + "." + wrapped.getName();
         relationImports.add(PythonElementUtils.derivePythonImport(generatedClassType));

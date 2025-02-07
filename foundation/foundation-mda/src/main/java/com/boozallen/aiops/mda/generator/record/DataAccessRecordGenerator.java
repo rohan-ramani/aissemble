@@ -32,6 +32,6 @@ public class DataAccessRecordGenerator extends JavaRecordGenerator {
      */
     @Override
     protected boolean shouldGenerateFile(GenerationContext generationContext, Record currentRecord) {
-        return currentRecord.getDataAccess() == null || currentRecord.getDataAccess().isEnabled();
+        return currentRecord.isDataAccessEnabled();
     }
 }

@@ -129,25 +129,37 @@ profile and appName set. This is helpful when deploying applications that do not
 (e.g. Keycloak) or when leveraging pre-built containers that do not require a Docker build (e.g. Kafka). Below is a
 list of available profiles that Foundation supports for Kubernetes generation.
 
-=== Available Profiles (Kubernetes)
+=== [[k8s_profiles]]Available Profiles (Kubernetes)
 [width="100%",options="header"]
 |======
-|Component                              | Profile
-|Bill of Materials                      | `aissemble-bom-deploy`
-|Bias Detection                         | `bias-detection-deploy`
-|Bias Detection Metrics Python Services | `bias-detection-metrics-python-services`
-|Hive Metastore DB                      | `hive-metastore-db-deploy`
-|Hive Metastore Service                 | `hive-metastore-service-deploy`
-|Inference                              | `inference-deploy`
-|Kafka Connect                          | `kafka-connect-deploy`
-|Keycloak                               | `keycloak-deploy`
-|Nexus                                  | `nexus-deploy`
-|Spark Infrastructure                   | `aissemble-spark-infrastructure-deploy`
-|Spark Operator                         | `aissemble-spark-operator-deploy`
-|Model Training API                     | `training-deploy`
-|Vault                                  | `vault-deploy`
-|Versioning                             | `versioning-deploy`
-|Zookeeper Alert                        | `zookeeper-alert-deploy`
+|Component                              | Profile                                  | ReadMe
+|[[k8s_airflow]]Airflow                 | `airflow-deploy-v2`                      |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-airflow-chart/README.md[Airflow,role=external,window=_blank]
+|Bias Detection                         | `bias-detection-deploy`                  |N/A
+|Bias Detection Metrics Python Services | `bias-detection-metrics-python-services` |N/A
+|Bill of Materials                      | `aissemble-bom-deploy`                   |N/A
+|Configuration Store                    | `configuration-store-deploy-v2`          |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-configuration-store-chart/README.md[Configuration Store,role=external,window=_blank]
+|[[k8s_trino]]Data Access (Trino)       | `data-access-trino-deploy-v2`            |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-trino-chart/README.md[Trino,role=external,window=_blank]
+|[[k8s_es]]ElasticSearch                | `elasticsearch-deploy-v2`                |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-elasticsearch-chart/README.md[ElasticSearch,role=external,window=_blank]
+|ElasticSearch Operator                 | `elasticsearch-operator-deploy-v2`       |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-elasticsearch-operator-chart/README.md[ElasticSearch Operator,role=external,window=_blank]
+|[[k8s_infer]]Inference                 | `inference-deploy-v2`                    |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-inference-chart/README.md[Inference,role=external,window=_blank]
+|[[k8s_kafka]]Kafka                     | `kafka-deploy-v2`                        |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-kafka-chart/README.md[Kafka,role=external,window=_blank]
+|[[k8s_kafka_conn]]Kafka Connect        | `kafka-connect-deploy`                   |N/A
+|[[k8s_keycloak]]Keycloak               | `keycloak-deploy-v2`                     |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-keycloak-chart/README.md[Keycloak,role=external,window=_blank]
+|Lineage HTTP Consumer                  | `lineage-http-consumer-deploy-v2`        |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-lineage-http-consumer-chart/README.md[Lineage HTTP Consumer,role=external,window=_blank]
+|[[k8s_metadata]]Metadata               | `metadata-deploy-v2`                     |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-metadata-chart/README.md[Metadata,role=external,window=_blank]
+|[[k8s_mlflow]]MLflow                   | `mlflow-deploy-v2`                       |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-mlflow-chart/README.md[MLFlow,role=external,window=_blank]
+|Model Training API                     | `training-deploy`                        |N/A
+|Neo4j                                  | `neo4j-deploy`                           |N/A
+|Nexus                                  | `nexus-deploy`                           |N/A
+|Pipeline Invocation Service            | `pipeline-invocation-service-v2`         |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/extensions-helm-pipeline-invocation/aissemble-pipeline-invocation-app-chart/README.md[Pipeline Invocation Service,role=external,window=_blank]
+|[[k8s_pdp]]Policy Decision Point       | `policy-decision-point-deploy-v2`        |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-policy-decision-point-chart/README.md[Policy Decision Point,role=external,window=_blank]
+|Postgres                               | `postgres-deploy`                        |N/A
+|[[k8s_quarkus]]Quarkus                 | `quarkus-deploy-v2`                      |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-quarkus-chart/README.md[Quarkus,role=external,window=_blank]
+|[[k8s_s3]]S3 Local                     | `s3local-deploy-v2`                      |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-localstack-chart/README.md[S3 Local,role=external,window=_blank]
+|[[k8s_spark_inf]]Spark Infrastructure  | `spark-infrastructure-deploy-v2`         |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/extensions-helm-spark-infrastructure/README.md[Spark Infrastructure,role=external,window=_blank]
+|[[k8s_spark_op]]Spark Operator         | `spark-operator-deploy-v2`               |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-spark-operator-chart/README.md[Spark Operator,role=external,window=_blank]
+|Vault                                  | `vault-deploy`                           |N/A
+|[[k8s_versioning]]Versioning           | `versioning-deploy-v2`                   |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-versioning-chart/README.md[Versioning,role=external,window=_blank]
 |======
 
 === Other Available Kubernetes Artifacts
@@ -158,7 +170,7 @@ projects, however, their helm charts are available to use for deployments:
 |======
 |Application    | ReadMe
 |SealedSecrets  | https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-sealed-secrets-chart/README.md[SealedSecrets,role=external,window=_blank]
-|aiSSEMBLE Infrastructure  | https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-infrastructure-chart/README.md[aiSSEMBLE Infrastructure,role=external,window=_blank]
+|[[k8s_inf]]aiSSEMBLE Infrastructure  | https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-infrastructure-chart/README.md[aiSSEMBLE Infrastructure,role=external,window=_blank]
 |======
 
 === Kubernetes Artifacts Upgrade
@@ -184,22 +196,27 @@ following these steps:
 
 TIP: If your project is under version control, we recommend using a diff tool to migrate the values.yaml files.
 
-==== Available V2 Profiles (Kubernetes)
+==== Available V2 Upgrades
 [width="100%",options="header"]
 |======
-|Application                            | Fermenter Profile                          | ReadMe
-|Airflow                                | `airflow-deploy-v2`                        |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-airflow-chart/README.md[Airflow,role=external,window=_blank]
-|Configuration Store                    | `configuration-store-deploy-v2`            |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-configuration-store-chart/README.md[Configuration Store,role=external,window=_blank]
-|Data Access                            | `data-access-trino-deploy-v2`              |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-trino-chart/README.md[Trino,role=external,window=_blank]
-|Kafka                                  | `kafka-deploy-v2`                          |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-kafka-chart/README.md[Kafka,role=external,window=_blank]
-|Lineage HTTP Consumer                  | `lineage-http-consumer-deploy-v2`          |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-lineage-http-consumer-chart/README.md[Lineage HTTP Consumer,role=external,window=_blank]
-|Metadata                               | `metadata-deploy-v2`                       |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-metadata-chart/README.md[Metadata,role=external,window=_blank]
-|MLflow                                 | `mlflow-deploy-v2`                         |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-mlflow-chart/README.md[MLFlow,role=external,window=_blank]
-|Pipeline Invocation Service            | `pipeline-invocation-service-v2`           |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/extensions-helm-pipeline-invocation/aissemble-pipeline-invocation-app-chart/README.md[Pipeline Invocation Service,role=external,window=_blank]
-|Policy Decision Point                  | `policy-decision-point-deploy-v2`          |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-policy-decision-point-chart/README.md[Policy Decision Point,role=external,window=_blank]
-|S3 Local                               | `s3local-deploy-v2`                        |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-localstack-chart/README.md[S3 Local,role=external,window=_blank]
-|Spark Infrastructure                   | `aissemble-spark-infrastructure-deploy-v2` |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/extensions-helm-spark-infrastructure/README.md[Spark Infrastructure,role=external,window=_blank]
-|Spark Operator                         | `aissemble-spark-operator-deploy-v2`       |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-spark-operator-chart/README.md[Spark Operator,role=external,window=_blank]
+|Old Profile                             | New Profile
+|aissemble-airflow-deploy                |<<k8s_airflow,airflow-deploy-v2>>
+|aissemble-mlflow-deploy                 |<<k8s_mlflow,mlflow-deploy-v2>>
+|aissemble-policy-decision-point-deploy  |<<k8s_pdp,policy-decision-point-deploy-v2>>
+|aissemble-spark-infrastructure-deploy   |<<k8s_spark_inf,spark-infrastructure-deploy-v2>>
+|aissemble-spark-operator-deploy         |<<k8s_spark_op,spark-operator-deploy-v2>>
+|data-access-deploy                      |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-lineage-http-consumer-chart/README.md[data-access-deploy-v2,role=external,window=_blank] __(Consider migrating to <<k8s_trino,Trino>> instead)__
+|elasticsearch-deploy                    |<<k8s_es,elasticsearch-deploy-v2>>
+|hive-metastore-db-deploy                |<<k8s_spark_inf,spark-infrastructure-deploy-v2>>
+|hive-metastore-service-deploy           |<<k8s_spark_inf,spark-infrastructure-deploy-v2>>
+|inference-deploy                        |<<k8s_infer,inference-deploy-v2>>
+|jenkins-deploy                          |N/A, use <<k8s_inf,aiSSEMBLE Infrastructure>> directly
+|kafka-deploy                            |<<k8s_kafka,kafka-deploy-v2>>
+|kafka-connect-deploy                    |<<k8s_kafka_conn,kafka-connect-deploy-v2>>
+|keycloak-deploy                         |<<k8s_keycloak,keycloak-deploy-v2>>
+|metadata-deploy                         |<<k8s_metadata,metadata-deploy-v2>>
+|s3local-deploy                          |<<k8s_s3,s3local-deploy-v2>>
+|versioning-deploy                       |<<k8s_versioning,versioning-deploy-v2>>
 |======
 
 //todo drop example file replace with link to dockerfile build docs

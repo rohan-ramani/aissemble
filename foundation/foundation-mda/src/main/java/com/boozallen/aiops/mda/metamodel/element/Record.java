@@ -44,6 +44,13 @@ public interface Record extends NamespacedMetamodel {
     DataAccess getDataAccess();
 
     /**
+     * Returns whether data access is enabled, defaulting if data access is undefined
+     *
+     * @return data access enabled
+     */
+    boolean isDataAccessEnabled();
+
+    /**
      * Returns the fields contained in this field container.
      * 
      * @return fields
