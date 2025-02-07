@@ -32,7 +32,8 @@ import static org.technologybrewery.baton.util.FileUtils.readAllFileLines;
 import static org.technologybrewery.baton.util.FileUtils.writeFile;
 
 /**
- * This migration enables Server-Side Diff Strategy within ArgoCD for the Spark Infrastructure resource so that changes made by the Universal Config Store mutating webhook are ignored in ArgoCD diffs.
+ * This migration enables Server-Side Diff Strategy within ArgoCD for the Spark Infrastructure resource so that changes
+ * made by the Universal Config Store mutating webhook are ignored in ArgoCD diffs.
  */
 public class SparkInfrastructureUniversalConfigServerSideDiffYAMLMigration extends AbstractAissembleMigration {
     private static final Logger logger = LoggerFactory.getLogger(SparkInfrastructureUniversalConfigServerSideDiffYAMLMigration.class);

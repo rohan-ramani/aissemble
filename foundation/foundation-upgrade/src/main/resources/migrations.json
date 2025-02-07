@@ -70,6 +70,26 @@
             "includes": ["*-deploy/src/main/resources/apps/*/values-dev.yaml"]
           }
         ]
+      },
+      {
+        "name": "data-access-default-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.v1_11_0.DataAccessDefaultMigration",
+        "fileSets": [
+          {
+            "includes": ["*-pipeline-models/src/main/resources/records/*.json"]
+          }
+        ]
+      },
+      {
+        "name": "spark-infrastructure-server-side-label-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.v1_11_0.SparkInfrastructureUniversalConfigServerSideDiffYAMLMigration",
+        "fileSets": [
+          {
+            "includes": [
+              "*-deploy/src/main/resources/templates/spark-infrastructure.yaml"
+            ]
+          }
+        ]
       }
     ]
   },
@@ -106,17 +126,6 @@
               "**/metadata/values.yaml",
               "**/model-training-api/values.yaml",
               "**/pipeline-invocation-service/values.yaml"
-            ]
-          }
-        ]
-      },
-      {
-        "name": "spark-infrastructure-universal-config-server-side-diff-yaml-migration",
-        "implementation": "com.boozallen.aissemble.upgrade.migration.v1_11_0.SparkInfrastructureUniversalConfigServerSideDiffYAMLMigration",
-        "fileSets": [
-          {
-            "includes": [
-              "*-deploy/src/main/resources/templates/spark-infrastructure.yaml"
             ]
           }
         ]

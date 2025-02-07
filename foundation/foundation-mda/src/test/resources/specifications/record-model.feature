@@ -181,15 +181,20 @@ Feature: Specify record of semantically defined types
       | singleSlaInDays              | oneZScorePlusAveragePolicy |
       | doubleSlaInDays              | noOpPolicy                 |
 
-  Scenario: Data Access is enabled by default for a record
-    Given a valid record with data access configuration
-    When records are read
-    Then the record is available and has data access enabled
-
-  Scenario: Data Access can be disabled for a record
-    Given a valid record with data access disabled
+  Scenario: Data Access is disabled by default for a record with "dataAccess" is not specified
+    Given a valid record without data access configuration
     When records are read
     Then the record is available and has data access disabled
+
+  Scenario: Data Access is disabled by default for a record when "dataAccess.enabled" is not specified
+    Given a valid record with data access configuration
+    When records are read
+    Then the record is available and has data access disabled
+
+  Scenario: Data Access can be enabled for a record
+    Given a valid record with data access enabled
+    When records are read
+    Then the record is available and has data access enabled
 
   Scenario: Pyspark support is enabled for a Python record
     Given a valid record with pyspark support

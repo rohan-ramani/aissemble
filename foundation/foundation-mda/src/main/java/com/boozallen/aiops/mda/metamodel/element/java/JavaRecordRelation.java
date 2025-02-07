@@ -36,7 +36,7 @@ public class JavaRecordRelation extends BaseRecordRelationDecorator {
      * @return generated class import
      */
     public Set<String> getGeneratedClassImport() {
-        Set<String> relationImports = new HashSet();
+        Set<String> relationImports = new HashSet<>();
         if (isOneToManyRelation())
            relationImports.add(LIST_IMPORT);
         if (!this.isNullable()) {

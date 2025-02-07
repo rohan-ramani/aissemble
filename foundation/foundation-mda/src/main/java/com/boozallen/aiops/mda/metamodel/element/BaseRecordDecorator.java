@@ -103,6 +103,14 @@ public class BaseRecordDecorator implements Record {
      * {@inheritDoc}
      */
     @Override
+    public boolean isDataAccessEnabled() {
+        return wrapped.isDataAccessEnabled();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<RecordField> getFields() {
         return wrapped.getFields();
     }

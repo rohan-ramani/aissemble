@@ -1,10 +1,10 @@
 # Major Additions
 
 ## Service account support for spark-infrastructure
-To have more flexible and secure way to authenticate AWS service, we add service account support for spark-infrastructure helm chart to enable the AWS IRSA (IAM Roles Service Account) authentication. See _**How to Upgrade**_ for more information.
+To have a more flexible and secure way to authenticate with AWS services, the spark-infrastructure helm chart has been enhanced to support [AWS IRSA](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) (IAM Roles for Service Accounts) authentication. See the _**How to Upgrade**_ for more information.
 
 ## Path to Production Alignment
-To better align development processes with processes in CI/CD and higher environments, we no longer recommend using Tilt live-reloading.  As such, upgrading projects should consider narrowing the scope of their Tiltfile. See _**How to Upgrade**_ for more information.
+To better align development processes with processes in CI/CD and higher environments, we no longer recommend using Tilt live-reloading.  As such, upgrading projects should consider narrowing the scope of their Tiltfile. These changes will also help smooth the transition as further alignment is brought to the path to production. See _**How to Upgrade**_ for more information.
 
 ## Data Access Upgrade
 Data access through [GraphQL](https://graphql.org/) has been deprecated and replaced with [Trino](https://trino.io/). Trino is optimized for performing queries against large datasets by leveraging a distributed architecture that processes queries in parallel, enabling fast and scalable data retrieval.
@@ -64,16 +64,20 @@ The following steps will upgrade your project to `1.11`. These instructions cons
 ## Automatic Upgrades
 To reduce burden of upgrading aiSSEMBLE, the Baton project is used to automate the migration of some files to the new version.  These migrations run automatically when you build your project, and are included by default when you update the `build-parent` version in your root POM.  Below is a description of all of the Baton migrations that are included with this version of aiSSEMBLE.
 
-| Migration Name                                                         | Description                                                                                                                                                                            |
-|------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| upgrade-tiltfile-aissemble-version-migration                           | Updates the aiSSEMBLE version within your project's Tiltfile                                                                                                                           |
-| upgrade-v2-chart-files-aissemble-version-migration                     | Updates the Helm chart dependencies within your project's deployment resources (`<YOUR_PROJECT>-deploy/src/main/resources/apps/`) to use the latest version of the aiSSEMBLE           |
-| upgrade-v1-chart-files-aissemble-version-migration                     | Updates the docker image tags within your project's deployment resources (`<YOUR_PROJECT>-deploy/src/main/resources/apps/`) to use the latest version of the aiSSEMBLE                 |
-| pipeline-invocation-service-template-migrtion                          | Include the helm.valueFiles param to ArgoCD pipeline-invocation-service template                                                                                                       |                                                                                                                                                      
-| docker-module-pom-dependency-type-migration                            | Updates the maven pipeline dependency type within your project's sub docker module pom file(`<YOUR_PROJECT>-docker/*-docker/pom.xml`) to fix the build cache checksum calculation issue |
-| enable-maven-docker-build-migration                                    | Remove the maven fabric8 plugin `skip` configuration within your project's docker module pom file(`<YOUR_PROJECT>-docker/pom.xml`) to enable the maven docker build                    |
-| spark-worker-docker-image-tag-migration                                | Updated the worker docker image tag to use project version                                                                                                                             |
-| spark-infrastructure-universal-config-server-side-diff-yaml-migration  | Enables the Server-Side Diff Strategy within ArgoCD for the Spark Infrastructure resource so that changes made by the Universal Config Store mutating webhook are ignored                            |
+| Migration Name                                     | Description                                                                                                                                                                             |
+|----------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| upgrade-tiltfile-aissemble-version-migration       | Updates the aiSSEMBLE version within your project's Tiltfile                                                                                                                            |
+| upgrade-v2-chart-files-aissemble-version-migration | Updates the Helm chart dependencies within your project's deployment resources (`<YOUR_PROJECT>-deploy/src/main/resources/apps/`) to use the latest version of the aiSSEMBLE            |
+| upgrade-v1-chart-files-aissemble-version-migration | Updates the docker image tags within your project's deployment resources (`<YOUR_PROJECT>-deploy/src/main/resources/apps/`) to use the latest version of the aiSSEMBLE                  |
+| pipeline-invocation-service-template-migrtion      | Include the helm.valueFiles param to ArgoCD pipeline-invocation-service template                                                                                                        |                                                                                                                                                      
+| docker-module-pom-dependency-type-migration        | Updates the maven pipeline dependency type within your project's sub docker module pom file(`<YOUR_PROJECT>-docker/*-docker/pom.xml`) to fix the build cache checksum calculation issue |
+| enable-maven-docker-build-migration                | Remove the maven fabric8 plugin `skip` configuration within your project's docker module pom file(`<YOUR_PROJECT>-docker/pom.xml`) to enable the maven docker build                     |
+| ml-pipeline-docker-pom-migration                   | Adds pipeline ML pipeline dependencies to relevant docker POMs to improve the Maven build cache functionality                                                                           |
+| training-api-image-tag-migration                   | Update training docker image tags to use project version                                                                                                                                |
+| inference-docker-image-tag-migration               | Update inference docker image tags to use project version                                                                                                                               |
+| spark-worker-docker-image-tag-migration            | Updates Spark docker image tags to use project version                                                                                                                                  |
+| spark-infrastructure-server-side-label-migration   | Enables the Server-Side Diff Strategy within ArgoCD for the Spark Infrastructure resource so that changes made by the Universal Config Store mutating webhook are ignored               |
+| data-access-default-migration                      | Migrates Record metamodels that were relying on the default Data Access settings to preserve semantics with the updated default value                                                   |
 
 To deactivate any of these migrations, add the following configuration to the `baton-maven-plugin` within your root `pom.xml`:
 

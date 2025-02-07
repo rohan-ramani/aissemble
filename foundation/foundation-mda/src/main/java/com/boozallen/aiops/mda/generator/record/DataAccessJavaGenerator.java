@@ -57,7 +57,7 @@ public class DataAccessJavaGenerator extends AbstractJavaGenerator {
     private List<JavaRecord> getDataAccessEnabledRecords(Map<String, Record> recordMap) {
         List<JavaRecord> dataAccessEnabledRecords = new ArrayList<>();
         for (Record record : recordMap.values()) {
-            if (record.getDataAccess() == null || record.getDataAccess().isEnabled()) {
+            if (record.isDataAccessEnabled()) {
                 dataAccessEnabledRecords.add(new JavaRecord(record));
             }
         }

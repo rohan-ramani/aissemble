@@ -86,8 +86,7 @@ public class DataAccessModuleGenerator extends AbstractMavenModuleGenerator {
             for (Record record : recordMap.values()) {
                 // generate if there is at least one record that has not
                 // explicitly disabled data access
-                DataAccess dataAccess = record.getDataAccess();
-                if (dataAccess == null || dataAccess.isEnabled()) {
+                if (record.isDataAccessEnabled()) {
                     shouldGenerateModule = true;
                     break;
                 }

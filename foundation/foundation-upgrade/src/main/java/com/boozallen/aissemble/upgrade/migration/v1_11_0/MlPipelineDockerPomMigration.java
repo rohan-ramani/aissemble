@@ -30,7 +30,8 @@ import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.technologybrewery.baton.util.pom.LocationAwareMavenReader.END;
 
 /**
- * This migration updates machine learning pipeline docker POM to include step artifact dependency for resolving the build cache dependency check issue.
+ * This migration updates machine learning pipeline docker POM to include step artifact dependency for resolving the
+ * build cache dependency check issue.
  */
 public class MlPipelineDockerPomMigration extends AbstractPomMigration {
 

@@ -94,8 +94,8 @@ public class SparkDockerPomGenerator extends AbstractMavenModuleGenerator {
             final String sparkInfrastructureAppName = "spark-infrastructure";
 
             manualActionNotificationService.addNoticeToAddModuleToParentBuild(context, sparkDockerArtifactId, "docker");
-            manualActionNotificationService.addDeployPomMessage(context, "aissemble-spark-operator-deploy-v2", sparkOperatorAppName);
-            manualActionNotificationService.addDeployPomMessage(context, "aissemble-spark-infrastructure-deploy-v2", sparkInfrastructureAppName);
+            manualActionNotificationService.addDeployPomMessage(context, "spark-operator-deploy-v2", sparkOperatorAppName);
+            manualActionNotificationService.addDeployPomMessage(context, "spark-infrastructure-deploy-v2", sparkInfrastructureAppName);
             manualActionNotificationService.addSparkApplicationTiltMessage(context);
             String pipelineArtifactId;
             for (Pipeline pipeline: dataFlowPipelines) {

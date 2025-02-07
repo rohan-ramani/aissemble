@@ -16,5 +16,5 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * Represents a data access instance.
  */
 @JsonPropertyOrder({ "enabled" })
-public class DataAccessElement extends AbstractEnabledElement implements DataAccess {
+public class DataAccessElement extends AbstractDisabledElement implements DataAccess {
 }
