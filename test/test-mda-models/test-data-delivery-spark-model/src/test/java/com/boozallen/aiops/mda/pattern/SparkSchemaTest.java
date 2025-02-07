@@ -162,8 +162,8 @@ public class SparkSchemaTest {
         }
     }
 
-    @When("spark schema validation is performed on the dataSet")
-    public void sparkSchemaValidationIsPerformedOnTheDataSet() {
+    @When("spark schema validation is performed on the \"City\" dataSet")
+    public void sparkSchemaValidationIsPerformedOnTheCityDataSet() {
         try {
             this.validatedDataSet = this.citySchema.validateDataFrame(this.cityDataSet);
         }catch (Exception e) {
