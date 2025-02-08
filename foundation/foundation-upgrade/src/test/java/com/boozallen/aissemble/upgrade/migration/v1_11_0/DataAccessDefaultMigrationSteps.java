@@ -31,6 +31,36 @@ public class DataAccessDefaultMigrationSteps extends AbstractMigrationTest {
         setTestFileToVersionMigration("DataAccessDefaultMigration", "UndefinedEnabledRecord.json");
     }
 
+    @Given("a root project POM file with inlined disabled migrations")
+    public void aRootProjectPOMFileWithInlinedDisabledMigrations() {
+        setTestFileToVersionMigration("DataAccessDefaultMigration", "InlineExisting.xml");
+    }
+
+    @Given("a root project POM file with disabled migrations")
+    public void aRootProjectPOMFileWithDisabledMigrations() {
+        setTestFileToVersionMigration("DataAccessDefaultMigration", "Existing.xml");
+    }
+
+    @Given("a root project POM file with a Baton configuration")
+    public void aRootProjectPOMFileWithABatonConfiguration() {
+        setTestFileToVersionMigration("DataAccessDefaultMigration", "Config.xml");
+    }
+
+    @Given("a root project POM file")
+    public void aRootProjectPOMFile() {
+        setTestFileToVersionMigration("DataAccessDefaultMigration", "pom.xml");
+    }
+
+    @Given("a root project POM file with this migration disabled inline")
+    public void aRootProjectPOMFileWithThisMigrationDisabledInline() {
+        setTestFileToVersionMigration("DataAccessDefaultMigration", "InlineDisabled.xml");
+    }
+
+    @Given("a root project POM file with this migration disabled")
+    public void aRootProjectPOMFileWithThisMigrationDisabled() {
+        setTestFileToVersionMigration("DataAccessDefaultMigration", "Disabled.xml");
+    }
+
     @When("the data access default migration executes")
     public void theDataAccessDefaultMigrationExecutes() {
         DataAccessDefaultMigration migration = new DataAccessDefaultMigration();
@@ -45,5 +75,10 @@ public class DataAccessDefaultMigrationSteps extends AbstractMigrationTest {
     @Then("the record is updated to set dataAccess.enabled to true")
     public void theRecordIsUpdatedToSetDataAccessEnabledToTrue() {
         assertTestFileMatchesExpectedFile("Data Access not added correctly to record file");
+    }
+
+    @Then("the POM is updated to disable the {string} migration")
+    public void thePOMIsUpdatedToDisableTheMigration(String arg0) {
+        assertTestFileMatchesExpectedFile("Data Access Default migration not disabled correctly in POM");
     }
 }
