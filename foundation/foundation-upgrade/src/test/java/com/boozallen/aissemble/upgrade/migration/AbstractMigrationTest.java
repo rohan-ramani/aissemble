@@ -72,7 +72,7 @@ public abstract class AbstractMigrationTest {
     }
 
     protected void setTestFileToVersionMigration(String migrationName, String fileName) {
-        testFile = getTestFile(Path.of("v1_11_0", migrationName, "migration", fileName).toString());
+        testFile = getTestFile(Path.of("version-specific", migrationName, "migration", fileName).toString());
     }
 
     protected void performMigration(AbstractAissembleMigration migration) {
