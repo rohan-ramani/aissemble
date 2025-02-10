@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.boozallen.aissemble</groupId>
         <artifactId>extensions-alerting</artifactId>
-        <version>1.11.0-SNAPSHOT</version>
+        <version>1.12.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>extensions-alerting-slack</artifactId>
@@ -17,7 +17,7 @@
         <dependency>
             <groupId>com.boozallen.aissemble</groupId>
             <artifactId>foundation-alerting</artifactId>
-            <version>${version.aissemble}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.technologybrewery.krausening</groupId>
