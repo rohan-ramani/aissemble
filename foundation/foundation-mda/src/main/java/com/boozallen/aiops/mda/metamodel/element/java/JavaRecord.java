@@ -104,20 +104,6 @@ public class JavaRecord extends BaseRecordDecorator {
         return StringUtils.isNotBlank(javaField.getProtectionPolicy()) && !javaField.hasOverriddenProtectionPolicy();
     }
 
-    /**
-     * Returns the data-access related imports for this java record.
-     * 
-     * @return data-access imports
-     */
-    public Set<String> getDataAccessImports() {
-        for (RecordField field : getFields()) {
-            JavaRecordField javaField = (JavaRecordField) field;
-            addSimpleTypeImport(javaField);
-        }
-
-        return imports;
-    }
-
     private void addFieldImports(JavaRecordField field) {
         addDictionaryTypeImports(field, false);
 

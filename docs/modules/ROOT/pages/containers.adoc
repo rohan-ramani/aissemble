@@ -205,7 +205,7 @@ TIP: If your project is under version control, we recommend using a diff tool to
 |aissemble-policy-decision-point-deploy  |<<k8s_pdp,policy-decision-point-deploy-v2>>
 |aissemble-spark-infrastructure-deploy   |<<k8s_spark_inf,spark-infrastructure-deploy-v2>>
 |aissemble-spark-operator-deploy         |<<k8s_spark_op,spark-operator-deploy-v2>>
-|data-access-deploy                      |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-lineage-http-consumer-chart/README.md[data-access-deploy-v2,role=external,window=_blank] __(Consider migrating to <<k8s_trino,Trino>> instead)__
+|data-access-deploy                      |<<k8s_trino,data-access-trino-deploy-v2>>
 |elasticsearch-deploy                    |<<k8s_es,elasticsearch-deploy-v2>>
 |hive-metastore-db-deploy                |<<k8s_spark_inf,spark-infrastructure-deploy-v2>>
 |hive-metastore-service-deploy           |<<k8s_spark_inf,spark-infrastructure-deploy-v2>>

@@ -26,7 +26,6 @@
         <module>foundation-lineage</module>
         <module>foundation-security</module>
         <module>foundation-encryption</module>
-        <module>foundation-data-access</module>
         <module>foundation-metadata</module>
         <module>foundation-transform</module>
         <module>foundation-messaging</module>

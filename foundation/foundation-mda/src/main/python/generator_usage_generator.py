@@ -169,15 +169,25 @@ class GeneratorDetails:
         lines.append('     */\n\n')
         return lines
 
+
 def removeprefix(string, prefix):
     if string.startswith(prefix):
         string = string[len(prefix):]
     return string
 
+
 def removesuffix(string, suffix):
     if string.endswith(suffix):
         string = string[:len(string)-len(suffix)]
     return string
+
+
+def read_profiles(module_root):
+    """Reads profiles.json into a JSON structure"""
+    with open(module_root + '/src/main/resources/profiles.json', 'r') as profilesFile:
+        profiles_str = profilesFile.read()
+        return json.JSONDecoder().decode(profiles_str)
+
 
 def read_targets(module_root):
     """Reads targets.json into a JSON structure"""
@@ -289,19 +299,130 @@ def copy_remaining(javaFile, tempFile):
         data = javaFile.read(1024)
 
 
+def extract_targets(profiles):
+    """Returns a list of target nams referenced by the given profiles"""
+    profiles_w_targets = [p for p in profiles if 'targetReferences' in p]
+    used_targets = [t['name'] for p in profiles_w_targets for t in p['targetReferences']]
+    return used_targets
+
+
+def extract_templates(targets):
+    """Returns a list of template paths referenced by the given targets, split by whether the path is parameterized"""
+    used_templates = []
+    param_templates = []
+    for target in targets:
+        template = removeprefix(target['templateName'], 'templates/')
+        if '${' in template:
+            param_templates.append(template)
+        else:
+            used_templates.append(template)
+    return used_templates, param_templates
+
+
+def unused_templates(templateroot, targets, known_embedded):
+    """Finds all files under the template root that aren't referenced by a target. Excludes any templates which may
+    be part of a target with a parameterized template path and templates which are known to be embedded in other
+    templates."""
+    unused = []
+    used_templates, param_templates = extract_templates(targets)
+    param_templates = [os.path.basename(path) for path in param_templates]
+    for root, dirs, files in os.walk(templateroot):
+        for filename in files:
+            fullpath = os.path.join(root, filename)
+            template = removeprefix(fullpath, templateroot)
+            filename = os.path.basename(fullpath)
+            if (not template.startswith('notifications/')
+                    and template not in known_embedded
+                    and filename not in param_templates
+                    and template not in used_templates):
+                unused.append(template)
+    return unused
+
+
+def missing_templates(templateroot, targets, known_embedded):
+    """For all targets which do not have a parameterized template path."""
+    missing = []
+    used_templates, param_templates = extract_templates(targets)
+    used_templates.extend(known_embedded)
+    for template in used_templates:
+        fullpath = os.path.join(templateroot, template)
+        if not os.path.isfile(fullpath):
+            missing.append(template)
+    return missing
+
+
+def unused_targets(profiles, targets):
+    """Returns a list of target names that are in the given targets but not referenced by any of the given profiles"""
+    used_targets = extract_targets(profiles)
+    available_targets = [t['name'] for t in targets]
+    return [t for t in available_targets if t not in used_targets]
+
+
+def missing_targets(profiles, targets):
+    """Returns a list of target names that are referenced by a given profile but not in the set of given targets"""
+    used_targets = extract_targets(profiles)
+    available_targets = [t['name'] for t in targets]
+    return [t for t in used_targets if t not in available_targets]
+
+
 def update_generators():
     module_root = sys.argv[1]
     javaroot = module_root + "/src/main/java/"
+    templateroot = module_root + "/src/main/resources/templates/"
+    profiles_json = read_profiles(module_root)
     targets_json = read_targets(module_root)
     generators = map_generators(targets_json)
 
-    unused = mark_unused(javaroot, generators)
+    unused = sorted(mark_unused(javaroot, generators))
     for cls in unused:
         print('[', Term.Fg.YELLOW, Term.BOLD, 'WARNING', Term.END, '] ',
               'The generator class ',
               Term.Bg.MAGENTA, Term.Fg.Bright.WHITE, Term.BOLD, cls, Term.END,
               ' is not used by any target in targets.json!!', sep='')
     mark_usages(javaroot, generators)
+
+    fail = False
+    known_embedded_templates = [
+        'data-delivery-common/pipeline.chart.pom.configuration.vm',
+        'data-delivery-pyspark/encryption.py.vm',
+        'data-delivery-pyspark/persist.py.vm',
+        'data-delivery-pyspark/rdbms.config.extension.py.vm',
+        'data-delivery-spark/encryption.java.vm',
+        'data-delivery-spark/persist.java.vm',
+        'python.lineage.py.vm'
+    ]
+    unused = sorted(unused_templates(templateroot, targets_json, known_embedded_templates))
+    for template in unused:
+        fail = True
+        print('[', Term.Fg.YELLOW, Term.BOLD, 'WARNING', Term.END, '] ',
+              'The template ',
+              Term.Bg.MAGENTA, Term.Fg.Bright.WHITE, Term.BOLD, template, Term.END,
+              ' is not used by any target in targets.json!!', sep='')
+
+    unused = sorted(unused_targets(profiles_json, targets_json))
+    for target in unused:
+        fail = True
+        print('[', Term.Fg.RED, Term.BOLD, 'ERROR', Term.END, '] ',
+              'The target ',
+              Term.Bg.MAGENTA, Term.Fg.Bright.WHITE, Term.BOLD, target, Term.END,
+              ' is not used by any profile in profiles.json!!', sep='')
+
+    missing = sorted(missing_templates(templateroot, targets_json, known_embedded_templates))
+    for template in missing:
+        fail = True
+        print('[', Term.Fg.RED, Term.BOLD, 'ERROR', Term.END, '] ',
+              'A target references ',
+              Term.Bg.MAGENTA, Term.Fg.Bright.WHITE, Term.BOLD, template, Term.END,
+              ' but it is not present in ', templateroot, '!!', sep='')
+    missing = missing_targets(profiles_json, targets_json)
+    for target in missing:
+        fail = True
+        print('[', Term.Fg.RED, Term.BOLD, 'ERROR', Term.END, '] ',
+              'A profile references ',
+              Term.Bg.MAGENTA, Term.Fg.Bright.WHITE, Term.BOLD, target, Term.END,
+              ' but it is not defined in targets.json!!', sep='')
+    if fail:
+        exit(1)
 
 
 if __name__ == '__main__':

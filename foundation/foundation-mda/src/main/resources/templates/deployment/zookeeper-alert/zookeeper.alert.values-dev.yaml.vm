@@ -1,3 +1,0 @@
-# Dev values for zookeeper alert.
-image:
-  dockerRepo: ""

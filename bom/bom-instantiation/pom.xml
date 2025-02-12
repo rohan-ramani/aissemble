@@ -53,11 +53,6 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>foundation-data-access</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
                 <artifactId>foundation-messaging-java</artifactId>
                 <version>${project.version}</version>
             </dependency>

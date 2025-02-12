@@ -1,4 +1,0 @@
-# Dev values for versioning.
-image:
-  imagePullPolicy: IfNotPresent
-  dockerRepo: ""
