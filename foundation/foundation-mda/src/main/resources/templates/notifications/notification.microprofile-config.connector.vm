@@ -1,0 +1,6 @@
+#set ($comment = '#')
+#set ($header = '###')
+$header $description configs $header
+mp.messaging.outgoing.${channel}.connector=smallrye-kafka
+mp.messaging.outgoing.${channel}.topic=$topic
+mp.messaging.outgoing.${channel}.value.serializer=${serializer}

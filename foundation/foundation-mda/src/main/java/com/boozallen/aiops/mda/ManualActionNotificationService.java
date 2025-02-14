@@ -119,7 +119,7 @@ public class ManualActionNotificationService {
     /**
      * Checks if updates are needed to dependencies in a POM file.
      *
-     * @param context     the generation context
+     * @param context    the generation context
      * @param artifactId  the artifact ID
      * @param persistType the persist type
      */
@@ -313,41 +313,6 @@ public class ManualActionNotificationService {
     }
 
     /**
-     * Adds a notification to update the Tiltfile.
-     * NOTE: This "k8s_yaml" line is also being output by appendTiltHelmBuild() and addSparkWorkerTiltResources() so
-     * we should consider refactoring to extract out common code.
-     *
-     * @param context          the generation context
-     * @param appName          the application name
-     * @param deployArtifactId the deploy artifact ID
-     * @param yamlFileName     the deploy artifact ID
-     */
-    public void addYamlTiltFileMessage(final GenerationContext context, final String appName,
-                                       final String deployArtifactId, final String yamlFileName) {
-
-        final File rootDir = context.getExecutionRootDirectory();
-        if (!rootDir.exists() || !tiltFileFound(rootDir)) {
-            logger.warn("Unable to find Tiltfile. Will not be able to direct manual Helm updates to for Tiltfile");
-        } else {
-            final String tiltFilePath = rootDir.getAbsolutePath() + File.separator + "Tiltfile";
-            final String yamlFilePath = deployArtifactId + "/src/main/resources/apps/" + appName + "/" + yamlFileName;
-            final String text = "apps/" + appName;
-
-            boolean tiltFileContainsArtifact = existsInFile(tiltFilePath, text);
-            if (!tiltFileContainsArtifact && showWarnings(tiltFilePath)) {
-                final String key = getMessageKey("Tiltfile", "yaml", appName);
-
-                HashSet<String> items = new HashSet<String>();
-                items.add(yamlFilePath);
-
-                VelocityNotification notification = new VelocityNotification(key, GROUP_TILT, items,
-                        "templates/notifications/notification.yaml.tiltfile.vm");
-                addManualAction(tiltFilePath, notification);
-            }
-        }
-    }
-
-    /**
      * Adds a notification to update the tiltfile with necessary elasticsearch resources
      *
      * @param context    the generation context
@@ -496,6 +461,40 @@ public class ManualActionNotificationService {
 
                     addManualAction(params.getPomFilePath(), notification);
                 }
+            }
+        }
+    }
+
+    /**
+     * Adds a manual action notification to configure an outbound SmallRye connector for a specific channel to support
+     * sending messages to an external messaging system.
+     *
+     * @param context the Fermenter generation context
+     * @param pipelineArtifactId the artifact ID for the pipeline which needs an outbound connector configured
+     * @param description the plain English description of the messaging channel, e.g. "Alert Producer"
+     * @param channel the SmallRye channel name on which the connector will receive outbound messages
+     * @param serializerClass the class used to serialize the message values
+     */
+    public void addSmallRyeConnectorMessage(GenerationContext context, String pipelineArtifactId, String description, String channel, String serializerClass) {
+        File root = context.getExecutionRootDirectory();
+        String pipelinesModule = MavenUtil.getPipelinesModuleName(root);
+        if (root != null && pipelinesModule != null) {
+            Path pipelineDir = root.toPath().resolve(Path.of(pipelinesModule, pipelineArtifactId));
+            Path mpConfig = pipelineDir.resolve("src/main/resources/META-INF/microprofile-config.properties");
+            String connectorProperty = "mp.messaging.outgoing." + channel + ".connector=";
+
+            if (Files.exists(mpConfig) && !existsInFile(mpConfig.toString(), connectorProperty)) {
+                String key = getMessageKey(pipelineArtifactId, "microprofile-config", channel, "outgoing-connector");
+                VelocityNotification notification = new VelocityNotification(key, "microprofile-config", new HashSet<>(),
+                        "templates/notifications/notification.microprofile-config.connector.vm");
+                notification.addToVelocityContext("description", description);
+                notification.addToVelocityContext("channel", channel);
+                notification.addToVelocityContext("topic", channel);
+                notification.addToVelocityContext("serializer", serializerClass);
+                // Group Template properties
+                notification.addToExternalVelocityContextProperties("pipelinesArtifactId", pipelinesModule);
+                notification.addToExternalVelocityContextProperties("pipelineArtifactId", pipelineArtifactId);
+                addManualAction(mpConfig.toString(), notification);
             }
         }
     }

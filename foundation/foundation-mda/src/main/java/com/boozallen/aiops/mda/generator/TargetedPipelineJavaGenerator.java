@@ -43,6 +43,9 @@ public class TargetedPipelineJavaGenerator extends AbstractJavaGenerator {
      * | javaPipelineDriver        | pipeline.driver.impl.java.vm                        | ${basePackage}/${pipelineName}Driver.java         |
      */
 
+    public static final String METADATA_CHANNEL = "metadata-ingest";
+    public static final String ALERT_CHANNEL = "alerts";
+
     protected ManualActionNotificationService manualActionNotificationService = new ManualActionNotificationService();
 
     /**
@@ -56,8 +59,9 @@ public class TargetedPipelineJavaGenerator extends AbstractJavaGenerator {
 
         Pipeline pipeline = PipelineUtils.getTargetedPipeline(generationContext, metadataContext);
         JavaPipeline javaTargetPipeline = new JavaPipeline(pipeline);
+        String artifactId = javaTargetPipeline.deriveArtifactIdFromCamelCase();
         vc.put(VelocityProperty.PIPELINE, javaTargetPipeline);
-        vc.put(VelocityProperty.ARTIFACT_ID, javaTargetPipeline.deriveArtifactIdFromCamelCase());
+        vc.put(VelocityProperty.ARTIFACT_ID, artifactId);
 
         String baseOutputFile = generationContext.getOutputFile();
         String fileName = replace("pipelineName", baseOutputFile, javaTargetPipeline.getName());
@@ -73,7 +77,7 @@ public class TargetedPipelineJavaGenerator extends AbstractJavaGenerator {
 
         // TODO: Conditional on whether we're specifically using Kafka
 
-        if(javaTargetPipeline.hasMessaging()) {
+        if(javaTargetPipeline.hasMessagingSteps()) {
             for (JavaStep eachStep : javaTargetPipeline.getMessagingSteps()) {
                 if (eachStep.hasMessagingInbound()) {
                     manualActionNotificationService.addNoticeToUpdateKafkaConfig(generationContext, eachStep.getInbound().getChannelName());
@@ -84,13 +88,17 @@ public class TargetedPipelineJavaGenerator extends AbstractJavaGenerator {
             }
         }
         if(javaTargetPipeline.isAlertingSupportNeeded()) {
-            manualActionNotificationService.addNoticeToUpdateKafkaConfig(generationContext, "alerts");
+            manualActionNotificationService.addNoticeToUpdateKafkaConfig(generationContext, ALERT_CHANNEL);
+            // TODO: StringSerializer actually throws an exception. We need an AlertSerializer in alerting-core
+            manualActionNotificationService.addSmallRyeConnectorMessage(generationContext, artifactId, "Alert Producer", ALERT_CHANNEL, "org.apache.kafka.common.serialization.StringSerializer");
         }
         if(javaTargetPipeline.isMetadataNeeded()) {
-            manualActionNotificationService.addNoticeToUpdateKafkaConfig(generationContext, "metadata-ingest");
+            manualActionNotificationService.addNoticeToUpdateKafkaConfig(generationContext, METADATA_CHANNEL);
+            manualActionNotificationService.addSmallRyeConnectorMessage(generationContext, artifactId, "Metadata Producer", METADATA_CHANNEL, "com.boozallen.aissemble.core.metadata.producer.MetadataSerializer");
         }
         if(javaTargetPipeline.getDataLineage()) {
             manualActionNotificationService.addNoticeToUpdateKafkaConfig(generationContext, Constants.DATA_LINEAGE_CHANNEL_NAME);
+            manualActionNotificationService.addSmallRyeConnectorMessage(generationContext, artifactId, "Data Lineage Emitter", Constants.DATA_LINEAGE_CHANNEL_NAME, "org.apache.kafka.common.serialization.StringSerializer");
         }
      }
 

@@ -176,16 +176,6 @@ public class JavaStep extends BaseStepDecorator {
         return imports;
     }
 
-    @Override
-    public boolean isMessaging(StepDataBinding stepDataBinding) {
-        return stepDataBinding != null
-                && ("messaging".equalsIgnoreCase(stepDataBinding.getType()));
-    }
-
-    public boolean isMultiMessaging(StepDataBinding stepDataBinding) {
-        return stepDataBinding != null && "multimessaging".equalsIgnoreCase(stepDataBinding.getType());
-    }
-
     /**
      * If the outbound type of this step is messaging, this method will return the Reactive Messaging outgoing channel
      * name.  Note this is not the same as {@link StepDataBinding#getChannelName()} and is simply an externality of our
@@ -267,10 +257,10 @@ public class JavaStep extends BaseStepDecorator {
             outboundType += "<Void>";
         } else {
             List<String> types = new ArrayList<>();
-            if (isMessaging(outbound)) {
+            if (hasSingleMessagingOutbound()) {
                 types.add("<Message");
             }
-            if (isMultiMessaging(getOutbound())) {
+            if (hasMultiMessagingOutbound()) {
                 types.add("<Message");
                 outboundType = "Publisher";
             }

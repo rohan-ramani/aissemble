@@ -2625,7 +2625,7 @@
     "name": "microprofileConfigProperties",
     "templateName": "templates/pipeline.microprofile-config.properties.vm",
     "outputFile": "META-INF/microprofile-config.properties",
-    "generator": "com.boozallen.aiops.mda.generator.TargetedPipelineResourcesGenerator",
+    "generator": "com.boozallen.aiops.mda.generator.PipelineMessagingResourcesGenerator",
     "metadataContext": "targeted",
     "overwritable": false
   },
@@ -2633,7 +2633,7 @@
     "name": "microprofileConfigServices",
     "templateName": "templates/pipeline.services.microprofile.config.vm",
     "outputFile": "META-INF/services/org.eclipse.microprofile.config.spi.ConfigSource",
-    "generator": "com.boozallen.aiops.mda.generator.TargetedPipelineResourcesGenerator",
+    "generator": "com.boozallen.aiops.mda.generator.PipelineMessagingResourcesGenerator",
     "metadataContext": "targeted",
     "overwritable": false
   },
@@ -2649,7 +2649,7 @@
     "name": "pipelineTestConfig",
     "templateName": "templates/cucumber.test.pipeline-messaging.properties.vm",
     "outputFile": "krausening/test/pipeline-messaging.properties",
-    "generator": "com.boozallen.aiops.mda.generator.TargetedPipelineResourcesGenerator",
+    "generator": "com.boozallen.aiops.mda.generator.PipelineMessagingResourcesGenerator",
     "metadataContext": "targeted",
     "overwritable": false,
     "artifactType": "test"

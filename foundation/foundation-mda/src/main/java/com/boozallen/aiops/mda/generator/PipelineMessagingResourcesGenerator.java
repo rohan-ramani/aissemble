@@ -23,7 +23,7 @@ import com.boozallen.aissemble.common.Constants;
  * Generates configuration code with no model interaction. This is often useful for
  * configuration files that must exist in some form or similar constructs.
  */
-public class TargetedPipelineResourcesGenerator extends AbstractResourcesGenerator {
+public class PipelineMessagingResourcesGenerator extends AbstractResourcesGenerator {
     /*--~-~-~~
      * Usages:
      * | Target                        | Template                                        | Generated File                                                      |
@@ -50,12 +50,12 @@ public class TargetedPipelineResourcesGenerator extends AbstractResourcesGenerat
 		String fileName = replace("pipelineName", baseOutputFile, targetPipeline.getName());
 		generationContext.setOutputFile(fileName);
 
-		if (shouldGenerate(pipeline)) {
+		if (shouldGenerate(targetPipeline)) {
 			generateFile(generationContext, vc);
 		}
 	}
 
-	protected boolean shouldGenerate(Pipeline pipeline) {
-		return true;
+	protected boolean shouldGenerate(BasePipelineDecorator pipeline) {
+		return pipeline.isMessagingSupportNeeded();
 	}
 }
