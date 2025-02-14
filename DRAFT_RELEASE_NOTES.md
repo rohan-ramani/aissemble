@@ -3,6 +3,13 @@
 # Breaking Changes
 _Note: instructions for adapting to these changes are outlined in the upgrade instructions below._
 
+- PySpark will no longer throw an exception when a required field is `None` but instead filter it out. See Changes in Spark/PySpark Schema Behavior below for more details.
+- Spark/PySpark will no longer filter out records with `null`/`None` fields that are not required and have validation. See Changes in Spark/PySpark Schema Behavior below for more details.
+
+## Changes in Spark/PySpark Schema Behavior
+- When creating a data frame from a record schema with [required fields](https://boozallen.github.io/aissemble/aissemble/current/record-metamodel.html#_record_field_options) using PySpark, creation of the data frame (`spark_session.createDataFrame()`) will no longer throw an exception if a required field is `None` but instead filter out the record from the data frame as part of validation (`record_schema.validate_dataset()`).
+- When validating a data frame from a record schema with [non-required fields](https://boozallen.github.io/aissemble/aissemble/current/record-metamodel.html#_record_field_options) and [dictionary validation](https://boozallen.github.io/aissemble/aissemble/current/dictionary-metamodel.html#_validation_options) using Spark/PySpark, validation (`recordSchema.validateDataFrame()/record_schema.validate_dataset()`) will no longer mistakenly filter out a record from the data frame if the field value is `None`/`null`.
+
 # Known Issues
 
 ## Docker Module Build Failures

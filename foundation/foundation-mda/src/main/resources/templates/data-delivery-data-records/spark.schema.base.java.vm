@@ -8,6 +8,7 @@ import ${import};
 import ${import};
 #end
 
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -53,18 +54,21 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
     public ${record.capitalizedName}SchemaBase() {
         super();
 
+## Setting the nullable parameter to true for every column due to inconsistencies in the behavior from different data sources/toolings (Spark vs Pyspark)
+## This allows all data to be read in, and null values will be filtered out as part of the validateDataFrame method if the field is required
+## Spark will still allow null values through even when nullable is set to false, so setting to true here to be consistent with Pyspark implementation
   #foreach ($field in $record.fields)
       #if ($field.sparkAttributes.isDecimalType())
-        add(${columnVars[$field.name]}, new ${field.shortType}(${field.sparkAttributes.defaultDecimalPrecision}, ${field.sparkAttributes.decimalScale}), ${field.sparkAttributes.isNullable()}, "${field.description}");
+        add(${columnVars[$field.name]}, new ${field.shortType}(${field.sparkAttributes.defaultDecimalPrecision}, ${field.sparkAttributes.decimalScale}), true, "${field.description}");
       #else
-        add(${columnVars[$field.name]}, ${field.shortType}, ${field.sparkAttributes.isNullable()}, "${field.description}");
+        add(${columnVars[$field.name]}, ${field.shortType}, true, "${field.description}");
       #end
   #end
   #foreach ($relation in $record.relations)
       #if ($relation.isOneToManyRelation())
-        add(${relationVars[$relation.name]}, DataTypes.createArrayType(new ${relation.name}Schema().getStructType()), ${relation.isNullable()}, "${relation.documentation}");
+        add(${relationVars[$relation.name]}, DataTypes.createArrayType(new ${relation.name}Schema().getStructType()), true, "${relation.documentation}");
       #else
-        add(${relationVars[$relation.name]}, new ${relation.name}Schema().getStructType(), ${relation.isNullable()}, "${relation.documentation}");
+        add(${relationVars[$relation.name]}, new ${relation.name}Schema().getStructType(), true, "${relation.documentation}");
       #end
   #end
     }
@@ -135,6 +139,8 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
             #foreach ($field in $record.fields)
                 #if (${field.isRequired()})
                     .withColumn(${columnVars[$field.name]} + "_IS_NOT_NULL", col(columnPrefix + ${columnVars[$field.name]}).isNotNull())
+                #else
+                    .withColumn(${columnVars[$field.name]} + "_IS_NULL", col(columnPrefix + ${columnVars[$field.name]}).isNull())
                 #end
                 #if (${field.getValidation().getMinValue()})
                     .withColumn(${columnVars[$field.name]} + "_GREATER_THAN_MIN", col(columnPrefix + ${columnVars[$field.name]}).gt(lit(${field.getValidation().getMinValue()})).or(col(columnPrefix + ${columnVars[$field.name]}).equalTo(lit(${field.getValidation().getMinValue()}))))
@@ -176,21 +182,66 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
         #end
     #end
 
-        Column filterSchema = null;
+        List<Column> columnFilterSchemas = new ArrayList<>();
         List<String> validationColumns = new ArrayList<>();
         Collections.addAll(validationColumns, dataWithValidations.columns());
         validationColumns.removeAll(Arrays.asList(data.columns()));
-        for (String columnName : validationColumns) {
-            if (filterSchema == null) {
-                filterSchema = col(columnName).equalTo(lit(true));
-            } else {
-                filterSchema = filterSchema.and(col(columnName).equalTo(lit(true)));
+
+        // Separate columns into groups based on their field name
+        List<List<String>> columnsGroupedByField = new ArrayList<>();
+
+        #foreach ($field in $record.fields)
+        columnsGroupedByField.add(validationColumns.stream()
+            .filter(col -> col.startsWith(${columnVars[$field.name]}))
+            .collect(Collectors.toList()));
+
+        #end
+
+        // Create a schema filter for each field represented as a column group
+        for (List<String> columnGroup: columnsGroupedByField) {
+            Column columnGroupFilterSchema = null;
+
+            // This column tracks if a non-required field is null. This enables
+            // non-required validated fields to still pass filtering when they are null
+            Column nullableColumn = null;
+
+            for (String columnName : columnGroup) {
+                if (columnName.endsWith("_IS_NULL")) {
+                    nullableColumn = col(columnName).equalTo(lit(true));
+                } else if (columnGroupFilterSchema == null) {
+                    columnGroupFilterSchema = col(columnName).equalTo(lit(true));
+                } else {
+                    columnGroupFilterSchema = columnGroupFilterSchema.and(col(columnName).equalTo(lit(true)));
+                }
+            }
+
+            // Add the nullable column filter as a OR statement at the end of the given field schema
+            // If there is no other schema filters for the field, then it can be ignored
+            if (nullableColumn != null && columnGroupFilterSchema != null) {
+                columnGroupFilterSchema = nullableColumn.or(columnGroupFilterSchema);
+            }
+
+            if (columnGroupFilterSchema != null) {
+                columnFilterSchemas.add(columnGroupFilterSchema);
             }
         }
+
         // Isolate the valid data
         Dataset<Row> validData = data;
-        if (filterSchema != null) {
-            validData = dataWithValidations.filter(filterSchema);
+        if (!columnFilterSchemas.isEmpty()) {
+
+            // Combine all the field filter schemas into one final schema for the row
+            Column finalColumnsFilterSchema = null;
+            
+            for (Column columnGroupFilterSchema: columnFilterSchemas) {
+                if (finalColumnsFilterSchema == null) {
+                    finalColumnsFilterSchema = columnGroupFilterSchema;
+                } else {
+                    finalColumnsFilterSchema = finalColumnsFilterSchema.and(columnGroupFilterSchema);
+                }
+            }
+
+            validData = dataWithValidations.filter(finalColumnsFilterSchema);
         }
 
         // Remove validation columns from valid data

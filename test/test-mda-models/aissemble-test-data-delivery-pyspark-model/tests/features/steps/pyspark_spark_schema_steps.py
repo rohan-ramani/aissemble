@@ -6,6 +6,12 @@ from behave import given, when, then
 from aissemble_test_data_delivery_pyspark_model.dictionary.integer_with_validation import (
     IntegerWithValidation,
 )
+from aissemble_test_data_delivery_pyspark_model.dictionary.string_with_validation import (
+    StringWithValidation,
+)
+from aissemble_test_data_delivery_pyspark_model.dictionary.state_address import (
+    StateAddress,
+)
 from aissemble_test_data_delivery_pyspark_model.dictionary.zipcode import Zipcode
 from aissemble_test_data_delivery_pyspark_model.record.address import Address
 from aissemble_test_data_delivery_pyspark_model.record.city import (
@@ -26,6 +32,13 @@ from aissemble_test_data_delivery_pyspark_model.record.state import (
 from aissemble_test_data_delivery_pyspark_model.record.street import (
     Street,
 )
+from aissemble_test_data_delivery_pyspark_model.record.record_with_required_validation import (
+    RecordWithRequiredValidation,
+)
+
+from aissemble_test_data_delivery_pyspark_model.record.record_with_non_required_validation import (
+    RecordWithNonRequiredValidation,
+)
 from aissemble_test_data_delivery_pyspark_model.schema.city_schema import (
     CitySchema,
 )
@@ -35,8 +48,11 @@ from aissemble_test_data_delivery_pyspark_model.schema.person_with_m_to_one_rela
 from aissemble_test_data_delivery_pyspark_model.schema.person_with_one_to_one_relation_schema import (
     PersonWithOneToOneRelationSchema,
 )
-from aissemble_test_data_delivery_pyspark_model.dictionary.state_address import (
-    StateAddress,
+from aissemble_test_data_delivery_pyspark_model.schema.record_with_required_validation_schema import (
+    RecordWithRequiredValidationSchema,
+)
+from aissemble_test_data_delivery_pyspark_model.schema.record_with_non_required_validation_schema import (
+    RecordWithNonRequiredValidationSchema,
 )
 
 
@@ -132,6 +148,75 @@ def step_impl(context, validity):
     )
 
 
+@given('a record with a "{requirement}" field with validation rules')
+def step_impl(context, requirement):
+    context.record_with_validated_field_requirement = requirement
+
+    context.record_with_requirement_validation = (
+        RecordWithRequiredValidation()
+        if requirement == "required"
+        else RecordWithNonRequiredValidation()
+    )
+
+
+@given('the field is set to a "{validity}" value')
+def step_impl(context, validity):
+    # set valid fields to verify validation still works with multiple fields
+    context.record_with_requirement_validation.string_validation = StringWithValidation(
+        "Test123"
+    )
+    context.record_with_requirement_validation.string_simple = "Test123"
+
+    if validity == "valid":
+        context.record_with_requirement_validation.integer_validation = (
+            IntegerWithValidation(150)
+        )
+    elif validity == "invalid":
+        context.record_with_requirement_validation.integer_validation = (
+            IntegerWithValidation(50)
+        )
+    else:
+        pass  # Do nothing to keep the field None
+
+
+@given("a dataSet containing the record")
+def step_impl(context):
+    if context.record_with_validated_field_requirement == "required":
+        row = RecordWithRequiredValidation.as_row(
+            context.record_with_requirement_validation
+        )
+    else:
+        row = RecordWithNonRequiredValidation.as_row(
+            context.record_with_requirement_validation
+        )
+
+    context.record_with_requirement_validation_rows = [row]
+
+
+@given("the dataset contains one valid record")
+def step_impl(context):
+    if context.record_with_validated_field_requirement == "required":
+        # Create other valid row for the data frame to test filtering
+        valid_record_with_requirement_validation = RecordWithRequiredValidation()
+        valid_record_with_requirement_validation.integer_validation = (
+            IntegerWithValidation(150)
+        )
+        valid_record_with_requirement_validation.string_validation = (
+            StringWithValidation("Test123")
+        )
+        valid_record_with_requirement_validation.string_simple = "Test123"
+        valid_row = RecordWithRequiredValidation.as_row(
+            valid_record_with_requirement_validation
+        )
+    else:
+        valid_record_with_non_requirement_validation = RecordWithNonRequiredValidation()
+        valid_row = RecordWithNonRequiredValidation.as_row(
+            valid_record_with_non_requirement_validation
+        )
+
+    context.record_with_requirement_validation_rows.append(valid_row)
+
+
 @when('spark schema validation is performed on the "PersonWithMToOneRelation" dataSet')
 def step_impl(context):
     person_with_many_to_one_relation_schema = PersonWithMToOneRelationSchema()
@@ -167,6 +252,27 @@ def step_impl(context):
         )
     except Exception as e:
         context.exc = e
+
+
+@when("the generated spark schema validation is performed on the dataSet")
+def step_impl(context):
+    if context.record_with_validated_field_requirement == "required":
+        record_with_requirement_validation_schema = RecordWithRequiredValidationSchema()
+    else:
+        record_with_requirement_validation_schema = (
+            RecordWithNonRequiredValidationSchema()
+        )
+
+    record_with_validated_field_dataset = context.test_spark_session.createDataFrame(
+        context.record_with_requirement_validation_rows,
+        schema=record_with_requirement_validation_schema.struct_type,
+    )
+
+    context.validated_dataframe = (
+        record_with_requirement_validation_schema.validate_dataset(
+            record_with_validated_field_dataset
+        )
+    )
 
 
 @then('the schema data type for "{record}" is "{type}"')
@@ -210,6 +316,15 @@ def step_impl(context):
     nt.assert_true(context.exc is not None, "No exception was raised when validating")
     nt.assert_true(
         isinstance(context.exc, NotImplementedError),
+    )
+
+
+@then("the resulting dataSet contains {numRows} row(s)")
+def step_impl(context, numRows):
+    nt.assert_equal(
+        int(numRows),
+        context.validated_dataframe.count(),
+        "The validated dataSet contained the incorrect number of rows",
     )
 
 

@@ -1,5 +1,5 @@
-@pyspark_schema_relation
-Feature: Pyspark schema functionality works for relations
+@pyspark_schema
+Feature: Pyspark schema functionality works for records
 
   Background:
     Given the record "City" exists with the following relations
@@ -57,3 +57,18 @@ Feature: Pyspark schema functionality works for relations
       | 0          | 1            |
       | 1          | 1            |
 
+  Scenario Outline: Records with fields with validation rules can be validated using the spark schema
+    Given a record with a "<requirement>" field with validation rules
+    And the field is set to a "<validity>" value
+    And a dataSet containing the record
+    And the dataset contains one valid record
+    When the generated spark schema validation is performed on the dataSet
+    Then the resulting dataSet contains <num> row(s)
+    Examples:
+      | requirement  | validity | num |
+      | required     | valid    | 2   |
+      | required     | invalid  | 1   |
+      | required     | null     | 1   |
+      | non-required | valid    | 2   |
+      | non-required | invalid  | 1   |
+      | non-required | null     | 2   |

@@ -16,12 +16,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import com.boozallen.aiops.mda.pattern.dictionary.Zipcode;
-import com.boozallen.aiops.mda.pattern.record.PersonWithOneToMRelation;
 import com.boozallen.aiops.mda.pattern.record.PersonWithOneToMRelationSchema;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.NotImplementedException;
@@ -30,6 +30,7 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
 import com.boozallen.aiops.mda.pattern.dictionary.IntegerWithValidation;
+import com.boozallen.aiops.mda.pattern.dictionary.StringWithValidation;
 import com.boozallen.aiops.mda.pattern.record.Address;
 import com.boozallen.aiops.mda.pattern.record.City;
 import com.boozallen.aiops.mda.pattern.record.CitySchema;
@@ -38,6 +39,10 @@ import com.boozallen.aiops.mda.pattern.record.PersonWithMToOneRelation;
 import com.boozallen.aiops.mda.pattern.record.PersonWithMToOneRelationSchema;
 import com.boozallen.aiops.mda.pattern.record.PersonWithOneToOneRelation;
 import com.boozallen.aiops.mda.pattern.record.PersonWithOneToOneRelationSchema;
+import com.boozallen.aiops.mda.pattern.record.RecordWithNonRequiredValidation;
+import com.boozallen.aiops.mda.pattern.record.RecordWithNonRequiredValidationSchema;
+import com.boozallen.aiops.mda.pattern.record.RecordWithRequiredValidation;
+import com.boozallen.aiops.mda.pattern.record.RecordWithRequiredValidationSchema;
 import com.boozallen.aiops.mda.pattern.record.State;
 import com.boozallen.aiops.mda.pattern.record.Street;
 
@@ -47,21 +52,29 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 public class SparkSchemaTest {
+    String recordWithValidatedFieldRequirement;
     CitySchema citySchema;
     PersonWithOneToOneRelationSchema personWithOneToOneRelationSchema;
     PersonWithMToOneRelationSchema personWithMToOneRelationSchema;
     PersonWithOneToMRelationSchema personWithOneToMRelationSchema;
+    RecordWithRequiredValidationSchema recordWithRequiredValidationSchema;
+    RecordWithNonRequiredValidationSchema recordWithNonRequiredValidationSchema;
+    RecordWithNonRequiredValidation recordWithNonRequiredValidation;
+    RecordWithRequiredValidation recordWithRequiredValidation;
+    List<Row> recordWithRequirementValidationRows;
     SparkSession spark;
     Dataset<Row> cityDataSet;
     Dataset<Row> personWithOneToOneRelationDataSet;
     Dataset<Row> personWithMToOneRelationDataSet;
     Dataset<Row> personWithOneToMRelationDataSet;
+    Dataset<Row> recordWithValidatedFieldDataSet;
     Dataset<Row> validatedDataSet;
     Exception exception;
 
     @Before("@SparkSchema")
     public void setUp() {
         this.spark = SparkTestHarness.getSparkSession();
+        this.recordWithRequirementValidationRows = new ArrayList<>();
     }
 
     @Given("the record \"City\" exists with the following relations")
@@ -130,6 +143,71 @@ public class SparkSchemaTest {
         this.cityDataSet = spark.createDataFrame(rows, this.citySchema.getStructType());
     }
 
+    @Given("a record with a {string} field with validation rules")
+    public void aRecordWithAFieldWithValidationRules(String requirement) {
+        this.recordWithValidatedFieldRequirement = requirement;
+
+        if (requirement.equals("required")) {
+            this.recordWithRequiredValidation = new RecordWithRequiredValidation();
+        } else {
+            this.recordWithNonRequiredValidation = new RecordWithNonRequiredValidation();
+        }
+    }
+
+    @Given("the field is set to a {string} value")
+    public void theFieldIsSetToAValue(String validity) {
+        if (this.recordWithValidatedFieldRequirement.equals("required")) {
+            // set valid fields to verify validation still works with multiple fields
+            this.recordWithRequiredValidation.setStringValidation(new StringWithValidation("Test123"));
+            this.recordWithRequiredValidation.setStringSimple("Test123");
+
+            if (validity.equals("valid")) {
+                this.recordWithRequiredValidation.setIntegerValidation(new IntegerWithValidation(150));
+            } else if(validity.equals("invalid")) {
+                this.recordWithRequiredValidation.setIntegerValidation(new IntegerWithValidation(50));
+            } else {
+                // Do nothing to keep the field null
+            }
+        } else {
+            // set valid fields to verify validation still works with multiple fields
+            this.recordWithNonRequiredValidation.setStringValidation(new StringWithValidation("Test123"));
+            this.recordWithNonRequiredValidation.setStringSimple("Test123");
+            
+            if (validity.equals("valid")) {
+                this.recordWithNonRequiredValidation.setIntegerValidation(new IntegerWithValidation(150));
+            } else if(validity.equals("invalid")) {
+                this.recordWithNonRequiredValidation.setIntegerValidation(new IntegerWithValidation(50));
+            } else {
+                // Do nothing to keep the field null
+            }
+        }
+    }
+
+    @Given("a dataSet containing the record")
+    public void aDataSetContainingTheRecord() {
+        if (this.recordWithValidatedFieldRequirement.equals("required")) {
+            this.recordWithRequirementValidationRows.add(RecordWithRequiredValidationSchema.asRow(this.recordWithRequiredValidation));
+        } else {
+            this.recordWithRequirementValidationRows.add(RecordWithNonRequiredValidationSchema.asRow(this.recordWithNonRequiredValidation));
+        }
+    }
+
+    @Given("the dataset contains one valid record")
+    public void theDataSetContainsOneValidRecord() {
+        if (this.recordWithValidatedFieldRequirement.equals("required")) {
+            RecordWithRequiredValidation validRecordWithRequiredValidation = new RecordWithRequiredValidation();
+            validRecordWithRequiredValidation.setIntegerValidation(new IntegerWithValidation(150));
+            validRecordWithRequiredValidation.setStringValidation(new StringWithValidation("Test123"));
+            validRecordWithRequiredValidation.setStringSimple("Test123");
+
+            this.recordWithRequirementValidationRows.add(RecordWithRequiredValidationSchema.asRow(validRecordWithRequiredValidation));
+        } else {
+            RecordWithNonRequiredValidation validRecordWithNonRequiredValidation = new RecordWithNonRequiredValidation();
+            
+            this.recordWithRequirementValidationRows.add(RecordWithNonRequiredValidationSchema.asRow(validRecordWithNonRequiredValidation));
+        }
+    }
+
     @When("the spark schema is generated for the \"City\" record")
     public void theSparkSchemaIsGeneratedForTheCityRecord() {
         this.citySchema = new CitySchema();
@@ -171,6 +249,29 @@ public class SparkSchemaTest {
         }
     }
 
+    @When("the generated spark schema validation is performed on the dataSet")
+    public void theGeneratedSparkSchemaValidationIsPerformedOnTheDataSet() {
+        if (this.recordWithValidatedFieldRequirement.equals("required")) {
+            this.recordWithRequiredValidationSchema = new RecordWithRequiredValidationSchema();
+
+            this.recordWithValidatedFieldDataSet = this.spark.createDataFrame(
+                this.recordWithRequirementValidationRows,
+                this.recordWithRequiredValidationSchema.getStructType()
+            );
+
+            this.validatedDataSet = this.recordWithRequiredValidationSchema.validateDataFrame(this.recordWithValidatedFieldDataSet);
+        } else {
+            this.recordWithNonRequiredValidationSchema = new RecordWithNonRequiredValidationSchema();
+            
+            this.recordWithValidatedFieldDataSet = this.spark.createDataFrame(
+                this.recordWithRequirementValidationRows,
+                this.recordWithNonRequiredValidationSchema.getStructType()
+            );
+
+            this.validatedDataSet = this.recordWithNonRequiredValidationSchema.validateDataFrame(this.recordWithValidatedFieldDataSet);
+        }
+    }
+
     @Then("the validation fails with NotYetImplementedException")
     public void theValidationFailsWithNotYetImplementedException() {
         assertNotNull("No exception was thrown", this.exception);
@@ -208,6 +309,11 @@ public class SparkSchemaTest {
             assertNotNull("Validation failed when it should have passed", validatedDataSet);
             assertFalse("Validation failed when it should have passed", validatedDataSet.isEmpty());
         }
+    }
+
+    @Then("the resulting dataSet contains {int} row\\(s)")
+    public void theResultingDataSetContainsRows(int numRows) {
+        assertEquals("The validated dataSet contained the incorrect number of rows", numRows, this.validatedDataSet.count());
     }
 
     private City createCity(){

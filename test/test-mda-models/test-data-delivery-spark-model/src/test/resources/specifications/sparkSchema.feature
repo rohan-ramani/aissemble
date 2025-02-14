@@ -1,5 +1,5 @@
 @SparkSchema
-Feature: Records with relations are generated correctly and function as expected
+Feature: Record spark schemas are generated correctly and function as expected
 
   Background:
     Given the record "City" exists with the following relations
@@ -50,3 +50,19 @@ Feature: Records with relations are generated correctly and function as expected
     And a valid "City" dataSet exists
     When spark schema validation is performed on the "City" dataSet
     Then the dataSet validation "passes"
+
+  Scenario Outline: Records with fields with validation rules can be validated using the spark schema
+    Given a record with a "<requirement>" field with validation rules
+    And the field is set to a "<validity>" value
+    And a dataSet containing the record
+    And the dataset contains one valid record
+    When the generated spark schema validation is performed on the dataSet
+    Then the resulting dataSet contains <num> row(s)
+    Examples:
+      | requirement  | validity | num |
+      | required     | valid    | 2   |
+      | required     | invalid  | 1   |
+      | required     | null     | 1   |
+      | non-required | valid    | 2   |
+      | non-required | invalid  | 1   |
+      | non-required | null     | 2   |
