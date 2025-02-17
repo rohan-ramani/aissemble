@@ -1,6 +1,11 @@
 @SparkSchema
 Feature: Record spark schemas are generated correctly and function as expected
 
+  This feature captures the cascading validation relation records in the dataset
+  If any relation is invalid the base record is invalid
+  For the following scenarios, 1-1 and M-1 are treated as equivalent scenarios
+  A null entry in the 1-M relation is treated valid
+
   Background:
     Given the record "City" exists with the following relations
       | multiplicity | record |
@@ -16,40 +21,12 @@ Feature: Record spark schemas are generated correctly and function as expected
       | Mayor  | StructType(StructField(name,StringType,true),StructField(int_v8n,IntegerType,true))                                                     |
       | Street | ArrayType(StructType(StructField(name,StringType,true),StructField(county,StringType,true),StructField(int_v8n,IntegerType,true)),true) |
       | State  | StructType(StructField(name,StringType,true))                                                                                           |
+      | Citizen| ArrayType(StructType(StructField(name,StringType,true),StructField(int_v8n,IntegerType,true)),true)                                     |
 
   Scenario: Spark schemas generated has working to and from POJO functionality
     Given the spark schema is generated for the "City" record
     When a "City" POJO is mapped to a spark dataset using the schema
     Then the dataset has the correct values for the relational objects
-
-  # TODO validation for invalid relations should fail
-  Scenario Outline: Records with a One to One relation can be validated using the spark schema
-    Given the spark schema is generated for the "PersonWithOneToOneRelation" record
-    And a "<validity>" "PersonWithOneToOneRelation" dataSet exists
-    When spark schema validation is performed on the "PersonWithOneToOneRelation" dataSet
-    Then the dataSet validation "<success>"
-    Examples:
-      | validity | success |
-      | valid    | passes  |
-      | invalid  | passes  |
-
-  # TODO validation for invalid relations should fail
-  Scenario Outline: Records with a Many to One relation can be validated using the spark schema
-    Given the spark schema is generated for the "PersonWithMToOneRelation" record
-    And a "<validity>" "PersonWithMToOneRelation" dataSet exists
-    When spark schema validation is performed on the "PersonWithMToOneRelation" dataSet
-    Then the dataSet validation "<success>"
-    Examples:
-      | validity | success |
-      | valid    | passes  |
-      | invalid  | passes  |
-
-  # TODO validation for One to Many relations should include pass/fail testing
-  Scenario: Spark schemas generated validates One to Many relations
-    Given the spark schema is generated for the "City" record
-    And a valid "City" dataSet exists
-    When spark schema validation is performed on the "City" dataSet
-    Then the dataSet validation "passes"
 
   Scenario Outline: Records with fields with validation rules can be validated using the spark schema
     Given a record with a "<requirement>" field with validation rules
@@ -66,3 +43,78 @@ Feature: Record spark schemas are generated correctly and function as expected
       | non-required | valid    | 2   |
       | non-required | invalid  | 1   |
       | non-required | null     | 2   |
+
+  Scenario: An 1-1 or M-1 relation data record that has invalid data is removed
+    Given the following City dataset:
+      | Mayor         | Streets      | State       | Citizen                        |
+      | valid mayor   | valid street | valid state | valid citizen                  |
+      | invalid mayor | valid street | valid state | valid citizen                  |
+      | valid mayor   | valid street | valid state | valid citizen, invalid citizen |
+    When the dataset is validated against the schema
+    Then the result dataset should match:
+      | Mayor       | Streets      | State       | Citizen       |
+      | valid mayor | valid street | valid state | valid citizen |
+
+  Scenario: An 1-M relation data record that has invalid data is removed
+    Given the following City dataset:
+      | Mayor       | Streets                      | State       | Citizen                        |
+      | valid mayor | valid street                 | valid state | valid citizen                  |
+      | valid mayor | invalid street, valid street | valid state | valid citizen                  |
+      | valid mayor | valid street, valid street   | valid state | valid citizen, invalid citizen |
+    When the dataset is validated against the schema
+    Then the result dataset should match:
+      | Mayor       | Streets      | State       | Citizen       |
+      | valid mayor | valid street | valid state | valid citizen |
+
+  Scenario: A required 1-1 or M-1 relation data record that is not set is removed
+    Given the following City dataset:
+      | Mayor       | Streets      | State       | Citizen       |
+      | valid mayor | valid street | valid state | valid citizen |
+      | null        | valid street | valid state | valid citizen |
+    When the dataset is validated against the schema
+    Then the result dataset should match:
+      | Mayor       | Streets      | State       | Citizen       |
+      | valid mayor | valid street | valid state | valid citizen |
+
+  Scenario: A non-required 1-1 or M-1 relation data record that is not set is preserved
+    Given the following City dataset:
+      | Mayor       | Streets      | State       | Citizen       |
+      | valid mayor | valid street | valid state | valid citizen |
+      | valid mayor | valid street | null        | valid citizen |
+    When the dataset is validated against the schema
+    Then the result dataset should match:
+      | Mayor       | Streets      | State       | Citizen       |
+      | valid mayor | valid street | valid state | valid citizen |
+      | valid mayor | valid street | null        | valid citizen |
+
+  Scenario: A required 1-M relation data record that is empty is removed
+    Given the following City dataset:
+      | Mayor       | Streets      | State       | Citizen       |
+      | valid mayor | valid street | valid state | valid citizen |
+      | valid mayor | valid street | valid state | []            |
+    When the dataset is validated against the schema
+    Then the result dataset should match:
+      | Mayor       | Streets      | State       | Citizen       |
+      | valid mayor | valid street | valid state | valid citizen |
+
+  Scenario: A required 1-M relation data record that is not set is removed
+    Given the following City dataset:
+      | Mayor       | Streets      | State       | Citizen       |
+      | valid mayor | valid street | valid state | valid citizen |
+      | valid mayor | valid street | valid state | null          |
+    When the dataset is validated against the schema
+    Then the result dataset should match:
+      | Mayor       | Streets      | State       | Citizen       |
+      | valid mayor | valid street | valid state | valid citizen |
+
+  Scenario: A non-required 1-M relation data record that is not set is preserved
+    Given the following City dataset:
+      | Mayor       | Streets      | State       | Citizen       |
+      | valid mayor | valid street | valid state | valid citizen |
+      | valid       | null         | valid state | valid citizen |
+    When the dataset is validated against the schema
+    Then the result dataset should match:
+      | Mayor       | Streets      | State       | Citizen       |
+      | valid mayor | valid street | valid state | valid citizen |
+      | valid mayor | null         | valid state | valid citizen |
+

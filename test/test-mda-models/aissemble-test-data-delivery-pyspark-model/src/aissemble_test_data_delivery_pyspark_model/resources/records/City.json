@@ -11,7 +11,8 @@
       "package": "com.boozallen.aiops.mda.pattern.records",
       "multiplicity": "1-1",
       "column": "MAYOR",
-      "documentation": "There is one mayor in the city"
+      "documentation": "There is one mayor in the city",
+      "required": true
     },
     {
       "name": "State",
@@ -24,6 +25,13 @@
       "package": "com.boozallen.aiops.mda.pattern.records",
       "multiplicity": "1-M",
       "column": "STREET"
+    },
+    {
+      "name": "Citizen",
+      "package": "com.boozallen.aiops.mda.pattern.records",
+      "multiplicity": "1-M",
+      "column": "CITIZEN",
+      "required": true
     }
   ]
 }

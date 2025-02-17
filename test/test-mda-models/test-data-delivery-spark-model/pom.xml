@@ -265,6 +265,12 @@
             <artifactId>cucumber-reporting</artifactId>
             <version>${version.cucumber.reporting.plugin}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-text</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.jclouds.api</groupId>
