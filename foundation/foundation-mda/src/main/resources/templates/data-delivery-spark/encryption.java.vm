@@ -20,7 +20,7 @@ ${step.encryptionSignature} {
     EncryptionPolicyManager encryptionPolicyManager = EncryptionPolicyManager.getInstance();
     String filePath = encryptionPolicyManager.getPoliciesLocation();
 
-    if(Files.isDirectory(Paths.get(filePath))) {
+    if(filePath != null && Files.isDirectory(Paths.get(filePath))) {
         Map<String, EncryptionPolicy> policies = encryptionPolicyManager.getEncryptPolicies();
 
         if(!policies.isEmpty()) {

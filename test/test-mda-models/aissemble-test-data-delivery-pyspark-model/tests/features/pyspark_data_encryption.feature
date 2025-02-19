@@ -22,3 +22,9 @@ Feature: Data encryption
   Given a pipeline with native inbound collection and inbound record type
   When AES encryption is requested
   Then the correct AES algorithm is applied to the data set
+
+  Scenario: The policies location property can be undefined for encryption policies
+  Given a pipeline with an inbound data type
+  And the policies location property is not defined
+  When the check and apply encryption method is called
+  Then the method completes without applying encryption

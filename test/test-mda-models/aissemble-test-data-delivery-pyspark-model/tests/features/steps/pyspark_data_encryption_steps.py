@@ -17,6 +17,7 @@ Originally generated from: templates/behave.steps.py.vm
 
 from behave import given, when, then  # pylint: disable=no-name-in-module
 import nose.tools as nt
+import os
 from aissemble_test_data_delivery_pyspark_model.step.native_inbound_with_custom_types import (
     NativeInboundWithCustomTypes,
 )
@@ -25,6 +26,9 @@ from aissemble_test_data_delivery_pyspark_model.step.native_inbound_and_messagin
 )
 from aissemble_test_data_delivery_pyspark_model.step.native_inbound_with_custom_collection_type import (
     NativeInboundWithCustomCollectionType,
+)
+from aissemble_test_data_delivery_pyspark_model.step.native_inbound_and_outbound import (
+    NativeInboundAndOutbound,
 )
 from aissemble_test_data_delivery_pyspark_model.record.custom_data import CustomData
 from krausening.logging import LogManager
@@ -83,6 +87,19 @@ def step_impl(context):
     )
 
 
+@given("a pipeline with an inbound data type")
+def step_impl(context):
+    context.pipeline = NativeInboundAndOutbound()
+
+
+@given("the policies location property is not defined")
+def step_impl(context):
+    # Get the current krausening base dir for restoring after the test
+    context.default_krausening_base = os.environ.get("KRAUSENING_BASE")
+
+    os.environ["KRAUSENING_BASE"] = "invalid/path"
+
+
 @when("encryption is called on the inbound record")
 def step_impl(context):
     context.encrypted_dataset = context.pipeline.apply_encryption_to_dataset(
@@ -99,6 +116,15 @@ def step_impl(context):
     logger.info("processing encrypted_dataset")
 
     logger.info(context.encrypted_dataset)
+
+
+@when("the check and apply encryption method is called")
+def step_impl(context):
+    context.exception = None
+    try:
+        context.pipeline.check_and_apply_encryption_policy(None)
+    except Exception as e:
+        context.exception = e
 
 
 @then("the correct fields are encrypted")
@@ -227,3 +253,14 @@ def step_impl(context):
         logger.info(
             "Set[(dataframe)] - The Vault encrypted value is: " + encrypted_field
         )
+
+
+@then("the method completes without applying encryption")
+def step_impl(context):
+    nt.ok_(
+        context.exception is None,
+        "An exception was thrown",
+    )
+
+    # Restore the krausening base dir to the value from before the test
+    os.environ["KRAUSENING_BASE"] = context.default_krausening_base
