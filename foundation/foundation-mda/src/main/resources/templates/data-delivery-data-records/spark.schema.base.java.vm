@@ -13,9 +13,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.apache.commons.lang3.function.TriFunction;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.spark.sql.Column;
+import org.apache.spark.sql.expressions.Window;
 import org.apache.spark.sql.types.DataTypes;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
@@ -27,9 +29,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.apache.spark.sql.functions.bool_and;
 import static org.apache.spark.sql.functions.col;
 import static org.apache.spark.sql.functions.lit;
 import static org.apache.spark.sql.functions.explode;
+import static org.apache.spark.sql.functions.monotonically_increasing_id;
+import static org.apache.spark.sql.functions.row_number;
+import static org.apache.spark.sql.functions.when;
 
 /**
  * Base implementation of the Spark schema for ${record.capitalizedName}.
@@ -39,6 +45,7 @@ import static org.apache.spark.sql.functions.explode;
  * Generated from: ${templateName} 
  */
 public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
+    public static final String VALIDATION_RESULT_COLUMN = "__VALIDATE_RESULT_${record.capitalizedName}_";
 
 #set($columnVars = {})
 #foreach ($field in $record.fields)
@@ -127,6 +134,10 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
         return validateDataFrame(data, "");
     }
 
+    public Dataset<Row> validateDataFrame(Dataset<Row> data, String columnPrefix) {
+        return validateDataFrame(data, columnPrefix, true);
+    }
+
     /***
      * Appends spark validation logic to an unvalidated spark DataFrame (org.apache.spark.sql.Dataset)
      *
@@ -134,52 +145,59 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
      * @param columnPrefix a prefix to append to the dataset columns that validation is being performed on
      * @return Dataset with appended validation logic
      */
-    protected Dataset<Row> validateDataFrame(Dataset<Row> data, String columnPrefix) {
-        Dataset<Row> dataWithValidations = data
-            #foreach ($field in $record.fields)
-                #if (${field.isRequired()})
-                    .withColumn(${columnVars[$field.name]} + "_IS_NOT_NULL", col(columnPrefix + ${columnVars[$field.name]}).isNotNull())
-                #else
-                    .withColumn(${columnVars[$field.name]} + "_IS_NULL", col(columnPrefix + ${columnVars[$field.name]}).isNull())
-                #end
-                #if (${field.getValidation().getMinValue()})
-                    .withColumn(${columnVars[$field.name]} + "_GREATER_THAN_MIN", col(columnPrefix + ${columnVars[$field.name]}).gt(lit(${field.getValidation().getMinValue()})).or(col(columnPrefix + ${columnVars[$field.name]}).equalTo(lit(${field.getValidation().getMinValue()}))))
-                #end
-                #if (${field.getValidation().getMaxValue()})
-                    .withColumn(${columnVars[$field.name]} + "_LESS_THAN_MAX", col(columnPrefix + ${columnVars[$field.name]}).lt(lit(${field.getValidation().getMaxValue()})).or(col(columnPrefix + ${columnVars[$field.name]}).equalTo(lit(${field.getValidation().getMaxValue()}))))
-                #end
-                #if (${field.getValidation().getScale()})
-                    .withColumn(${columnVars[$field.name]} + "_MATCHES_SCALE", col(columnPrefix + ${columnVars[$field.name]}).rlike(("^[0-9]*(?:\\.[0-9]{0,${field.getValidation().getScale()}})?$")))
-                #end
-                #if (${field.getValidation().getMinLength()})
-                    .withColumn(${columnVars[$field.name]} + "_GREATER_THAN_OR_EQUAL_TO_MIN_LENGTH", col(columnPrefix + ${columnVars[$field.name]}).rlike(("^.{${field.getValidation().getMinLength()},}")))
-                #end
-                #if (${field.getValidation().getMaxLength()})
-                #set($max = ${field.getValidation().getMaxLength()} + 1)
-                    .withColumn(${columnVars[$field.name]} + "_LESS_THAN_OR_EQUAL_TO_MAX_LENGTH", col(columnPrefix + ${columnVars[$field.name]}).rlike(("^.{$max,}")).equalTo(lit(false)))
-                #end
-                #foreach ($format in $field.getValidation().getFormats())
-                    #if ($foreach.first)
-                        .withColumn(${columnVars[$field.name]} + "_MATCHES_FORMAT", col(columnPrefix +${columnVars[$field.name]}).rlike(("$format.replace("\","\\")"))
-                    #else
-                        .or(col(columnPrefix + ${columnVars[$field.name]}).rlike(("$format.replace("\","\\")")))
-                    #end
-                    #if ($foreach.last)
-                        )
-                    #end
-                #end
-            #end ;
-
-    ## TODO revise validation for relations
-    #if (false)
-        #foreach($relation in $record.relations)
-            #if($relation.isOneToManyRelation())
-            dataWithValidations = dataWithValidations.withColumn(${relationVars[$relation.name]} + "_VALID", lit(validateWith${relation.capitalizedName}Schema(data.select(col(${relationVars[$relation.name]})))));
-            #else
-            ${relation.capitalizedName}Schema ${relation.uncapitalizedName}Schema = new ${relation.capitalizedName}Schema();
-            dataWithValidations = dataWithValidations.withColumn(${relationVars[$relation.name]} + "_VALID", lit(!${relation.uncapitalizedName}Schema.validateDataFrame(data.select(col(${relationVars[$relation.name]})), ${relationVars[$relation.name]} + ".").isEmpty()));
-            #end
+    protected Dataset<Row> validateDataFrame(Dataset<Row> data, String columnPrefix, Boolean validDataOnly) {
+        Dataset<Row> dataWithValidations = data;
+#if ($record.hasRelations())
+    // relations validation
+    #foreach($relation in $record.relations)
+        #if(!$relation.isNullable())
+        // filter out null data for the required relation
+        dataWithValidations = dataWithValidations.withColumn(VALIDATION_RESULT_COLUMN + ${relationVars[$relation.name]} + "_IS_NOT_NULL", col(columnPrefix + ${relationVars[$relation.name]}).isNotNull());
         #end
+        #if($relation.isOneToManyRelation())
+        dataWithValidations = with${relation.capitalizedName}Validation(dataWithValidations);
+        #else
+        ${relation.capitalizedName}Schema ${relation.uncapitalizedName}Schema = new ${relation.capitalizedName}Schema();
+        dataWithValidations = ${relation.uncapitalizedName}Schema.validateDataFrame(dataWithValidations, ${relationVars[$relation.name]} + ".", false);
+        #end
+    #end
+#end
+        // fields validation
+    #if ($record.hasFields())
+        dataWithValidations = dataWithValidations
+        #foreach ($field in $record.fields)
+            #if (${field.isRequired()})
+                .withColumn(${columnVars[$field.name]} + "_IS_NOT_NULL", col(columnPrefix + ${columnVars[$field.name]}).isNotNull())
+            #else
+                .withColumn(${columnVars[$field.name]} + "_IS_NULL", col(columnPrefix + ${columnVars[$field.name]}).isNull())
+            #end
+            #if (${field.getValidation().getMinValue()})
+                .withColumn(${columnVars[$field.name]} + "_GREATER_THAN_MIN", col(columnPrefix + ${columnVars[$field.name]}).gt(lit(${field.getValidation().getMinValue()})).or(col(columnPrefix + ${columnVars[$field.name]}).equalTo(lit(${field.getValidation().getMinValue()}))))
+            #end
+            #if (${field.getValidation().getMaxValue()})
+                .withColumn(${columnVars[$field.name]} + "_LESS_THAN_MAX", col(columnPrefix + ${columnVars[$field.name]}).lt(lit(${field.getValidation().getMaxValue()})).or(col(columnPrefix + ${columnVars[$field.name]}).equalTo(lit(${field.getValidation().getMaxValue()}))))
+            #end
+            #if (${field.getValidation().getScale()})
+                .withColumn(${columnVars[$field.name]} + "_MATCHES_SCALE", col(columnPrefix + ${columnVars[$field.name]}).rlike(("^[0-9]*(?:\\.[0-9]{0,${field.getValidation().getScale()}})?$")))
+            #end
+            #if (${field.getValidation().getMinLength()})
+                .withColumn(${columnVars[$field.name]} + "_GREATER_THAN_OR_EQUAL_TO_MIN_LENGTH", col(columnPrefix + ${columnVars[$field.name]}).rlike(("^.{${field.getValidation().getMinLength()},}")))
+            #end
+            #if (${field.getValidation().getMaxLength()})
+            #set($max = ${field.getValidation().getMaxLength()} + 1)
+                .withColumn(${columnVars[$field.name]} + "_LESS_THAN_OR_EQUAL_TO_MAX_LENGTH", col(columnPrefix + ${columnVars[$field.name]}).rlike(("^.{$max,}")).equalTo(lit(false)))
+            #end
+            #foreach ($format in $field.getValidation().getFormats())
+                #if ($foreach.first)
+                    .withColumn(${columnVars[$field.name]} + "_MATCHES_FORMAT", col(columnPrefix +${columnVars[$field.name]}).rlike(("$format.replace("\","\\")"))
+                #else
+                    .or(col(columnPrefix + ${columnVars[$field.name]}).rlike(("$format.replace("\","\\")")))
+                #end
+                #if ($foreach.last)
+                    )
+                #end
+            #end
+        #end ;
     #end
 
         List<Column> columnFilterSchemas = new ArrayList<>();
@@ -196,6 +214,12 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
             .collect(Collectors.toList()));
 
         #end
+
+        if (validDataOnly == null || validDataOnly.booleanValue()) {
+            columnsGroupedByField.add(validationColumns.stream()
+                .filter(col -> col.startsWith("__VALIDATE_"))
+                .collect(Collectors.toList()));
+        }
 
         // Create a schema filter for each field represented as a column group
         for (List<String> columnGroup: columnsGroupedByField) {
@@ -232,7 +256,7 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
 
             // Combine all the field filter schemas into one final schema for the row
             Column finalColumnsFilterSchema = null;
-            
+
             for (Column columnGroupFilterSchema: columnFilterSchemas) {
                 if (finalColumnsFilterSchema == null) {
                     finalColumnsFilterSchema = columnGroupFilterSchema;
@@ -240,8 +264,17 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
                     finalColumnsFilterSchema = finalColumnsFilterSchema.and(columnGroupFilterSchema);
                 }
             }
-
-            validData = dataWithValidations.filter(finalColumnsFilterSchema);
+            // only return the valid data
+            if (validDataOnly == null || validDataOnly.booleanValue()) {
+                validData = dataWithValidations.filter(finalColumnsFilterSchema);
+            } else {
+                // return all data but include a validation result column for validation result
+                validData = dataWithValidations.withColumn(VALIDATION_RESULT_COLUMN, when(finalColumnsFilterSchema, lit(true)).otherwise(lit(false)));
+            }
+        } else {
+            if (validDataOnly != null && !validDataOnly.booleanValue()) {
+                validData = dataWithValidations.withColumn(VALIDATION_RESULT_COLUMN, lit(true));
+            }
         }
 
         // Remove validation columns from valid data
@@ -330,26 +363,56 @@ public abstract class ${record.capitalizedName}SchemaBase extends SparkSchema {
         return ${record.name};
     }
 
-
-## TODO revise validation for relations
-#if (false)
+    #set($hasOneToManyRelation = false)
     #foreach ($relation in $record.relations)
         #if ($relation.isOneToManyRelation())
-
+        #set($hasOneToManyRelation = true)
     /**
      * Validate the given ${relation.capitalizedName} 1:M multiplicity relation dataset against ${relation.capitalizedName}Schema.
-     * A false will be return if any one of the relation records schema validation is failed.
-     * Currently not implemented so it throws a NotImplementedException
+     * A dataset with validation result __VALIDATE_${relationVars[$relation.name]} column will be returned
      * @param ${relation.uncapitalizedName}Dataset
-     * @return NotImplementedException
+     * @return dataset contains the validation result column
      */
-    private boolean validateWith${relation.capitalizedName}Schema(Dataset<Row> ${relation.uncapitalizedName}Dataset) {
-        throw new NotImplementedException(
-                "Validation against relations with One to Many multiplicity is not yet implemented");
+    private Dataset<Row> with${relation.capitalizedName}Validation(Dataset<Row> dataset) {
+        ${relation.capitalizedName}Schema ${relation.uncapitalizedName}Schema = new ${relation.capitalizedName}Schema();
+        return validateWithRelationRecordSchema(dataset, ${relationVars[$relation.name]},
+                    ${relation.uncapitalizedName}Schema::validateDataFrame, ${relation.capitalizedName}Schema.VALIDATION_RESULT_COLUMN, !${relation.isNullable()});
     }
 
 
         #end
     #end
-#end
+
+    #if ($hasOneToManyRelation)
+    private Dataset<Row> validateWithRelationRecordSchema(Dataset<Row> dataset, String validationColumn, TriFunction<Dataset<Row>, String, Boolean, Dataset<Row>> validateDataFrame, String resultColumn, boolean required) {
+        final String ID = "id";
+        final String EXPANDED_COLUMN = "EXPANDED_COLUMN";
+        final String AGGREGATED_RESULT_COLUMN = String.format("bool_and(%s)", resultColumn);
+        final String RESULT_COLUMN = String.format("__VALIDATE_%s", validationColumn);
+
+        // add a row id
+        dataset = dataset.withColumn(ID, row_number().over(Window.orderBy(monotonically_increasing_id())));
+
+        // flatten relation array record data for relation record validation
+        Dataset<Row> validationDataset = dataset.select(validationColumn, ID)
+                                                .withColumn(EXPANDED_COLUMN, explode(col(validationColumn))).drop(validationColumn);
+        // validate the flatten dataset
+        validationDataset = validateDataFrame.apply(validationDataset, EXPANDED_COLUMN + ".", false).drop(EXPANDED_COLUMN);
+        // group the validation result with original dataset row id
+        validationDataset = validationDataset.groupBy(ID).agg(bool_and(col(resultColumn)))
+                            .withColumn(RESULT_COLUMN, col(AGGREGATED_RESULT_COLUMN));
+        // cleanup
+        validationDataset = validationDataset.drop(resultColumn, AGGREGATED_RESULT_COLUMN);
+        dataset = dataset.join(validationDataset, ID, "outer").drop(ID);
+
+        if (required) {
+            dataset = dataset.withColumn(RESULT_COLUMN, when(col(RESULT_COLUMN).isNotNull().and(col(RESULT_COLUMN).equalTo(lit(true))), lit(true)).otherwise(lit(false)));
+        } else {
+            dataset = dataset.withColumn(RESULT_COLUMN, when(col(RESULT_COLUMN).isNull().or(col(RESULT_COLUMN).equalTo(lit(true))), lit(true)).otherwise(lit(false)));
+        }
+
+        return dataset;
+    }
+    #end
+
 }

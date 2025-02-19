@@ -11,34 +11,23 @@ package com.boozallen.aiops.mda.pattern;
  */
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.boozallen.aiops.mda.pattern.dictionary.Zipcode;
-import com.boozallen.aiops.mda.pattern.record.PersonWithOneToMRelationSchema;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.NotImplementedException;
+import com.boozallen.aiops.mda.pattern.record.Citizen;
+import io.cucumber.datatable.DataTable;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
 import com.boozallen.aiops.mda.pattern.dictionary.IntegerWithValidation;
 import com.boozallen.aiops.mda.pattern.dictionary.StringWithValidation;
-import com.boozallen.aiops.mda.pattern.record.Address;
 import com.boozallen.aiops.mda.pattern.record.City;
 import com.boozallen.aiops.mda.pattern.record.CitySchema;
 import com.boozallen.aiops.mda.pattern.record.Mayor;
-import com.boozallen.aiops.mda.pattern.record.PersonWithMToOneRelation;
-import com.boozallen.aiops.mda.pattern.record.PersonWithMToOneRelationSchema;
-import com.boozallen.aiops.mda.pattern.record.PersonWithOneToOneRelation;
-import com.boozallen.aiops.mda.pattern.record.PersonWithOneToOneRelationSchema;
 import com.boozallen.aiops.mda.pattern.record.RecordWithNonRequiredValidation;
 import com.boozallen.aiops.mda.pattern.record.RecordWithNonRequiredValidationSchema;
 import com.boozallen.aiops.mda.pattern.record.RecordWithRequiredValidation;
@@ -54,22 +43,16 @@ import io.cucumber.java.en.When;
 public class SparkSchemaTest {
     String recordWithValidatedFieldRequirement;
     CitySchema citySchema;
-    PersonWithOneToOneRelationSchema personWithOneToOneRelationSchema;
-    PersonWithMToOneRelationSchema personWithMToOneRelationSchema;
-    PersonWithOneToMRelationSchema personWithOneToMRelationSchema;
     RecordWithRequiredValidationSchema recordWithRequiredValidationSchema;
     RecordWithNonRequiredValidationSchema recordWithNonRequiredValidationSchema;
     RecordWithNonRequiredValidation recordWithNonRequiredValidation;
     RecordWithRequiredValidation recordWithRequiredValidation;
     List<Row> recordWithRequirementValidationRows;
+    Dataset<Row> recordWithValidatedFieldDataSet;
     SparkSession spark;
     Dataset<Row> cityDataSet;
-    Dataset<Row> personWithOneToOneRelationDataSet;
-    Dataset<Row> personWithMToOneRelationDataSet;
-    Dataset<Row> personWithOneToMRelationDataSet;
-    Dataset<Row> recordWithValidatedFieldDataSet;
     Dataset<Row> validatedDataSet;
-    Exception exception;
+    private final List<String> NULL_OR_EMPTY_ARRAY = List.of("null", "[]");
 
     @Before("@SparkSchema")
     public void setUp() {
@@ -82,63 +65,15 @@ public class SparkSchemaTest {
         // Handled with MDA generation
     }
 
-    @Given("the spark schema is generated for the \"PersonWithOneToOneRelation\" record")
-    public void theSparkSchemaIsGeneratedForThePersonWithOneToOneRelationRecord() {
-        this.personWithOneToOneRelationSchema = new PersonWithOneToOneRelationSchema();
-    }
-
     @Given("a valid \"City\" dataSet exists")
     public void aValidDataSetExists() {
-        List<Row> rows = Collections.singletonList(CitySchema.asRow(createCity()));
+        List<Row> rows = Collections.singletonList(CitySchema.asRow(createCity("valid")));
         this.cityDataSet = spark.createDataFrame(rows, this.citySchema.getStructType());
-    }
-
-    @Given("a {string} \"PersonWithOneToOneRelation\" dataSet exists")
-    public void aValidPersonWithOneToOneRelationDataSetExists(String validity) {
-        PersonWithOneToOneRelation personWithOneToOneRelation = new PersonWithOneToOneRelation();
-        if (StringUtils.equals("valid", validity)){
-            personWithOneToOneRelation.setAddress(createAddress());
-        } else {
-            Address address = createAddress();
-            address.setStreet(null);
-            personWithOneToOneRelation.setAddress(address);
-        }
-
-        List<Row> rows = Collections.singletonList(PersonWithOneToOneRelationSchema.asRow(personWithOneToOneRelation));
-        this.personWithOneToOneRelationDataSet = spark.createDataFrame(rows,
-                this.personWithOneToOneRelationSchema.getStructType());
-    }
-
-    @Given("the spark schema is generated for the \"PersonWithMToOneRelation\" record")
-    public void theSparkSchemaIsGeneratedForThePersonWithMToOneRelationRecord() {
-        this.personWithMToOneRelationSchema = new PersonWithMToOneRelationSchema();
-    }
-
-    @Given("a {string} \"PersonWithMToOneRelation\" dataSet exists")
-    public void aValidPersonWithManyToOneRelationDataSetExists(String validity) {
-        PersonWithMToOneRelation personWithOneToOneRelation = new PersonWithMToOneRelation();
-        if (StringUtils.equals("valid", validity)){
-            personWithOneToOneRelation.setAddress(createAddress());
-        } else {
-            Address address = createAddress();
-            address.setStreet(null);
-            personWithOneToOneRelation.setAddress(address);
-        }
-
-        List<Row> rows = Collections.singletonList(PersonWithMToOneRelationSchema.asRow(personWithOneToOneRelation));
-        this.personWithMToOneRelationDataSet = spark.createDataFrame(rows,
-                this.personWithMToOneRelationSchema.getStructType());
     }
 
     @Given("a \"City\" dataSet with an invalid relation exists")
     public void aCityDataSetWithAnInvalidRelationExists() {
-        IntegerWithValidation integerWithValidation = new IntegerWithValidation(0);
-        Mayor mayor = new Mayor();
-        mayor.setName("Sam");
-        mayor.setIntegerValidation(integerWithValidation);
-
-        City city = createCity();
-        city.setMayor(mayor);
+        City city = createCity("invalid");
         List<Row> rows = Collections.singletonList(CitySchema.asRow(city));
         this.cityDataSet = spark.createDataFrame(rows, this.citySchema.getStructType());
     }
@@ -172,7 +107,7 @@ public class SparkSchemaTest {
             // set valid fields to verify validation still works with multiple fields
             this.recordWithNonRequiredValidation.setStringValidation(new StringWithValidation("Test123"));
             this.recordWithNonRequiredValidation.setStringSimple("Test123");
-            
+
             if (validity.equals("valid")) {
                 this.recordWithNonRequiredValidation.setIntegerValidation(new IntegerWithValidation(150));
             } else if(validity.equals("invalid")) {
@@ -203,7 +138,7 @@ public class SparkSchemaTest {
             this.recordWithRequirementValidationRows.add(RecordWithRequiredValidationSchema.asRow(validRecordWithRequiredValidation));
         } else {
             RecordWithNonRequiredValidation validRecordWithNonRequiredValidation = new RecordWithNonRequiredValidation();
-            
+
             this.recordWithRequirementValidationRows.add(RecordWithNonRequiredValidationSchema.asRow(validRecordWithNonRequiredValidation));
         }
     }
@@ -215,38 +150,10 @@ public class SparkSchemaTest {
 
     @When("a \"City\" POJO is mapped to a spark dataset using the schema")
     public void aSparkDatasetExists() {
-        City expectedCity = createCity();
+        City expectedCity = createCity("valid");
         List<Row> cityRows = Collections.singletonList(CitySchema.asRow(expectedCity));
 
         this.cityDataSet = this.spark.createDataFrame(cityRows, this.citySchema.getStructType());
-    }
-
-    @When("spark schema validation is performed on the \"PersonWithOneToOneRelation\" dataSet")
-    public void sparkSchemaValidationIsPerformedOnThePersonWithOneToOneRelationDataSet() {
-        try {
-            this.validatedDataSet = this.personWithOneToOneRelationSchema.validateDataFrame(this.personWithOneToOneRelationDataSet);
-        }catch (Exception e) {
-            this.exception = e;
-        }
-    }
-
-    @When("spark schema validation is performed on the \"PersonWithMToOneRelation\" dataSet")
-    public void sparkSchemaValidationIsPerformedOnThePersonWithMToOneRelationDataSet() {
-        try {
-            this.validatedDataSet =
-                    this.personWithMToOneRelationSchema.validateDataFrame(this.personWithMToOneRelationDataSet);
-        }catch (Exception e) {
-            this.exception = e;
-        }
-    }
-
-    @When("spark schema validation is performed on the \"City\" dataSet")
-    public void sparkSchemaValidationIsPerformedOnTheCityDataSet() {
-        try {
-            this.validatedDataSet = this.citySchema.validateDataFrame(this.cityDataSet);
-        }catch (Exception e) {
-            this.exception = e;
-        }
     }
 
     @When("the generated spark schema validation is performed on the dataSet")
@@ -262,7 +169,7 @@ public class SparkSchemaTest {
             this.validatedDataSet = this.recordWithRequiredValidationSchema.validateDataFrame(this.recordWithValidatedFieldDataSet);
         } else {
             this.recordWithNonRequiredValidationSchema = new RecordWithNonRequiredValidationSchema();
-            
+
             this.recordWithValidatedFieldDataSet = this.spark.createDataFrame(
                 this.recordWithRequirementValidationRows,
                 this.recordWithNonRequiredValidationSchema.getStructType()
@@ -270,13 +177,6 @@ public class SparkSchemaTest {
 
             this.validatedDataSet = this.recordWithNonRequiredValidationSchema.validateDataFrame(this.recordWithValidatedFieldDataSet);
         }
-    }
-
-    @Then("the validation fails with NotYetImplementedException")
-    public void theValidationFailsWithNotYetImplementedException() {
-        assertNotNull("No exception was thrown", this.exception);
-        assertNotNull("Throw exception is not of instance NotImplementedException", this.exception instanceof
-                NotImplementedException ? (this.exception) : null);
     }
 
     @Then("the schema data type for {string} is {string}")
@@ -287,7 +187,7 @@ public class SparkSchemaTest {
 
     @Then("the dataset has the correct values for the relational objects")
     public void aPOJOCanBeMappedToASparkRow() {
-        City expectedCity = createCity();
+        City expectedCity = createCity("valid");
         for (Row row : this.cityDataSet.collectAsList()) {
             City actualCity = CitySchema.mapRow(row);
             assertEquals("City did not map correctly. Incorrect number of Street relations",
@@ -301,56 +201,148 @@ public class SparkSchemaTest {
         }
     }
 
-    @Then("the dataSet validation {string}")
-    public void theDataSetValidationIsSuccessful(String succeed) {
-        if(StringUtils.equals("fails", succeed)) {
-            assertTrue("Validation passed when it should have failed", validatedDataSet.isEmpty());
-        } else {
-            assertNotNull("Validation failed when it should have passed", validatedDataSet);
-            assertFalse("Validation failed when it should have passed", validatedDataSet.isEmpty());
-        }
-    }
-
     @Then("the resulting dataSet contains {int} row\\(s)")
     public void theResultingDataSetContainsRows(int numRows) {
         assertEquals("The validated dataSet contained the incorrect number of rows", numRows, this.validatedDataSet.count());
     }
 
-    private City createCity(){
-        IntegerWithValidation integerWithValidation = new IntegerWithValidation(100);
+    @Given("the following City dataset:")
+    public void theFollowingCityDataset(DataTable inputTable) {
+        List<Map<String, String>> records = inputTable.asMaps();
+        List<Row> rows = new ArrayList<>();
+        for (Map<String, String> record :records) {
+            rows.add(CitySchema.asRow(createCity(record.get("Mayor"), record.get("State"), record.get("Streets"), record.get("Citizen"))));
+        }
+        this.citySchema = new CitySchema();
+        this.cityDataSet = this.spark.createDataFrame(rows, this.citySchema.getStructType());
+    }
+
+    @When("the dataset is validated against the schema")
+    public void theDatasetIsValidatedAgainstTheSchema() {
+        validatedDataSet = this.citySchema.validateDataFrame(this.cityDataSet);
+    }
+
+    @Then("the result dataset should match:")
+    public void theResultDatasetShouldMatch(DataTable result) {
+        List<Row> rows = new ArrayList<>();
+        List<Map<String, String>> records = result.asMaps();
+        for (Map<String, String> record :records) {
+            rows.add(CitySchema.asRow(createCity(record.get("Mayor"), record.get("State"), record.get("Streets"), record.get("Citizen"))));
+        }
+
+        Dataset<Row> expectedDataset = this.spark.createDataFrame(rows, this.citySchema.getStructType());
+        this.validatedDataSet.except(expectedDataset);
+        assertEquals("The validated dataset has expected size.", this.validatedDataSet.count(), expectedDataset.count());
+        assertEquals("The validated dataset has the expected results.", expectedDataset.except(this.validatedDataSet).isEmpty(), true);
+    }
+
+    private Mayor createMayor(String type) {
+        type = type.strip();
+        Mayor mayor = new Mayor();
+        if (NULL_OR_EMPTY_ARRAY.contains(type)) {
+            mayor = null;
+        } else if (type.startsWith("valid")) {
+            mayor.setName("Valid Mayor");
+            mayor.setIntegerValidation(new IntegerWithValidation(100));
+        } else {
+            mayor.setName("invalid Mayor");
+            mayor.setIntegerValidation(new IntegerWithValidation(1000));
+        }
+        return mayor;
+    }
+
+    private Citizen createCitizen(String type) {
+        type = type.strip();
+        Citizen citizen = new Citizen();
+        if (type.equals("null")) {
+            citizen = null;
+        } else if (type.startsWith("valid")) {
+            citizen.setName("Valid Citizen");
+            citizen.setIntegerValidation(new IntegerWithValidation(100));
+        } else {
+            citizen.setName("invalid Citizen");
+            citizen.setIntegerValidation(new IntegerWithValidation(1000));
+        }
+        return citizen;
+    }
+
+    private List<Citizen> createCitizens(String... types) {
+        if (types.length == 1 && NULL_OR_EMPTY_ARRAY.contains(types[0].strip())) {
+            return (List<Citizen>) getNullOrEmptyList(types[0].strip());
+        }
+
+        List<Citizen> citizens = new ArrayList<>();
+        for (String type: types) {
+            type = type.strip();
+            citizens.add(createCitizen(type));
+        }
+        return citizens;
+    }
+
+    private Street createStreet(String type) {
+        type = type.strip();
+        Street street = new Street();
+        if (type.startsWith("valid")) {
+            street.setName("Valid Street");
+            street.setCounty("Valid County");
+            street.setIntegerValidation(new IntegerWithValidation(100));
+        } else {
+            street.setName("Invalid Street");
+            street.setCounty("Invalid County");
+            street.setIntegerValidation(new IntegerWithValidation(1000));
+        }
+        return street;
+    }
+
+    private List<Street> createStreets(String... types) {
+        if (types.length == 1 && NULL_OR_EMPTY_ARRAY.contains(types[0].strip())) {
+            return (List<Street>)getNullOrEmptyList(types[0].strip());
+        }
 
         List<Street> streets = new ArrayList<>();
-        Street street = new Street();
-        street.setName("Street 1 Name");
-        street.setCounty("County 2 Name");
-        street.setIntegerValidation(integerWithValidation);
-        streets.add(street);
-        Street street2 = new Street();
-        street2.setName("Street 2 Name");
-        street2.setCounty("County 2 Name");
-        street2.setIntegerValidation(integerWithValidation);
-        streets.add(street2);
+        for (String type: types) {
+            type = type.strip();
+            streets.add(createStreet(type));
+        }
+        return streets;
+    }
 
+    private State createState(String type) {
+        type = type.strip();
         State state = new State();
-        state.setName("Maryland");
+        if (NULL_OR_EMPTY_ARRAY.contains(type)) {
+            state = null;
+        } else if (type.startsWith("valid")) {
+            state.setName("Valid State");
+        } else {
+            state.setName("Invalid State");
+        }
+        return state;
+    }
 
-        Mayor mayor = new Mayor();
-        mayor.setName("Sam");
-        mayor.setIntegerValidation(integerWithValidation);
-
+    private City createCity(String type) {
+        type = type.strip();
         City city = new City();
-        city.setStreet(streets);
-        city.setMayor(mayor);
-        city.setState(state);
+        city.setCitizen(List.of(createCitizen(type), createCitizen(type)));
+        city.setMayor(createMayor(type));
+        city.setState(createState(type));
+        city.setStreet(List.of(createStreet(type), createStreet(type)));
         return city;
     }
 
-    private Address createAddress(){
-        Address address = new Address();
-        address.setZipcode(new Zipcode("12345-1234"));
-        address.setCity("City");
-        address.setState(new com.boozallen.aiops.mda.pattern.dictionary.State("CA"));
-        address.setStreet("Street");
-        return address;
+    private City createCity(String mayorValidity, String stateValidity, String streetValidity, String citizenValidity) {
+        City city = new City();
+        city.setMayor(createMayor(mayorValidity));
+        city.setState(createState(stateValidity));
+        city.setStreet(createStreets(streetValidity.split(",")));
+        city.setCitizen(createCitizens(citizenValidity.split(",")));
+        return city;
+    }
+
+    private Object getNullOrEmptyList(String type) {
+        if (type.equals("null")) {
+            return null;
+        }
+        return new ArrayList<>();
     }
 }

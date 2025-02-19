@@ -9,22 +9,11 @@ from aissemble_test_data_delivery_pyspark_model.dictionary.integer_with_validati
 from aissemble_test_data_delivery_pyspark_model.dictionary.string_with_validation import (
     StringWithValidation,
 )
-from aissemble_test_data_delivery_pyspark_model.dictionary.state_address import (
-    StateAddress,
-)
-from aissemble_test_data_delivery_pyspark_model.dictionary.zipcode import Zipcode
-from aissemble_test_data_delivery_pyspark_model.record.address import Address
 from aissemble_test_data_delivery_pyspark_model.record.city import (
     City,
 )
 from aissemble_test_data_delivery_pyspark_model.record.mayor import (
     Mayor,
-)
-from aissemble_test_data_delivery_pyspark_model.record.person_with_m_to_one_relation import (
-    PersonWithMToOneRelation,
-)
-from aissemble_test_data_delivery_pyspark_model.record.person_with_one_to_one_relation import (
-    PersonWithOneToOneRelation,
 )
 from aissemble_test_data_delivery_pyspark_model.record.state import (
     State,
@@ -42,11 +31,8 @@ from aissemble_test_data_delivery_pyspark_model.record.record_with_non_required_
 from aissemble_test_data_delivery_pyspark_model.schema.city_schema import (
     CitySchema,
 )
-from aissemble_test_data_delivery_pyspark_model.schema.person_with_m_to_one_relation_schema import (
-    PersonWithMToOneRelationSchema,
-)
-from aissemble_test_data_delivery_pyspark_model.schema.person_with_one_to_one_relation_schema import (
-    PersonWithOneToOneRelationSchema,
+from aissemble_test_data_delivery_pyspark_model.record.citizen import (
+    Citizen,
 )
 from aissemble_test_data_delivery_pyspark_model.schema.record_with_required_validation_schema import (
     RecordWithRequiredValidationSchema,
@@ -54,6 +40,8 @@ from aissemble_test_data_delivery_pyspark_model.schema.record_with_required_vali
 from aissemble_test_data_delivery_pyspark_model.schema.record_with_non_required_validation_schema import (
     RecordWithNonRequiredValidationSchema,
 )
+
+NULL_OR_EMPTY_ARRAY = ["null", "[]"]
 
 
 @given('the record "City" exists with the following relations')
@@ -70,82 +58,6 @@ def step_impl(context):
 @given("a city record is created")
 def step_impl(context):
     context.city = _create_city()
-
-
-@given('a "City" dataSet with a "{validity}" "Mayor" exists')
-def step_impl(context, validity):
-    city = _create_city()
-    if validity == "invalid":
-        mayor = Mayor()
-        mayor.integer_validation = IntegerWithValidation(0)
-        city.mayor = mayor
-
-    context.city_dataset = _create_city_dataframe(context, city)
-
-
-@given('a "City" dataSet with a "{validity}" "State" exists')
-def step_impl(context, validity):
-    city = _create_city()
-    if validity == "invalid":
-        state = State()
-        state.integer_validation = IntegerWithValidation(0)
-        city.state = state
-
-    context.city_dataset = _create_city_dataframe(context, city)
-
-
-@given(
-    'a "City" dataSet with "{valid_size}" valid "Street" and "{invalid_size}" invalid streets exists'
-)
-def step_impl(context, valid_size, invalid_size):
-    city = _create_city()
-    streets: List[Street] = []
-    for _ in range(int(valid_size)):
-        streets.append(_create_street())
-
-    for _ in range(int(invalid_size)):
-        street = _create_street()
-        street.integer_validation = IntegerWithValidation(0)
-        streets.append(street)
-
-    city.street = streets
-    context.city_dataset = _create_city_dataframe(context, city)
-
-
-@given('the spark schema is generated for the "PersonWithOneToOneRelation" record')
-def step_impl(context):
-    context.schema = PersonWithOneToOneRelationSchema()
-
-
-@given('a "{validity}" "PersonWithOneToOneRelation" dataSet exists')
-def step_impl(context, validity):
-    person_with_one_to_one_relation = PersonWithOneToOneRelation()
-    address = _create_address()
-    if validity == "invalid":
-        address.zipcode = Zipcode("0")
-    person_with_one_to_one_relation.address = address
-    row = PersonWithOneToOneRelation.as_row(person_with_one_to_one_relation)
-    context.person_with_one_to_one_relation = (
-        context.test_spark_session.createDataFrame([row], context.schema.struct_type)
-    )
-
-
-@given('the spark schema is generated for the "PersonWithMToOneRelation" record')
-def step_impl(context):
-    context.schema = PersonWithMToOneRelationSchema()
-
-
-@given('a "{validity}" "PersonWithMToOneRelation" dataSet exists')
-def step_impl(context, validity):
-    person_with_many_to_one_relation = PersonWithMToOneRelation()
-    address = _create_address()
-    if validity == "invalid":
-        address.zipcode = Zipcode("0")
-    person_with_many_to_one_relation.address = address
-    row = PersonWithMToOneRelation.as_row(person_with_many_to_one_relation)
-    context.person_with_many_to_one_relation = (
-        context.test_spark_session.createDataFrame([row], context.schema.struct_type)
-    )
 
 
 @given('a record with a "{requirement}" field with validation rules')
@@ -217,43 +129,6 @@ def step_impl(context):
     context.record_with_requirement_validation_rows.append(valid_row)
 
 
-@when('spark schema validation is performed on the "PersonWithMToOneRelation" dataSet')
-def step_impl(context):
-    person_with_many_to_one_relation_schema = PersonWithMToOneRelationSchema()
-    context.validated_dataframe = (
-        person_with_many_to_one_relation_schema.validate_dataset(
-            context.person_with_many_to_one_relation
-        )
-    )
-
-
-@when(
-    'spark schema validation is performed on the "PersonWithOneToOneRelation" dataSet'
-)
-def step_impl(context):
-    person_with_one_to_one_relation_schema = PersonWithOneToOneRelationSchema()
-    context.validated_dataframe = (
-        person_with_one_to_one_relation_schema.validate_dataset(
-            context.person_with_one_to_one_relation
-        )
-    )
-
-
-@when('a "City" object is mapped to a spark dataset using the record')
-def step_impl(context):
-    context.city_dataset = _create_city_dataframe(context, context.city)
-
-
-@when('spark schema validation is performed on the "City" dataSet')
-def step_impl(context):
-    try:
-        context.validated_dataframe = context.schema.validate_dataset(
-            context.city_dataset
-        )
-    except Exception as e:
-        context.exc = e
-
-
 @when("the generated spark schema validation is performed on the dataSet")
 def step_impl(context):
     if context.record_with_validated_field_requirement == "required":
@@ -275,6 +150,53 @@ def step_impl(context):
     )
 
 
+@given("the following City dataset")
+def step_impl(context):
+    cities = []
+    context.schema = CitySchema()
+    for row in context.table:
+        cities.append(
+            City.as_row(
+                _create_city(row["Mayor"], row["State"], row["Streets"], row["Citizen"])
+            )
+        )
+    context.city_dataset = _create_city_dataframe(context, cities)
+
+
+@when("the dataset is validated against the schema")
+def step_impl(context):
+    context.validated_dataset = context.schema.validate_dataset(context.city_dataset)
+
+
+@then("the result dataset should match")
+def step_impl(context):
+    rows = []
+    for row in context.table:
+        rows.append(
+            City.as_row(
+                _create_city(row["Mayor"], row["State"], row["Streets"], row["Citizen"])
+            )
+        )
+
+    expected_dataset = context.test_spark_session.createDataFrame(
+        rows, context.schema.struct_type
+    )
+
+    nt.assert_true(
+        expected_dataset.count() == context.validated_dataset.count(),
+        "The validated dataset has expected size.",
+    )
+    nt.assert_true(
+        expected_dataset.exceptAll(context.validated_dataset).isEmpty(),
+        "The validated dataset has the expected results.",
+    )
+
+
+@when('a "City" object is mapped to a spark dataset using the record')
+def step_impl(context):
+    context.city_dataset = _create_city_dataframe(context, [City.as_row(context.city)])
+
+
 @then('the schema data type for "{record}" is "{type}"')
 def step_impl(context, record, type):
     nt.assert_equal(str(context.schema.get_data_type(record.upper())), type)
@@ -292,33 +214,6 @@ def step_impl(context):
         )
 
 
-@then('the dataSet validation "{success}"')
-def step_impl(context, success):
-    if success == "passes":
-        nt.assert_true(
-            context.validated_dataframe is not None,
-            "Validation failed when it should have passed",
-        )
-        nt.assert_true(
-            not context.validated_dataframe.isEmpty(),
-            "Validation failed when it should have passed",
-        )
-    else:
-        nt.assert_true(
-            context.validated_dataframe is None
-            or context.validated_dataframe.isEmpty(),
-            "Validation passed when it should have failed",
-        )
-
-
-@then("the dataSet validation raises a not implemented error")
-def step_impl(context):
-    nt.assert_true(context.exc is not None, "No exception was raised when validating")
-    nt.assert_true(
-        isinstance(context.exc, NotImplementedError),
-    )
-
-
 @then("the resulting dataSet contains {numRows} row(s)")
 def step_impl(context, numRows):
     nt.assert_equal(
@@ -328,46 +223,103 @@ def step_impl(context, numRows):
     )
 
 
-def _create_city() -> City:
-    streets: List[Street] = []
-    street = Street()
-    street.name = "Street Name"
-    street.county = "Street County"
-    street.integer_validation = IntegerWithValidation(200)
-    streets.append(street)
+def _create_city_dataframe(context, cities):
+    return context.test_spark_session.createDataFrame(
+        cities, context.schema.struct_type
+    )
 
+
+def _create_mayor(validity: str) -> Mayor:
     mayor = Mayor()
-    mayor.integer_validation = IntegerWithValidation(200)
-    mayor.name = "Mayor"
+    if validity in NULL_OR_EMPTY_ARRAY:
+        mayor = None
+    elif validity.startswith("valid"):
+        mayor.name = "Valid Mayor"
+        mayor.integer_validation = IntegerWithValidation(100)
+    else:
+        mayor.name = "invalid Mayor"
+        mayor.integer_validation = IntegerWithValidation(1000)
 
-    state = State()
-    state.integer_validation = IntegerWithValidation(200)
-    state.name = "State Name"
-
-    city = City()
-    city.street = streets
-    city.mayor = mayor
-    city.state = state
-    return city
+    return mayor
 
 
-def _create_street() -> Street:
+def _create_citizen(validity: str) -> Citizen:
+    citizen = Citizen()
+    if validity == "null":
+        citizen = None
+    elif validity.startswith("valid"):
+        citizen.name = "Valid Citizen"
+        citizen.integer_validation = IntegerWithValidation(100)
+    else:
+        citizen.name = "invalid Citizen"
+        citizen.integer_validation = IntegerWithValidation(1000)
+    return citizen
+
+
+def _create_citizens(validity: List[str]) -> List[Citizen]:
+    if len(validity) == 1 and validity[0] in NULL_OR_EMPTY_ARRAY:
+        return _get_null_or_empty_list(validity[0])
+
+    citizens = []
+    for item_type in validity:
+        citizens.append(_create_citizen(item_type))
+
+    return citizens
+
+
+def _create_street(validity: str):
     street = Street()
-    street.integer_validation = IntegerWithValidation(200)
-    street.name = "Street Name"
-    street.county = "Street County"
+    if validity.startswith("valid"):
+        street.name = "Valid Street"
+        street.county = "Valid County"
+        street.integer_validation = IntegerWithValidation(100)
+    else:
+        street.name = "Invalid Street"
+        street.county = "Invalid County"
+        street.integer_validation = IntegerWithValidation(1000)
     return street
 
 
-def _create_city_dataframe(context, city):
-    row = City.as_row(city)
-    return context.test_spark_session.createDataFrame([row], context.schema.struct_type)
+def _create_streets(validity: List[str]) -> List[Street]:
+    if len(validity) == 1 and validity[0] in NULL_OR_EMPTY_ARRAY:
+        return _get_null_or_empty_list(validity[0])
+
+    streets = []
+    for item_type in validity:
+        streets.append(_create_street(item_type))
+
+    return streets
 
 
-def _create_address() -> Address:
-    address = Address()
-    address.street = "street address"
-    address.city = "city address"
-    address.zipcode = Zipcode("12345")
-    address.state = StateAddress("ZZ")
-    return address
+def _create_state(validity: str):
+    state = State()
+    if validity in NULL_OR_EMPTY_ARRAY:
+        state = None
+    elif validity.startswith("valid"):
+        state.name = "Valid State"
+        state.integer_validation = IntegerWithValidation(100)
+    else:
+        state.name = "Invalid State"
+        state.integer_validation = IntegerWithValidation(100)
+    return state
+
+
+# todo: should I aggregate the validity inside the context?
+def _create_city(
+    mayor_validity="valid",
+    state_validity="valid",
+    street_validity="valid",
+    citizen_validity="valid",
+):
+    city = City()
+    city.mayor = _create_mayor(mayor_validity)
+    city.state = _create_state(state_validity)
+    city.street = _create_streets(street_validity.split(","))
+    city.citizen = _create_citizens(citizen_validity.split(","))
+    return city
+
+
+def _get_null_or_empty_list(validity):
+    if validity == "null":
+        return None
+    return []

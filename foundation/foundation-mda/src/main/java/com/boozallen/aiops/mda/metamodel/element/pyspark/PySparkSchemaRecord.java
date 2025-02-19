@@ -34,6 +34,8 @@ public class PySparkSchemaRecord extends PythonRecord {
 
     private static final String SCHEMA_PACKAGE = "from ...schema.%s_schema import %sSchema";
     private static final String PYSPARK_ARRAY_IMPORT = "from pyspark.sql.types import ArrayType";
+    private static final String PYSPARK_COL_FUNCTIONS = "from pyspark.sql.functions import bool_and, explode, monotonically_increasing_id, row_number";
+    private static final String PYSPARK_WINDOW_IMPORT = "from pyspark.sql.window import Window";
     private Set<String> imports = new TreeSet<>();
 
     /**
@@ -79,12 +81,14 @@ public class PySparkSchemaRecord extends PythonRecord {
                 imports.add(dictionaryTypeImport);
             }
         }
-        boolean isArrayImportAdded = false;
+        boolean isPysparkImportAdded = false;
         for (Relation relation : getRelations()) {
             PythonRecordRelation wrappedRelation = new PythonRecordRelation(relation);
-            if(wrappedRelation.isOneToManyRelation() && !isArrayImportAdded) {
-                isArrayImportAdded = true;
+            if(wrappedRelation.isOneToManyRelation() && !isPysparkImportAdded) {
+                isPysparkImportAdded = true;
                 imports.add(PYSPARK_ARRAY_IMPORT);
+                imports.add(PYSPARK_COL_FUNCTIONS);
+                imports.add(PYSPARK_WINDOW_IMPORT);
             }
             imports.add(String.format(SCHEMA_PACKAGE, wrappedRelation.getSnakeCaseName(), relation.getName()));
         }
