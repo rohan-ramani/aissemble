@@ -25,4 +25,7 @@ class PolicyConfiguration:
         Configures the location and file name of the file that contains the
         policies.
         """
-        return self.properties["policies-location"]
+        try:
+            return self.properties["policies-location"]
+        except TypeError:
+            return None

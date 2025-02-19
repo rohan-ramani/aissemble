@@ -36,12 +36,14 @@
                                 <exclude>test/java/com/boozallen/aiops/mda/pattern/RelationTest.java</exclude>
                                 <exclude>test/java/com/boozallen/aiops/mda/pattern/RelationValidationTest.java</exclude>
                                 <exclude>test/java/com/boozallen/aiops/mda/pattern/SparkSchemaTest.java</exclude>
+                                <exclude>test/java/com/boozallen/aiops/mda/pattern/EncryptionTest.java</exclude>
                                 <exclude>test/resources/config/</exclude>
                                 <exclude>test/resources/specifications/record.feature</exclude>
                                 <exclude>test/resources/specifications/lineage.feature</exclude>
                                 <exclude>test/resources/specifications/relation.feature</exclude>
                                 <exclude>test/resources/specifications/relation-validation.feature</exclude>
                                 <exclude>test/resources/specifications/sparkSchema.feature</exclude>
+                                <exclude>test/resources/specifications/encryption.feature</exclude>
                                 <exclude>test/resources/krausening/base/</exclude>
                                 <exclude>test/resources/apps</exclude>
                             </excludes>
