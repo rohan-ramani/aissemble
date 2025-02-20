@@ -107,6 +107,10 @@ public class MavenUtil {
         return getChildModuleName(rootProjectDirectory, ".+-shared");
     }
 
+    public static String getPipelinesModuleName(final File rootProjectDirectory) {
+        return getChildModuleName(rootProjectDirectory, ".+-pipelines");
+    }
+
     /**
      * Discovers the appropriate data record module for the given language and data module type. If the language is not
      * the default language for the data module, a language-specific module is returned.

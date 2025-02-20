@@ -158,17 +158,13 @@ public class BasePipelineDecorator implements Pipeline  {
 	}
 
 
-	public boolean hasMessaging() {
-		for (Step step : getSteps()) {
-			if (step.getInbound() != null) {
-				if ("messaging".equals(step.getInbound().getType())) {
-					return true;
-				}
-			}
-			if (step.getOutbound() != null) {
-				if ("messaging".equals(step.getOutbound().getType())) {
-					return true;
-				}
+	/**
+	 * @return true if any step uses `messaging` or `multimessaging` type inbound/outbound
+ 	 */
+	public boolean hasMessagingSteps() {
+		for (BaseStepDecorator step : getSteps()) {
+			if(step.hasMessagingInbound() || step.hasMessagingOutbound()) {
+				return true;
 			}
 		}
 		return false;
@@ -343,6 +339,15 @@ public class BasePipelineDecorator implements Pipeline  {
                 .stream()
                 .anyMatch(BaseStepDecorator::isMetadataEnabled);
     }
+
+	/**
+	 * @return true if any features that require messaging are enabled
+	 */
+	public boolean isMessagingSupportNeeded() {
+		return isAlertingSupportNeeded() ||
+				isMetadataNeeded() ||
+				hasMessagingSteps();
+	}
 
     private boolean hasPersistType(PersistType persistType) {
         boolean hasPersistType = false;

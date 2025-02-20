@@ -26,7 +26,7 @@ aissemble-extensions-data-delivery-spark-py = "${aissemblePythonVersion}"
 aissemble-foundation-data-lineage-python = "${aissemblePythonVersion}"
 #end
 
-#if ($pipeline.hasMessaging() || $pipeline.isMetadataNeeded() || $pipeline.getDataLineage())
+#if ($pipeline.isMessagingSupportNeeded())
 confluent-kafka = { version = "2.1.1", optional = true }
 kafka-python = "^2.0.2"
 #end

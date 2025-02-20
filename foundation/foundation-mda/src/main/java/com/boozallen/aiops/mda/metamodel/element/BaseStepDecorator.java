@@ -289,26 +289,6 @@ public class BaseStepDecorator implements Step {
     }
 
     /**
-     * Whether or not the given step data binding has type 'messaging'.
-     * 
-     * @param stepDataBinding
-     *            the step data binding to check
-     * @return true if the given step data binding has type 'messaging'
-     */
-	public boolean isMessaging(StepDataBinding stepDataBinding) {
-		return stepDataBinding != null && ("messaging".equalsIgnoreCase(stepDataBinding.getType()));
-	}
-
-	/**
-	 * Whether or not the given step data binding has type 'multimessaging'.
-	 * @param stepDataBinding the step data binding to check
-	 * @return true if the given step data binding has type 'multimessaging'.
-	 */
-	public boolean isMultiMessaging(StepDataBinding stepDataBinding) {
-		return stepDataBinding != null && ("multimessaging".equalsIgnoreCase(stepDataBinding.getType()));
-	}
-
-    /**
      * Whether or not the step has inbound type 'messaging'.
      * 
      * @return true if the step has inbound type 'messaging'
@@ -318,12 +298,19 @@ public class BaseStepDecorator implements Step {
 	}
 
     /**
-     * Whether or not the step has outbound type 'messaging'.
-     * 
-     * @return true if the step has outbound type 'messaging'
+     * @return true if the step has outbound type 'messaging' or 'multimessaging'
      */
 	public boolean hasMessagingOutbound() {
-		return isMessaging(getOutbound()) || isMultiMessaging(getOutbound());
+		return hasSingleMessagingOutbound() || hasMultiMessagingOutbound();
+	}
+
+	/**
+	 * Whether or not the step has outbound type 'messaging'.
+	 *
+	 * @return true if the step has outbound type 'messaging'
+	 */
+	public boolean hasSingleMessagingOutbound() {
+		return isMessaging(getOutbound());
 	}
 
 	/**
@@ -457,4 +444,25 @@ public class BaseStepDecorator implements Step {
 
 		return isNative && hasRelations;
 	}
+
+	/**
+	 * Whether or not the given step data binding has type 'messaging'.
+	 *
+	 * @param stepDataBinding
+	 *            the step data binding to check
+	 * @return true if the given step data binding has type 'messaging'
+	 */
+	protected boolean isMessaging(StepDataBinding stepDataBinding) {
+		return stepDataBinding != null && ("messaging".equalsIgnoreCase(stepDataBinding.getType()));
+	}
+
+	/**
+	 * Whether or not the given step data binding has type 'multimessaging'.
+	 * @param stepDataBinding the step data binding to check
+	 * @return true if the given step data binding has type 'multimessaging'.
+	 */
+	protected boolean isMultiMessaging(StepDataBinding stepDataBinding) {
+		return stepDataBinding != null && ("multimessaging".equalsIgnoreCase(stepDataBinding.getType()));
+	}
+
 }

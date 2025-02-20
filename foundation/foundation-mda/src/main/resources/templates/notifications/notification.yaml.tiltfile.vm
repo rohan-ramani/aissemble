@@ -1,4 +1,0 @@
-#foreach ($item in $items)
-k8s_yaml('${item}')
-
-#end
