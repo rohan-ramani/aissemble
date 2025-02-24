@@ -581,7 +581,7 @@
                                                 <builderName>maven</builderName>
                                                 <driverOpts>
                                                     <!-- Fully qualify build driver image name to ensure any configured credentials are used -->
-                                                    <image>docker.io/moby/buildkit:buildx-stable-1</image>
+                                                    <image>docker.io/moby/buildkit:v0.19.0</image>
                                                 </driverOpts>
                                                 <cacheTo>type=local,dest=${user.home}/.docker/cache</cacheTo>
                                                 <cacheFrom>type=local,src=${user.home}/.docker/cache</cacheFrom>

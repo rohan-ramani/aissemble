@@ -50,6 +50,7 @@ helm install arc-runner-set-aissemble oci://ghcr.io/actions/actions-runner-contr
              --namespace gh-actions-aissemble \
              --create-namespace \
              --set githubConfigSecret.github_token="{TOKEN}" \
+             --post-renderer ./kustomize.sh \
              -f runnerset-values.yaml
 ```
 
@@ -72,5 +73,6 @@ the token may be required to achieve this.
 helm upgrade arc-runner-set-aissemble oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set \
              --namespace gh-actions-aissemble \
              --reuse-values \
+             --post-renderer ./kustomize.sh \
              -f runnerset-values.yaml
 ```
