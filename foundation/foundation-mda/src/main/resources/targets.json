@@ -2929,7 +2929,7 @@
     "name": "s3LocalValuesFileV2",
     "templateName": "templates/deployment/localstack/localstack.values.yaml.vm",
     "outputFile": "apps/${appName}/values.yaml",
-    "generator": "com.boozallen.aiops.mda.generator.KubernetesGenerator",
+    "generator": "com.boozallen.aiops.mda.generator.S3LocalValuesKubernetesGenerator",
     "metadataContext": "targeted",
     "overwritable": false
   },

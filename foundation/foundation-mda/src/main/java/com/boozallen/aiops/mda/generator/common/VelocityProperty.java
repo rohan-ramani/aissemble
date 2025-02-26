@@ -22,6 +22,7 @@ public final class VelocityProperty {
     public static final String SPARK_PIPELINES = "sparkPipelines";
     public static final String PYSPARK_PIPELINES = "pysparkPipelines";
     public static final String DATAFLOW_PIPELINES = "dataFlowPipelines";
+    public static final String MACHINE_LEARNING_PIPELINES = "machineLearningPipelines";
     public static final String TRAINING_PIPELINE = "trainingPipeline";
     public static final String TRAINING_PIPELINES = "trainingPipelines";
     public static final String INFERENCE_PIPELINE = "inferencePipeline";

@@ -5,4 +5,14 @@
 ################################################################################]]##
 
 aissemble-localstack-chart:
-  buckets: []
+  buckets:
+  #if (${dataFlowPipelines})
+    - name: spark-infrastructure
+      keys:
+      - warehouse/
+  #end
+  #if (${machineLearningPipelines})
+    - name: mlflow-models
+      keys:
+      - mlflow-storage/
+  #end

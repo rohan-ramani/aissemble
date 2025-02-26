@@ -1,6 +1,6 @@
 
 In ${rootPath}:
-Remove the empty "[]" from "buckets: []" and include the following content to the list:
+Append the following content to the bucket list:
 
     - name: ${bucketName}
       keys:
