@@ -80,6 +80,10 @@ To start your aiSSEMBLE upgrade, update your project's pom.xml to use the 1.11.0
 
 ## Conditional Steps
 
+### For projects that have customized the Hive service
+The hive service base image has been switched from `docker.io/eclipse-temurin:17-jre` to `registry.access.redhat.com/ubi9/openjdk-17-runtime:1.21`. 
+Projects should update their Hive service Dockerfile or any related startup configuration script to use `microdnf` instead `apt-get` as the package manager if applicable
+
 ## Final Steps - Required for All Projects
 ### Finalizing the Upgrade
 1. Run `./mvnw org.technologybrewery.baton:baton-maven-plugin:baton-migrate` to apply the automatic migrations

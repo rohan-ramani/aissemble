@@ -1,5 +1,5 @@
 ARG METASTORE_VERSION
-FROM docker.io/eclipse-temurin:17-jre AS builder
+FROM registry.access.redhat.com/ubi9/openjdk-17-runtime:1.21 as builder
 
 ARG METASTORE_VERSION
 ARG HADOOP_VERSION
@@ -11,9 +11,14 @@ ENV HADOOP_HOME=/opt/hadoop
 ENV HIVE_HOME=/opt/hive
 ENV HIVE_VER=$METASTORE_VERSION
 
+USER root
+
+RUN set -eux; \
+    microdnf install -y gzip util-linux
+
 # Install hadoop
 RUN cd /tmp \
-    && wget https://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz -O - \
+    && curl https://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz \
        | tar -xzf - \
     && mv hadoop-${HADOOP_VERSION} $HADOOP_HOME
 
@@ -41,7 +46,7 @@ RUN sed -i \
     's/org.apache.hadoop.hive.metastore.tools.MetastoreSchemaTool/org.apache.hadoop.hive.metastore.tools.schematool.MetastoreSchemaTool/' \
     "$HIVE_HOME/bin/ext/schemaTool.sh"
 
-FROM docker.io/eclipse-temurin:17-jre AS final
+FROM registry.access.redhat.com/ubi9/openjdk-17-runtime:1.21 as final
 
 LABEL org.opencontainers.image.source="https://github.com/boozallen/aissemble"
 
@@ -61,6 +66,8 @@ COPY --from=builder $HADOOP_HOME $HADOOP_HOME
 COPY --from=builder $HIVE_HOME $HIVE_HOME
 
 COPY --chmod=755 src/main/resources/scripts/entrypoint.sh /entrypoint.sh
+
+USER root
 
 RUN groupadd -rf hive --gid=1000 && \
     useradd --home $HIVE_HOME -g hive --shell /usr/sbin/nologin --uid 1000 hive -o && \
