@@ -14,7 +14,6 @@ import com.boozallen.aiops.mda.generator.common.PipelineEnum;
 import com.boozallen.aiops.mda.generator.common.VelocityProperty;
 import com.boozallen.aiops.mda.metamodel.AissembleModelInstanceRepository;
 import com.boozallen.aiops.mda.metamodel.element.Pipeline;
-import com.boozallen.aiops.mda.metamodel.element.python.MachineLearningPipeline;
 import org.apache.velocity.VelocityContext;
 import org.technologybrewery.fermenter.mda.generator.GenerationContext;
 
