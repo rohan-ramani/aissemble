@@ -14,6 +14,14 @@ mp.messaging.outgoing.metadata-ingest.topic=metadata-ingest
 mp.messaging.outgoing.metadata-ingest.value.serializer=com.boozallen.aissemble.core.metadata.producer.MetadataSerializer
 #end
 
+#if (${pipeline.isAlertingSupportNeeded()})
+$header Alert Producer configs $header
+mp.messaging.outgoing.alerts.connector=smallrye-kafka
+mp.messaging.outgoing.alerts.topic=alerts
+##TODO: StringSerializer actually throws an exception. We need an AlertSerializer in alerting-core
+mp.messaging.outgoing.alerts.value.serializer=org.apache.kafka.common.serialization.StringSerializer
+#end
+
 #if (${pipeline.getDataLineage()})
 $header Data Lineage Emitter configs $header
 $comment By default, uses in-memory transport and logs events to console.
