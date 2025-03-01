@@ -79,9 +79,11 @@ function runBuildAndUpdateDeploy {
   outputstart='executions to test-generator-deploy'
   outputend='\[WARNING\]'
   # $outputstart match at end ensures the match line isn't captured. NF ensures blank lines aren't captured.
-  execs=$(./mvnw clean install | tee /dev/tty | \
-            awk "BEGIN {output=0} /$outputend/ {output=0} NF && output {print} /$outputstart/ {output=1}")\
-      || { echo -e '\n\n\t**** MAVEN BUILD FAILED ****\n\n' ; exit 1; }
+  ./mvnw clean install | \
+    tee >(awk "BEGIN {output=0} /$outputend/ {output=0} NF && output {print} /$outputstart/ {output=1}">tmp.out ) \
+    || { echo -e '\n\n\t**** MAVEN BUILD FAILED ****\n\n' ; exit 1; }
+  execs=$(cat tmp.out)
+  rm -f tmp.out
   if [ -n "$execs" ]; then
     #re-adding insert comment allows for subsequent insertions
     execs=$deployInsert$'\n'$execs
@@ -278,7 +280,7 @@ sub "s/ *<\/plugins>/$plugins        <\/plugins>/" test-generator-deploy/pom.xml
 
 echo -e "\nINFO: Running full build to check that the build passes w/o any manual actions needed\n"
 # NOTE: because fermenter results are cached, the build-cache will hide remaining manual actions that were missed in previous steps
-./mvnw clean install -Dmaven.build.cache.skipCache -Dfermenter.display.message.keys=true | tee /dev/tty | awk '/WARNING/ {print}' > maven-build.log \
+./mvnw clean install -Dmaven.build.cache.skipCache -Dfermenter.display.message.keys=true | tee >(awk '/WARNING/ {print}' > maven-build.log) \
     || { echo -e '\n\n\t**** MAVEN BUILD FAILED ****\n\n' ; exit 1; }
 if grep -iq 'Manual action' maven-build.log; then
   echo -e "\n\n **** ERROR: Manual action still found in build **** \n    Look at **archetype/target/temp/test-generator/maven-build.log** to see what the problem was. \n\n"
