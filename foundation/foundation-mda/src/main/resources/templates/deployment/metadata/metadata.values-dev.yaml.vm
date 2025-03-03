@@ -1,7 +1,0 @@
-# Dev values for metadata.
-service:
-  spec:
-    type: LoadBalancer
-
-ingress:
-  enabled: false

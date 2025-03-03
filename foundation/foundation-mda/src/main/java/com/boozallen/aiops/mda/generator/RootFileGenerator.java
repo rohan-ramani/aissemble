@@ -29,7 +29,6 @@ public class RootFileGenerator extends AbstractGeneratorAissemble {
      * | jenkinsReleaseJob  | devops/jenkins-release-job.xml.vm      | devops/jenkins-release-job.xml  |
      * | airflowREADMEFile  | general-docker/airflow.readme.file.vm  | README.md                       |
      * | gitignoreFile      | gitignore.vm                           | .gitignore                      |
-     * | tiltignoreFile     | tiltignore.vm                          | .tiltignore                     |
      */
 
 

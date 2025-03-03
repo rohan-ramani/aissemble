@@ -3,6 +3,9 @@
 # Breaking Changes
 _Note: instructions for adapting to these changes are outlined in the upgrade instructions below._
 
+- All Fermenter profiles marked for deletion in 1.12.0 have been removed. Follow the [technical documentation](https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade) for migration instructions. In addition, the following artifacts were removed:
+  - The `aissemble-data-access-chart` Helm chart
+  - The `foundation-data-access` Java module
 - PySpark will no longer throw an exception when a required field is `None` but instead filter it out. See Changes in Spark/PySpark Schema Behavior below for more details.
 - Spark/PySpark will no longer filter out records with `null`/`None` fields that are not required and have validation. See Changes in Spark/PySpark Schema Behavior below for more details.
 

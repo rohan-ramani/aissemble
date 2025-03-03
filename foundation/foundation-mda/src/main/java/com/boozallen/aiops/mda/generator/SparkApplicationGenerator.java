@@ -35,7 +35,6 @@ public class SparkApplicationGenerator extends AbstractResourcesGenerator {
      * Usages:
      * | Target                           | Template                                                          | Generated File                          |
      * |----------------------------------|-------------------------------------------------------------------|-----------------------------------------|
-     * | sparkApplicationDebugScript      | deployment/spark-operator/run-debug.sh.vm                         | apps/run-debug.sh                       |
      * | sparkApplicationValuesFile       | deployment/spark-operator/spark-application-base-values.yaml.vm   | apps/${pipelineName}-base-values.yaml   |
      * | sparkApplicationCIValuesFile     | deployment/spark-operator/spark-application-ci-values.yaml.vm     | apps/${pipelineName}-ci-values.yaml     |
      * | sparkApplicationDebugValuesFile  | deployment/spark-operator/spark-application-debug-values.yaml.vm  | apps/${pipelineName}-debug-values.yaml  |

@@ -33,14 +33,11 @@ public class TargetedPipelinePythonMainGenerator extends AbstractPythonGenerator
      * Usages:
      * | Target                             | Template                                               | Generated File                                   |
      * |------------------------------------|--------------------------------------------------------|--------------------------------------------------|
-     * | inferenceApi                       | ${pipelineImplementation}/inference.api.py.vm          | inference_api.py                                 |
      * | pySparkAbstractDataActionImpl      | data-delivery-pyspark/abstract.data.action.impl.py.vm  | step/abstract_data_action_impl.py                |
      * | pySparkAbstractDataAction          | data-delivery-pyspark/abstract.data.action.py.vm       | step/abstract_data_action.py                     |
      * | pySparkAbstractPipelineStep        | data-delivery-pyspark/abstract.pipeline.step.py.vm     | step/abstract_pipeline_step.py                   |
      * | pySparkPipelineDriver              | data-delivery-pyspark/pipeline.driver.py.vm            | ${pipelineName}_driver.py                        |
      * | inferenceConfigScript              | general-mlflow/inference.config.py.vm                  | config/inference_config.py                       |
-     * | inferenceRequest                   | general-mlflow/inference.request.py.vm                 | validation/request.py                            |
-     * | inferenceResponse                  | general-mlflow/inference.response.py.vm                | validation/response.py                           |
      * | inferenceApiDriver                 | inference/inference.api.driver.py.vm                   | inference_api_driver.py                          |
      * | inferenceApiGrpcBase               | inference/inference.api.grpc.base.py.vm                | inference/grpc/inference_api_grpc_base.py        |
      * | inferenceApiRest                   | inference/inference.api.rest.py.vm                     | inference/rest/inference_api_rest.py             |
@@ -49,7 +46,6 @@ public class TargetedPipelinePythonMainGenerator extends AbstractPythonGenerator
      * | inferenceMessageDefinitionImpl     | inference/inference.message.impl.py.vm                 | validation/inference_message_definition.py       |
      * | inferencePayloadDefinitionImpl     | inference/inference.payload.impl.py.vm                 | validation/inference_payload_definition.py       |
      * | inferencePayloadDefinitionRest     | inference/inference.payload.rest.py.vm                 | inference/rest/inference_payload_definition.py   |
-     * | modzyInferenceApi                  | modzy/modzy.py.vm                                      | modzy/modzy.py                                   |
      * | pySparkPipelineBase                | pipeline.base.py.vm                                    | pipeline/pipeline_base.py                        |
      * | pythonPipelineImplInit             | python.init.py.vm                                      | impl/__init__.py                                 |
      * | pySparkGeneratedInit               | python.init.py.vm                                      | __init__.py                                      |
