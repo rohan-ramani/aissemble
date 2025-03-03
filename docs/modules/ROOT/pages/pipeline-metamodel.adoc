@@ -366,10 +366,10 @@ channel from which input should be received.
 | `steps/step/inbound/nativeCollectionType` (xref:#_pipeline_step_inbound_native_collection_type_options[details])
 | No
 | Yes
-| If using native as the `inbound` type, `nativeCollectionType` allows the implementation of the collection object being 
-passed into the step to be customized to any valid xref:type-metamodel.adoc[Type Manager] type. If not
-specified, it will default to dataset (which in turn is defaulted to `org.apache.spark.sql.Dataset` for a Spark-based 
-implementation).
+| If using native as the `inbound` type, the name of the `nativeCollectionType` must be defined in the dictionary where
+its `simpleType` can be any valid xref:type-metamodel.adoc[Type Manager] type. The Type Manger type will determine the
+collection implementation being passed into the step. If not specified, it will default to dataset (which in turn is
+defaulted to `org.apache.spark.sql.Dataset` for a Spark-based implementation).
 
 | `steps/step/inbound/recordType` (xref:#_pipeline_step_inbound_record_type_options[details])
 | No
@@ -496,12 +496,10 @@ channel to which output should be sent.
 | `steps/step/outbound/nativeCollectionType` (xref:#_pipeline_step_outbound_native_collection_type_options[details])
 | No
 | Yes
-| If using native as the `outbound` type, `nativeCollectionType` allows the implementation of the collection object being 
-returned from the step to be customized to any valid xref:type-metamodel.adoc[Type Manager] type. If
-not specified, it will default to dataset (which in turn is defaulted to `org.apache.spark.sql.Dataset` for a 
-Spark-based implementation).
-
-This has been changed to be defined to a valid dictionary type.
+| If using native as the `outbound` type, the name of the `nativeCollectionType` must be defined in the dictionary where
+its `simplyType` can be any valid xref:type-metamodel.adoc[Type Manager] type. The Type Manager type will determine
+the collection implementation return from the step. If not specified, it will default to dataset (which in turn is
+defaulted to `org.apache.spark.sql.Dataset` for a Spark-based implementation).
 
 | `steps/step/outbound/recordType` (xref:_pipeline_step_outbound_record_type_options[details])
 | No
@@ -640,9 +638,10 @@ modes] for details on the options.
 | `steps/step/persist/collectionType` (xref:_pipeline_step_persist_collection_type_options[details])
 | No
 | Yes
-| Allows the implementation of the collection object being persisted from the step to be customized to
-any valid xref:type-metamodel.adoc[Type Manager] type. If not specified, it will default to dataset
-(which in turn is defaulted to `org.apache.spark.sql.Dataset` for a Spark-based implementation).
+| The name of the `collectionType` must be defined in the dictionary where its `simpleType` can be any valid
+xref:type-metamodel.adoc[Type Manager] type, which is also the implementation of the collection object being persisted
+from the step to be customized to. If not specified, it will default to dataset (which in turn is defaulted to
+`org.apache.spark.sql.Dataset` for a Spark-based implementation).
 
 | `steps/step/persist/recordType` (xref:_pipeline_step_persist_record_type_options[details])
 | No
