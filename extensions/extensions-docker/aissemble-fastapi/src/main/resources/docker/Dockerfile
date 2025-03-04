@@ -1,6 +1,6 @@
 # Script for creating base FastAPI Docker image
 
-FROM docker.io/python:3.11
+FROM registry.access.redhat.com/ubi9/python-311:9.5
 
 LABEL org.opencontainers.image.source="https://github.com/boozallen/aissemble"
 
@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir --upgrade -r /tmp/requirements.txt
 
 # Custom start script to run fastAPI with specific
 # module (defined using MODULE environment variable)
-COPY ./src/main/resources/docker/scripts/start.sh /start.sh
+COPY --chown=default:root ./src/main/resources/docker/scripts/start.sh /start.sh
 RUN chmod +x /start.sh
 
 # Add FastAPI module
