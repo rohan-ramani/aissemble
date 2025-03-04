@@ -1,5 +1,10 @@
 # Major Additions
 
+## DEPRECATION
+The following artifacts are deprecated as of 1.12.0 and will be removed in 1.13.0. If you believe you had a good use case for any of these artifacts, please reach out to the aiSSEMBLE team.
+ - `aissemble-fastapi` Docker image
+ - `aissemble-fastapi-chart` Helm chart
+
 # Breaking Changes
 _Note: instructions for adapting to these changes are outlined in the upgrade instructions below._
 
@@ -86,6 +91,10 @@ To start your aiSSEMBLE upgrade, update your project's pom.xml to use the 1.11.0
 ### For projects that have customized the Hive service
 The hive service base image has been switched from `docker.io/eclipse-temurin:17-jre` to `registry.access.redhat.com/ubi9/openjdk-17-runtime:1.21`. 
 Projects should update their Hive service Dockerfile or any related startup configuration script to use `microdnf` instead `apt-get` as the package manager if applicable
+
+### For projects that uses aissemble-fastapi
+The fastapi base image has been switched from `docker.io/python:3.11` to `registry.access.redhat.com/ubi9/python-311:9.5`. 
+There may be adjustments needed if applicable.
 
 ## Final Steps - Required for All Projects
 ### Finalizing the Upgrade
