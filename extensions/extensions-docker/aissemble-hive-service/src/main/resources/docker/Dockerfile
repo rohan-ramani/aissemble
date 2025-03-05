@@ -17,17 +17,14 @@ RUN set -eux; \
     microdnf install -y gzip util-linux
 
 # Install hadoop
-RUN cd /tmp \
-    && curl https://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz \
-       | tar -xzf - \
+RUN --mount=source=${BIN_DIR},target=/tmp/bin cd /tmp \
+    && tar -xzf /tmp/bin/hadoop.tar.gz \
     && mv hadoop-${HADOOP_VERSION} $HADOOP_HOME
 
 # Use standalone binary instead of full-service version on original image
-COPY ${BIN_DIR}/hive-standalone-metastore-server-bin.tar.gz /tmp
-RUN cd /tmp \
-    && tar -xf /tmp/hive-standalone-metastore-server-bin.tar.gz \
-    && mv apache-hive-metastore-${METASTORE_VERSION}-bin $HIVE_HOME \
-    && rm /tmp/hive-standalone-metastore-server-bin.tar.gz
+RUN --mount=source=${BIN_DIR},target=/tmp/bin cd /tmp \
+    && tar -xf /tmp/bin/hive-standalone-metastore-server-bin.tar.gz \
+    && mv apache-hive-metastore-${METASTORE_VERSION}-bin $HIVE_HOME
 
 # Update library jars used by Hive and Hadoop
 COPY --chmod=755 ./src/main/resources/scripts/setup.sh $HIVE_HOME/setup.sh
