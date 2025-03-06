@@ -26,3 +26,4 @@ jobs:
           exclude-tags: "^\\d+\\.\\d+\\.\\d+$"
           use-regex: true
           keep-n-tagged: 2
+          delete-untagged: true
