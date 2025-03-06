@@ -103,21 +103,21 @@ jobs:
       - name: Save docker build cache
         id: save-docker-build
         uses: runs-on/cache/save@v4
-        if: always() && steps.cached-docker-build.outputs.cache-hit != 'true'
+        if: ${{ !cancelled() && steps.cached-docker-build.outputs.cache-hit != 'true' }}
         with:
           path: ~/.docker/cache
           key: docker-cache-${{ hashFiles('**/Dockerfile') }}
       - name: Save m2 repository cache
         id: save-m2-repo
         uses: runs-on/cache/save@v4
-        if: always() && steps.cached-m2-repo.outputs.cache-hit != 'true'
+        if: ${{ !cancelled() && steps.cached-m2-repo.outputs.cache-hit != 'true' }}
         with:
           path: ~/.m2/repository
           key: maven-${{ hashFiles('**/pom.xml') }}
       - name: Save m2 build cache
         id: save-m2-build
         uses: runs-on/cache/save@v4
-        if: always() && steps.cached-m2-build.outputs.cache-hit != 'true'
+        if: ${{ !cancelled() && steps.cached-m2-build.outputs.cache-hit != 'true' }}
         with:
           path: ~/.m2/build-cache
           key: maven-build-cache-${{ hashFiles('**/pom.xml') }}
