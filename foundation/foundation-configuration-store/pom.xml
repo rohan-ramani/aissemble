@@ -27,7 +27,6 @@
                             <ENVIRONMENT_PROPERTY>./target/test-classes/configurations/example-env</ENVIRONMENT_PROPERTY>
                             <KRAUSENING_PATH_PREFIX>./target/test-classes</KRAUSENING_PATH_PREFIX>
                             <KRAUSENING_PASSWORD>3uQ2j_=wmP5A2q8b</KRAUSENING_PASSWORD>
-                            <version.aissemble.vault>${project.version}</version.aissemble.vault>
                         </systemPropertyVariables>
                         <environmentVariables>
                             <STORAGE_CLASS>com.boozallen.aissemble.util.TestPropertyDao</STORAGE_CLASS>

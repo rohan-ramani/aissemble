@@ -1,5 +1,0 @@
-# Dev values for data access.
-service:
-  spec:
-    type: LoadBalancer
-

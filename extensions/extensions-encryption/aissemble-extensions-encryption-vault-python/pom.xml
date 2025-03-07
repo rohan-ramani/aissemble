@@ -16,13 +16,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.boozallen.aissemble</groupId>
-            <artifactId>aissemble-vault</artifactId>
-            <scope>test</scope>
-            <version>${project.version}</version>
-            <type>docker-build</type>
-        </dependency>
-        <dependency>
             <groupId>net.masterthought</groupId>
             <artifactId>cucumber-reporting</artifactId>
         </dependency>
@@ -36,6 +29,7 @@
                 <artifactId>habushu-maven-plugin</artifactId>
                 <configuration>
                     <behaveOptions>--tags ~integration</behaveOptions>
+                    <behaveOptions>--tags ~disabled</behaveOptions>
                 </configuration>
             </plugin>
             <plugin>
@@ -61,6 +55,7 @@
                         <artifactId>habushu-maven-plugin</artifactId>
                         <configuration>
                             <behaveOptions>--tags ~manual</behaveOptions>
+                            <behaveOptions>--tags ~disabled</behaveOptions>
                         </configuration>
                     </plugin>
                 </plugins>

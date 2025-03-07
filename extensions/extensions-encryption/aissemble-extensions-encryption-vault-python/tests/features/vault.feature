@@ -1,4 +1,4 @@
-@properties @integration
+@disabled @properties @integration
 Feature: Encryption
 
   Scenario: Data can be encrypted and decrypted using Vault

@@ -49,7 +49,7 @@ import io.restassured.response.ValidatableResponse;
 
 public class LoadConfigurationsSteps {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoadConfigurationsSteps.class);
+    private static final String VAULT_TOKEN = "my-root-token";
     private final Property expectedProperty = new Property("microprofile-config-messaging", "topic", "messaging-topic");
     private final Property expectedDecryptedProperty = new Property("aws-credentials", "AWS_SECRET_ACCESS_KEY", "env-secret-access-key");
     private final Property fullyLoadProperty = new Property("load-status", "fully-loaded", "true");
@@ -273,31 +273,14 @@ public class LoadConfigurationsSteps {
 
     private void setupVaultContainer() {
         final Properties encryptProperties = Krausening.getInstance().getProperties("encrypt.properties");
-        String dockerImage = "ghcr.io/boozallen/aissemble-vault:" + System.getProperty("version.aissemble.vault");
-        final DockerImageName vaultImage = DockerImageName.parse(dockerImage).asCompatibleSubstituteFor("vault");
-        vaultContainer = new VaultContainer(vaultImage);
+        vaultContainer = new VaultContainer<>("hashicorp/vault:1.19.0")
+                .withVaultToken(VAULT_TOKEN);
         vaultContainer.setWaitStrategy(Wait.forListeningPort());
         vaultContainer.start();
 
         // We override the secrets.host.url property in order to bring the port in-sync with the testcontainers port.
         encryptProperties.setProperty("secrets.host.url", vaultContainer.getHttpHostAddress());
-
-        // Override secrets.root.key values from the aissemble-vault image for VaultPropertyDao vault access.
-        String rootKey = vaultContainer.copyFileFromContainer("/root_key.txt", this::inputStreamToString);
-        encryptProperties.setProperty("secrets.root.key", rootKey);
-
-        // Override secrets.root.key values from the aissemble-vault image for VaultPropertyDao vault access.
-        String unsealKeysJSONArrayString = vaultContainer.copyFileFromContainer("/unseal_keys.txt", this::inputStreamToString);
-        encryptProperties.setProperty("secrets.unseal.keys", unsealKeysJSONArrayString.replaceAll("[\\s|\\[\\]\"]", ""));
-    }
-
-    private String inputStreamToString(InputStream inputStream) {
-        try {
-            return new String(inputStream.readAllBytes());
-        } catch (IOException e) {
-            logger.error("Failed to read key or token file from aissemble-vault container. Error while converting inputSteam to a String.", e);
-        }
-        return "";
+        encryptProperties.setProperty("secrets.root.key", VAULT_TOKEN);
     }
 
     public Set<Property> createExpectedProperties() {

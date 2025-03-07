@@ -28,7 +28,6 @@
         <module>aissemble-spark</module>
         <module>aissemble-spark-infrastructure</module>
         <module>aissemble-spark-operator</module>
-        <module>aissemble-vault</module>
         <module>aissemble-versioning</module>
         <module>aissemble-model-training-api-containers</module>
         <module>aissemble-data-lineage-http-consumer</module>

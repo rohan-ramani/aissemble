@@ -5,6 +5,9 @@ The following artifacts are deprecated as of 1.12.0 and will be removed in 1.13.
  - `aissemble-fastapi` Docker image
  - `aissemble-fastapi-chart` Helm chart
 
+## Vault Helm V2 Chart
+As we are retiring the `vault-deploy` profile, we are introducing the vault v2 structure helm chart. For details refer to [Available Profiles (Kubernetes)](https://boozallen.github.io/aissemble/aissemble/current/containers.html#_available_profiles_kubernetes)
+
 # Breaking Changes
 _Note: instructions for adapting to these changes are outlined in the upgrade instructions below._
 
@@ -13,6 +16,9 @@ _Note: instructions for adapting to these changes are outlined in the upgrade in
   - The `foundation-data-access` Java module
 - PySpark will no longer throw an exception when a required field is `None` but instead filter it out. See Changes in Spark/PySpark Schema Behavior below for more details.
 - Spark/PySpark will no longer filter out records with `null`/`None` fields that are not required and have validation. See Changes in Spark/PySpark Schema Behavior below for more details.
+
+## aiSSEMBLE-Vault Docker Image
+The aiSSEMBLE-vault docker image will no longer be available. We also remove the related `vault-deploy` profile.
 
 ## Changes in Spark/PySpark Schema Behavior
 - When creating a data frame from a record schema with [required fields](https://boozallen.github.io/aissemble/aissemble/current/record-metamodel.html#_record_field_options) using PySpark, creation of the data frame (`spark_session.createDataFrame()`) will no longer throw an exception if a required field is `None` but instead filter out the record from the data frame as part of validation (`record_schema.validate_dataset()`).

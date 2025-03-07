@@ -1,4 +1,4 @@
-@pyspark_data_encryption @integration
+@disabled @pyspark_data_encryption @integration
 Feature: Data encryption
 
   Scenario: Specifying the Vault encryption algorithm yields a custom field encrypted with the corresponding algorithm

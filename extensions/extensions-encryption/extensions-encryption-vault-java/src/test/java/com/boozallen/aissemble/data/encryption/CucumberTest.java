@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
         glue = "com.boozallen.aissemble.data.encryption",
         features = "src/test/resources/specifications",
         plugin = {"json:target/cucumber-reports/cucumber.json"},
-        tags = "not @manual and not @integration")
+        tags = "not @manual and not @integration and not @disabled")
 public class CucumberTest {
 
 }
