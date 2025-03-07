@@ -5,3 +5,5 @@ maxRunners: 3
 template:
   spec:
     serviceAccountName: "arc-runner-set-aissemble-gha-rs-custom-permissions"
+    nodeSelector:
+      beta.kubernetes.io/instance-type: t4g.xlarge
