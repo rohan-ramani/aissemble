@@ -11,14 +11,7 @@ helm install vault oci://ghcr.io/boozallen/aissemble-vault-chart --version <AISS
 _**NOTE:**_ *the version should match the aiSSEMBLE project version.*
 
 # Properties
-See the official Helm chart configurations [documentation](https://developer.hashicorp.com/vault/docs/v1.15.x/platform/k8s/helm/configuration). The following
-default values have been modified from the original helm chart.
-
-| Property                | Default                                                                        |
-|-------------------------|--------------------------------------------------------------------------------|
-| server.dataStorage      | true                                                                           |
-| server.auditStorage     | true                                                                           |
-| server.image.repository | "ghcr.io/boozallen/aissemble-vault" |
+See the official Helm chart configurations [documentation](https://developer.hashicorp.com/vault/docs/v1.19.x/platform/k8s/helm/configuration). 
 
 All properties must be prefixed with the key `aissemble-vault-chart.vault` to override any values in the chart. See the
 [helm documentation](https://helm.sh/docs/chart_template_guide/subcharts_and_globals/#overriding-values-from-a-parent-chart) for more info.

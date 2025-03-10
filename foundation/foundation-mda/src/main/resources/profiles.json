@@ -1262,39 +1262,33 @@
     ]
   },
   {
-    "name": "vault-deploy",
+    "name": "vault-deploy-v2",
     "profileReferences": [
       {
-        "name": "vault-kubernetes"
+        "name": "vault-kubernetes-v2"
       }
     ]
   },
   {
-    "name": "vault-kubernetes",
+    "name": "vault-kubernetes-v2",
     "targetReferences": [
       {
-        "name": "helmChartFile"
+        "name": "vaultHelmChartFileV2"
       },
       {
         "name": "helmIgnoreFile"
       },
       {
-        "name": "helmDeploymentFile"
+        "name": "vaultValuesFileV2"
       },
       {
-        "name": "helmServiceFile"
-      },
-      {
-        "name": "vaultValuesFile"
-      },
-      {
-        "name": "vaultValuesDevFile"
+        "name": "vaultValuesDevFileV2"
       },
       {
         "name": "valuesCIFile"
       },
       {
-        "name": "vaultArgoCD"
+        "name": "vaultArgoCDV2"
       }
     ]
   },

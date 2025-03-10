@@ -1437,24 +1437,32 @@
     "overwritable": false
   },
   {
-    "name": "vaultArgoCD",
-    "templateName": "templates/deployment/argocd/vault.yaml.vm",
+    "name": "vaultHelmChartFileV2",
+    "templateName": "templates/deployment/vault/v2/vault.chart.yaml.vm",
+    "outputFile": "apps/${appName}/Chart.yaml",
+    "generator": "com.boozallen.aiops.mda.generator.KubernetesGenerator",
+    "metadataContext": "targeted",
+    "overwritable": false
+  },
+  {
+    "name": "vaultArgoCDV2",
+    "templateName": "templates/deployment/argocd/v2/vault.yaml.vm",
     "outputFile": "templates/vault.yaml",
     "generator": "com.boozallen.aiops.mda.generator.KubernetesGenerator",
     "metadataContext": "targeted",
     "overwritable": false
   },
   {
-    "name": "vaultValuesFile",
-    "templateName": "templates/deployment/vault/vault.values.yaml.vm",
+    "name": "vaultValuesFileV2",
+    "templateName": "templates/deployment/vault/v2/vault.values.yaml.vm",
     "outputFile": "apps/${appName}/values.yaml",
     "generator": "com.boozallen.aiops.mda.generator.KubernetesGenerator",
     "metadataContext": "targeted",
     "overwritable": false
   },
   {
-    "name": "vaultValuesDevFile",
-    "templateName": "templates/deployment/vault/vault.values-dev.yaml.vm",
+    "name": "vaultValuesDevFileV2",
+    "templateName": "templates/deployment/vault/v2/vault.values-dev.yaml.vm",
     "outputFile": "apps/${appName}/values-dev.yaml",
     "generator": "com.boozallen.aiops.mda.generator.KubernetesGenerator",
     "metadataContext": "targeted",

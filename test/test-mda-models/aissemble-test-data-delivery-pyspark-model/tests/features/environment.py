@@ -59,7 +59,8 @@ def before_feature(context, feature):
     if "integration" in feature.tags:
         logger.info("Starting Test container services")
         context.test_containers = []
-        setup_vault(context)
+        # TODO: enable the vault encryption when ready
+        # setup_vault(context)
         setup_s3_local(context)
 
 

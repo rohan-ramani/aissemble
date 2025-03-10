@@ -46,6 +46,10 @@ decrypted_value = aes_encrypt.decrypt(encrypted_value)
 ----
 
 === Vault encryption
+
+[WARNING]
+Vault encryption is not available at this time.
+
 Another encryption service is provide through Hashicorp Vault.  This is a well known provider of security services and
 the fabrication process generates the client methods for calling and encrypting data.  In order to encrypt data using V
 ault the following properties need to be set:

@@ -158,7 +158,7 @@ list of available profiles that Foundation supports for Kubernetes generation.
 |[[k8s_s3]]S3 Local                     | `s3local-deploy-v2`                      |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-localstack-chart/README.md[S3 Local,role=external,window=_blank]
 |[[k8s_spark_inf]]Spark Infrastructure  | `spark-infrastructure-deploy-v2`         |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/extensions-helm-spark-infrastructure/README.md[Spark Infrastructure,role=external,window=_blank]
 |[[k8s_spark_op]]Spark Operator         | `spark-operator-deploy-v2`               |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-spark-operator-chart/README.md[Spark Operator,role=external,window=_blank]
-|Vault                                  | `vault-deploy`                           |N/A
+|Vault                                  | `vault-deploy-v2`                        |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-vault-chart/README.md[Vault,role=external,window=_blank]
 |[[k8s_versioning]]Versioning           | `versioning-deploy-v2`                   |https://github.com/boozallen/aissemble/blob/{git-tree}/extensions/extensions-helm/aissemble-versioning-chart/README.md[Versioning,role=external,window=_blank]
 |======
 

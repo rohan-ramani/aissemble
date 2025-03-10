@@ -1,0 +1,9 @@
+#[[#################################################################################
+## CONFIG | Vault Configs                                                      ##
+## See aiSSEMBLE aissemble-vault-chart: README for more details.               ##
+## https://github.com/boozallen/aissemble/                                     ##
+################################################################################]]##
+
+# Vault
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.

@@ -16,13 +16,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.boozallen.aissemble</groupId>
-            <artifactId>aissemble-vault</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>net.masterthought</groupId>
             <artifactId>cucumber-reporting</artifactId>
         </dependency>

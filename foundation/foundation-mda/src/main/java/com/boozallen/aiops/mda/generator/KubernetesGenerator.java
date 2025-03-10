@@ -46,8 +46,8 @@ public class KubernetesGenerator extends AbstractKubernetesGenerator {
      * | sparkInfrastructureArgoCDFileV2             | deployment/argocd/v2/spark.infrastructure.yaml.vm                                         | templates/spark-infrastructure.yaml            |
      * | sparkOperatorArgoCDV2                       | deployment/argocd/v2/spark.operator.yaml.vm                                               | templates/spark-operator.yaml                  |
      * | trinoArgoCDV2                               | deployment/argocd/v2/trino.yaml.vm                                                        | templates/trino-ui.yaml                        |
+     * | vaultArgoCDV2                               | deployment/argocd/v2/vault.yaml.vm                                                        | templates/vault.yaml                           |
      * | versioningArgoCDV2                          | deployment/argocd/v2/versioning.yaml.vm                                                   | templates/versioning.yaml                      |
-     * | vaultArgoCD                                 | deployment/argocd/vault.yaml.vm                                                           | templates/vault.yaml                           |
      * | bomValuesDevFile                            | deployment/bom/bom.values-dev.yaml.vm                                                     | apps/${appName}/values-dev.yaml                |
      * | bomValuesFile                               | deployment/bom/bom.values.yaml.vm                                                         | apps/${appName}/values.yaml                    |
      * | aissembleConfigurationStoreHelmChartFileV2  | deployment/configuration-store/v2/configuration-store.chart.yaml.vm                       | apps/${appName}/Chart.yaml                     |
@@ -120,8 +120,9 @@ public class KubernetesGenerator extends AbstractKubernetesGenerator {
      * | trinoValuesDevFileV2                        | deployment/trino/v2/trino.values-dev.yaml.vm                                              | apps/${appName}/values-dev.yaml                |
      * | trinoValuesFileV2                           | deployment/trino/v2/trino.values.yaml.vm                                                  | apps/${appName}/values.yaml                    |
      * | valuesCIFile                                | deployment/values-ci.yaml.vm                                                              | apps/${appName}/values-ci.yaml                 |
-     * | vaultValuesDevFile                          | deployment/vault/vault.values-dev.yaml.vm                                                 | apps/${appName}/values-dev.yaml                |
-     * | vaultValuesFile                             | deployment/vault/vault.values.yaml.vm                                                     | apps/${appName}/values.yaml                    |
+     * | vaultHelmChartFileV2                        | deployment/vault/v2/vault.chart.yaml.vm                                                   | apps/${appName}/Chart.yaml                     |
+     * | vaultValuesDevFileV2                        | deployment/vault/v2/vault.values-dev.yaml.vm                                              | apps/${appName}/values-dev.yaml                |
+     * | vaultValuesFileV2                           | deployment/vault/v2/vault.values.yaml.vm                                                  | apps/${appName}/values.yaml                    |
      * | versioningHelmChartFileV2                   | deployment/versioning/v2/versioning.chart.yaml.vm                                         | apps/${appName}/Chart.yaml                     |
      * | versioningValuesDevFileV2                   | deployment/versioning/v2/versioning.values-dev.yaml.vm                                    | apps/${appName}/values-dev.yaml                |
      * | versioningValuesFileV2                      | deployment/versioning/v2/versioning.values.yaml.vm                                        | apps/${appName}/values.yaml                    |
