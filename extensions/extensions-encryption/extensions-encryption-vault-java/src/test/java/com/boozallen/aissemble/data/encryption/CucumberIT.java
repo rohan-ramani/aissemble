@@ -20,8 +20,10 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(
         features = "src/test/resources/specifications",
-        plugin = {"json:target/cucumber-reports/cucumber.json"},
-        tags = "@integration")
+        // TODO: re-enable or remove when vault encryption is ready or removed
+        // Disable cucumber report for integration test since we only have vault for integration test, which is disabled for now
+        // plugin = {"json:target/cucumber-reports/cucumber.json"},
+        tags = "@integration and not @disabled")
 public class CucumberIT {
 
 }
