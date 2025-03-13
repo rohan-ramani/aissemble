@@ -1,29 +1,7 @@
 # Major Additions
 
-## DEPRECATION
-The following artifacts are deprecated as of 1.12.0 and will be removed in 1.13.0. If you believe you had a good use case for any of these artifacts, please reach out to the aiSSEMBLE team.
- - `aissemble-fastapi` Docker image
- - `aissemble-fastapi-chart` Helm chart
-
-## Vault Helm V2 Chart
-As we are retiring the `vault-deploy` profile, we are introducing the vault v2 structure helm chart. For details refer to [Available Profiles (Kubernetes)](https://boozallen.github.io/aissemble/aissemble/current/containers.html#_available_profiles_kubernetes)
-
 # Breaking Changes
 _Note: instructions for adapting to these changes are outlined in the upgrade instructions below._
-
-- All Fermenter profiles marked for deletion in 1.12.0 have been removed. Follow the [technical documentation](https://boozallen.github.io/aissemble/aissemble/current/containers.html#_kubernetes_artifacts_upgrade) for migration instructions. In addition, the following artifacts were removed:
-  - The `aissemble-data-access-chart` Helm chart
-  - The `foundation-data-access` Java module
-- PySpark will no longer throw an exception when a required field is `None` but instead filter it out. See Changes in Spark/PySpark Schema Behavior below for more details.
-- Spark/PySpark will no longer filter out records with `null`/`None` fields that are not required and have validation. See Changes in Spark/PySpark Schema Behavior below for more details.
-- The default `preparationGoals` for the release plugin had been changed to `help:help` to skip redundant testing during the release preparation phase, providing for a faster and more reliable release process.
-
-## aiSSEMBLE-Vault Docker Image
-The aiSSEMBLE-vault docker image will no longer be available. We also remove the related `vault-deploy` profile.
-
-## Changes in Spark/PySpark Schema Behavior
-- When creating a data frame from a record schema with [required fields](https://boozallen.github.io/aissemble/aissemble/current/record-metamodel.html#_record_field_options) using PySpark, creation of the data frame (`spark_session.createDataFrame()`) will no longer throw an exception if a required field is `None` but instead filter out the record from the data frame as part of validation (`record_schema.validate_dataset()`).
-- When validating a data frame from a record schema with [non-required fields](https://boozallen.github.io/aissemble/aissemble/current/record-metamodel.html#_record_field_options) and [dictionary validation](https://boozallen.github.io/aissemble/aissemble/current/dictionary-metamodel.html#_validation_options) using Spark/PySpark, validation (`recordSchema.validateDataFrame()/record_schema.validate_dataset()`) will no longer mistakenly filter out a record from the data frame if the field value is `None`/`null`.
 
 # Known Issues
 
@@ -44,7 +22,7 @@ When using a Docker daemon that does not reside in `/var/run` (e.g. running Ranc
 
 # How to Upgrade
 
-The following steps will upgrade your project to `1.11`. These instructions consist of multiple phases:
+The following steps will upgrade your project to `1.13`. These instructions consist of multiple phases:
 - Automatic Upgrades - no manual action required
 - Precondition Steps - needed in all situations
 - Conditional Steps (e.g., Python steps, Java steps, if you use Metadata, etc)
@@ -84,24 +62,16 @@ To deactivate any of these migrations, add the following configuration to the `b
 ## Precondition Steps - Required for All Projects
 
 ### Beginning the Upgrade
-To start your aiSSEMBLE upgrade, update your project's pom.xml to use the 1.11.0 version of the build-parent:
+To start your aiSSEMBLE upgrade, update your project's pom.xml to use the 1.13.0 version of the build-parent:
 ```xml
 <parent>
     <groupId>com.boozallen.aissemble</groupId>
     <artifactId>build-parent</artifactId>
-    <version>1.11.0</version>
+    <version>1.13.0</version>
 </parent>
 ```
 
 ## Conditional Steps
-
-### For projects that have customized the Hive service
-The hive service base image has been switched from `docker.io/eclipse-temurin:17-jre` to `registry.access.redhat.com/ubi9/openjdk-17-runtime:1.21`. 
-Projects should update their Hive service Dockerfile or any related startup configuration script to use `microdnf` instead `apt-get` as the package manager if applicable
-
-### For projects that uses aissemble-fastapi
-The fastapi base image has been switched from `docker.io/python:3.11` to `registry.access.redhat.com/ubi9/python-311:9.5`. 
-There may be adjustments needed if applicable.
 
 ## Final Steps - Required for All Projects
 ### Finalizing the Upgrade
