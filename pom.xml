@@ -310,19 +310,10 @@
                     <artifactId>maven-release-plugin</artifactId>
                     <configuration>
                         <scmCommentPrefix>:bookmark: [maven-release-plugin] </scmCommentPrefix>
-                        <!-- The helm charts can't be built at all once the version changes unless they are being
-                          released.  Many charts depend on other charts, and so cannot be packaged properly unless those
-                          dependencies are already available in the helm repo. !!WARNING!! though it seems that we should
-                          just be using preparationProfiles, unfortunately this adds the enabled profiles to the
-                          release.properties file that the plugin uses to track settings.  This file is required to run
-                          the release:perform goal, but will always allow preparationProfiles to bleed into the perform
-                          step.  So if we do this naively, it ends up skipping the helm modules during release so the
-                          charts aren't published.  We could add a "un-skip-helm" profile that's enabled by
-                          releaseProfiles, but that seemed worse than simply using the goals config property to bypass
-                          updating the activate profiles of release.properties.
-
-                          Also add pyproject.toml changes to git (see below)-->
-                        <preparationGoals>clean install scm:add -Pskip-helm</preparationGoals>
+                        <!-- the CI build already compile and verify all the packages so to shorten the release process
+                             we can skip the prepare verify phase. The help plugin allows to skip project execution
+                             completely.-->
+                        <preparationGoals>help:help</preparationGoals>
 
                         <!-- Because the release plugin doesn't build after updating to the next development snapshot,
                           the habushu-managed updates to pyproject.toml files lags behind. To prevent the first

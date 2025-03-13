@@ -16,6 +16,7 @@ _Note: instructions for adapting to these changes are outlined in the upgrade in
   - The `foundation-data-access` Java module
 - PySpark will no longer throw an exception when a required field is `None` but instead filter it out. See Changes in Spark/PySpark Schema Behavior below for more details.
 - Spark/PySpark will no longer filter out records with `null`/`None` fields that are not required and have validation. See Changes in Spark/PySpark Schema Behavior below for more details.
+- The default `preparationGoals` for the release plugin had been changed to `help:help` to skip redundant testing during the release preparation phase, providing for a faster and more reliable release process.
 
 ## aiSSEMBLE-Vault Docker Image
 The aiSSEMBLE-vault docker image will no longer be available. We also remove the related `vault-deploy` profile.
