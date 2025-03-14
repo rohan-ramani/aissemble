@@ -16,8 +16,6 @@ outputs:
     value: ${{ steps.split.outputs.is-pre-release }}
   release-branch:
     value: ${{ steps.split.outputs.release-branch }}
-  existing-version:
-    value: ${{ steps.split.outputs.existing-version }}
 
 runs:
   using: "composite"
@@ -28,8 +26,7 @@ runs:
       # Gets minor version 1.9.0-rc1 -> 1.9 
       # Gets patch version 1.9.0-rc1 -> 1.9.0
       # Determines if release is a pre release candidate
-      # Gets the release branch inputs.release-branch != "" ? inputs.release-branch : aissemble-release-$mino_version 
-      # Gets the existing version inputs.existing-version != "" ? inputs.existing-version : $patch_version-SNAPSHOT 
+      # Gets the release branch inputs.release-branch != "" ? inputs.release-branch : aissemble-release-$mino_version
       run: |
         major=$(echo ${{ inputs.version }} | cut -d "." -f 1) 
         minor=$(echo ${{ inputs.version }} | cut -d "." -f 2) 
@@ -40,5 +37,4 @@ runs:
         echo "patch-version=$patch_version" >> $GITHUB_OUTPUT
         echo "is-pre-release=$( [ "${{ inputs.version }}" != "$patch_version" ] && echo true || echo false)" >> $GITHUB_OUTPUT
         echo "release-branch=$( [ "${{ inputs.release-branch }}" != "" ] && echo "${{ inputs.release-branch }}" || echo "aissemble-release-$minor_version")" >> $GITHUB_OUTPUT
-        echo "existing-version=$( [ "${{ inputs.existing-version }}" != "" ] && echo "${{ inputs.existing-version }}" || echo "$patch_version-SNAPSHOT")" >> $GITHUB_OUTPUT
 
