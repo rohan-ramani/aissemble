@@ -1,7 +1,6 @@
-@integration @vaulthashing
+@disabled @integration @vaulthashing
 Feature: Convert data element to hash
 
-  @disabled
   Scenario Outline: encrypt a given data element and decrypt it using Hashicorp Vault
     Given a data element is provided
     When the data element is encrypted with vault
