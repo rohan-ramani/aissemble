@@ -11,8 +11,6 @@ inputs:
     required: true
   release-branch:  
     required: true
-  custom-facet-old-version:  
-    required: true
   custom-facet-new-version:  
     required: true
     
@@ -27,7 +25,7 @@ runs:
         sed -i "s/^display_version: .*/display_version: \"$version\"/" docs/antora.yml
         sed -i "s/^prerelease: .*/prerelease: ${{ inputs.is-pre-release }}/" docs/antora.yml
         sed -i "s/^    is-pre-release: .*/    is-pre-release: ${{ inputs.is-pre-release }}/" docs/antora.yml
-        find docs/modules/ROOT/attachments/ -type f -exec sed -i 's|${{ inputs.custom-facet-old-version }}|${{ inputs.custom-facet-new-version }}|g' {} +
+        find docs/modules/ROOT/attachments/ -type f -exec sed -i 's|schemas/[^/]*/\(.*\.json\)|schemas/${{ inputs.custom-facet-new-version }}/\1|g' {} +
         git config --global user.email "aissemble@bah.com"
         git config --global user.name "aiSSEMBLE Team"
         git diff

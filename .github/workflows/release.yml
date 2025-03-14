@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     inputs:
       releaseVersion:
-        description: "Release Version"
+        description: "Release Version (X.Y.Z)"
         required: true
         type: string
       developmentVersion:
@@ -20,11 +20,7 @@ on:
         required: true
         type: string
       releaseBranch:
-        description: "Release Branch (default: aissemble-release-<MajMinVersion>)"
-        required: false
-        type: string
-      existingVersion:
-        description: "Existing Version (default: <MajMinPatchVersion>-SNAPSHOT)"
+        description: "Release Branch (default: aissemble-release-X.Y)"
         required: false
         type: string
 
@@ -37,7 +33,6 @@ jobs:
       RELEASE_VERSION: ${{ inputs.releaseVersion }}
       NEXT_DEVELOPMENT_VERSION: ${{ inputs.developmentVersion }}
       RELEASE_BRANCH: ${{ inputs.releaseBranch }}
-      EXISTING_VERSION: ${{ inputs.existingVersion }}
 
     steps:
       - name: Import GPG key
@@ -52,7 +47,6 @@ jobs:
         with:
           version: ${{ env.RELEASE_VERSION }}
           release-branch: ${{ env.RELEASE_BRANCH }}
-          existing-version: ${{ env.EXISTING_VERSION }}
       - name: Print release parameters
         run: | 
           echo "Releasing with the following parameters"
@@ -62,7 +56,6 @@ jobs:
           echo "Patch Version: ${{ steps.split_version.outputs.patch-version }}"
           echo "Is pre release version: ${{ steps.split_version.outputs.is-pre-release }}"
           echo "Release branch: ${{ steps.split_version.outputs.release-branch }}"
-          echo "Existing version: ${{ steps.split_version.outputs.existing-version }}"
       - name: Checkout release branch
         uses: actions/checkout@v4
         with:
@@ -75,7 +68,6 @@ jobs:
           patch-version: ${{ steps.split_version.outputs.patch-version }}
           is-pre-release: ${{ steps.split_version.outputs.is-pre-release }}
           release-branch: ${{ steps.split_version.outputs.release-branch }}
-          custom-facet-old-version: ${{ steps.split_version.outputs.existing-version }}
           custom-facet-new-version: ${{ env.RELEASE_VERSION }}
       - name: Install dependencies
         uses: ./.github/actions/install_dependencies
@@ -101,6 +93,5 @@ jobs:
           major-minor-version: ${{ steps.split_version_development.outputs.major-minor-version }} 
           is-pre-release: ${{ steps.split_version_development.outputs.is-pre-release }}
           release-branch: ${{ steps.split_version.outputs.release-branch }}
-          custom-facet-old-version: ${{ env.RELEASE_VERSION }}
           custom-facet-new-version: ${{ env.NEXT_DEVELOPMENT_VERSION }}
 
