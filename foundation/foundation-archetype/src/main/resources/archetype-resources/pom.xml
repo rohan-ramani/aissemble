@@ -34,6 +34,10 @@
         <module>${artifactId}-shared</module>
     </modules>
 
+    <organization>
+        <name>${organizationName}</name>
+    </organization>
+
     <properties>
         <maven.repo.id>maven-releases</maven.repo.id>
         <maven.repo.url>${mavenRepositoryUrl}</maven.repo.url>
