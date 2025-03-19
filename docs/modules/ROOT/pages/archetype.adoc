@@ -111,6 +111,12 @@ under mvn license:license-list
 
 | No
 
+| ``organizationName``
+| The name of the organization to use in the project
+| Defaults to "Booz Allen Hamilton Inc." and can be updated in the `<organization>` section of the root `pom.xml`
+|
+| No
+
 | ``mavenRepositoryUrl``
 |  The URL of the Maven repository where the release artifacts of the project will be deployed.
 | Defaults to `https://release-PLACEHOLDER/repository/maven-releases` and can be updated in the `<properties>` section
