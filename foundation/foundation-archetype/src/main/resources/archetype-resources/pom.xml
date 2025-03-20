@@ -66,19 +66,19 @@
         <dependency>
             <groupId>com.boozallen.aissemble</groupId>
             <artifactId>artifacts-maven-plugin</artifactId>
-            <version>${archetypeVersion}</version>
+            <version>${version.aissemble}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.boozallen.aissemble</groupId>
             <artifactId>foundation-model-plugin</artifactId>
-            <version>${archetypeVersion}</version>
+            <version>${version.aissemble}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.boozallen.aissemble</groupId>
             <artifactId>mda-maven-plugin</artifactId>
-            <version>${archetypeVersion}</version>
+            <version>${version.aissemble}</version>
             <scope>provided</scope>
         </dependency>
         <!-- END: workaround to get maven build cache invalidation on new SNAPSHOTS of commonly updated plugins -->
@@ -86,13 +86,13 @@
         <dependency>
             <groupId>com.boozallen.aissemble</groupId>
             <artifactId>foundation-mda</artifactId>
-            <version>${archetypeVersion}</version>
+            <version>${version.aissemble}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.boozallen.aissemble</groupId>
             <artifactId>foundation-upgrade</artifactId>
-            <version>${archetypeVersion}</version>
+            <version>${version.aissemble}</version>
             <scope>provided</scope>
         </dependency>
         <!-- END: workaround to get maven build cache invalidation on new SNAPSHOTS of plugin dependencies -->
@@ -187,7 +187,7 @@
                 <artifactId>fermenter-mda</artifactId>
                 <inherited>false</inherited>
                 <configuration>
-                    <basePackage>${project.groupId}</basePackage>
+                    <basePackage>${package}</basePackage>
                     <profile>aissemble-project-root</profile>
                 </configuration>
             </plugin>
