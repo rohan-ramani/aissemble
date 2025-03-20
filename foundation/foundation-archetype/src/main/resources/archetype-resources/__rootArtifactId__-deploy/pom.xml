@@ -46,7 +46,7 @@
                             <goal>generate-sources</goal>
                         </goals>
                         <configuration>
-                            <basePackage>com.boozallen</basePackage>
+                            <basePackage>${package}</basePackage>
                             <profile>kafka-deploy-v2</profile>
                             <!-- The property variables below are passed to the Generation Context and utilized
                                              to customize the deployment artifacts. -->
