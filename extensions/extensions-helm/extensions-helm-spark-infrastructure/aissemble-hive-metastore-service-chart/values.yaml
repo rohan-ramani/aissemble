@@ -70,4 +70,4 @@ configMap:
       - name: javax.jdo.option.ConnectionURL
         value: jdbc:mysql://hive-metastore-db:3306/metastore?createDatabaseIfNotExist=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false
         description: JDBC connect string for a JDBC metastore
-    properties: {}
+    properties: []
