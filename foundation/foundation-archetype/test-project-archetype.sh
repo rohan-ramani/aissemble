@@ -57,17 +57,24 @@ function updatePomBasedOnChildDirs {
     #    updatePomBasedOnChildDirs '<!-- TODO: this is where manual actions go -->'
   todoText=$1
   modules=""
-  for d in */ ; do
-    if [ $d != "target/" ]; then
+  # Instead of only looping on directories, we loop over all files and only add if it's a directory. Because pom.xml
+  # always exists, this mitigates the errant behavior caused by the build cache completely skipping execution which was
+  # resulting in a module named "*" being inserted into the pom file
+  for d in * ; do
+    if [ -d "$d" ] && [ "$d" != "target/" ]; then
       # Drop / from the end of the directory
       d="${d/\//}"
       modules+="<module>$d</module>"$'\n        '
     fi
   done
 
-  echo -e "\nINFO: Adding \n\t$modules\n\tto $PWD/pom.xml\n"
-  # command substitution trims trailing newlines so add it back
-  sub "s/$todoText/$(esc <<< "$modules")/" pom.xml
+  if [ -n "$modules" ]; then
+    echo -e "\nINFO: Adding \n\t$modules\n\tto $PWD/pom.xml\n"
+    # command substitution trims trailing newlines so add it back
+    sub "s/$todoText/$(esc <<< "$modules")/" pom.xml
+  else
+    return 1
+  fi
 }
 
 #---
@@ -90,6 +97,8 @@ function runBuildAndUpdateDeploy {
     execs=$(esc <<< "$execs")
     echo -e "\n INFO: Adding execution profiles to deploy POM: \n$execs"
     sub "s/$deployInsert/$execs/" test-generator-deploy/pom.xml
+  else
+    return 1
   fi
 }
 
@@ -250,16 +259,30 @@ echo "{
 echo -e "\n# maven-suppress-warnings" >> Tiltfile
 
 echo -e "\nINFO: Running full build to generate project structure\n"
-runBuildAndUpdateDeploy
+updates=false
+if runBuildAndUpdateDeploy; then
+  updates=true
+fi
 
 cd test-generator-shared/ || exit
-updatePomBasedOnChildDirs "<!-- TODO: replace with your project-specific modules here -->"
+if updatePomBasedOnChildDirs "<!-- TODO: replace with your project-specific modules here -->"; then
+  updates=true
+fi
 
 cd ../test-generator-docker/ || exit
-updatePomBasedOnChildDirs "<!-- TODO: Add docker modules here -->"
+if updatePomBasedOnChildDirs "<!-- TODO: Add docker modules here -->"; then
+  updates=true
+fi
 
 cd ../test-generator-pipelines/ || exit
-updatePomBasedOnChildDirs "<!-- TODO: replace with your pipeline-specific modules here -->"
+if updatePomBasedOnChildDirs "<!-- TODO: replace with your pipeline-specific modules here -->"; then
+  updates=true
+fi
+
+if [ $updates = false ]; then
+  echo -e "\nINFO: Build cached. No POM updates made. Exiting early."
+  exit 0
+fi
 
 cd ..
 
