@@ -153,14 +153,6 @@
             <artifactId>extensions-authzforce</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.boozallen.aissemble</groupId>
-            <artifactId>foundation-encryption-policy-java</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>extensions-encryption-vault-java</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.smallrye.reactive</groupId>
             <artifactId>smallrye-reactive-messaging-kafka</artifactId>
             <version>${version.smallrye.reactive.messaging}</version>

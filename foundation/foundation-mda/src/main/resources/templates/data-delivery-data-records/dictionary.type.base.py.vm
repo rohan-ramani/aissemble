@@ -45,9 +45,6 @@ class ${dictionaryType.capitalizedName}Base(ABC):
 #if ($dictionaryType.ethicsPolicy)
     ETHICS_POLICY: str = '${dictionaryType.ethicsPolicy}'
 #end
-#if ($dictionaryType.protectionPolicy)
-    PROTECTION_POLICY: str = '${dictionaryType.protectionPolicy}'
-#end
 
 
     def __init__(self, value: ${dictionaryType.shortType}):

@@ -127,13 +127,6 @@ as well as validation and advanced concepts.
 is defined on the xref:dictionary-metamodel.adoc#_dictionary_type_options[type] for this field, specifying a policy on
 the field will override the `driftPolicy` specified by the type.
 
-| `fields/field/protectionPolicy`
-| No
-| Situational
-| The default xref:data-encryption.adoc[data encryption] policy applied when this field is used. If a policy
-is defined on the xref:dictionary-metamodel.adoc#_dictionary_type_options[type] for this field, specifying a policy on
-the field will override the `protectionPolicy` specified by the type.
-
 | `fields/field/ethicsPolicy`
 | No
 | Situational

@@ -31,16 +31,10 @@ public abstract class AbstractFieldElement extends MetamodelElement implements A
     private Validation validation;
 
     @JsonInclude(Include.NON_NULL)
-    private String protectionPolicy;
-
-    @JsonInclude(Include.NON_NULL)
     private String ethicsPolicy;
 
     @JsonInclude(Include.NON_NULL)
     private String driftPolicy;
-
-    @JsonInclude(Include.NON_NULL)
-    private String securityPolicy;
 
     /**
      * {@inheritDoc}
@@ -65,15 +59,6 @@ public abstract class AbstractFieldElement extends MetamodelElement implements A
      */
     @JsonInclude(Include.NON_NULL)
     @Override
-    public String getProtectionPolicy() {
-        return protectionPolicy;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @JsonInclude(Include.NON_NULL)
-    @Override
     public String getEthicsPolicy() {
         return ethicsPolicy;
     }
@@ -87,14 +72,6 @@ public abstract class AbstractFieldElement extends MetamodelElement implements A
         return driftPolicy;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @JsonInclude(Include.NON_NULL)
-    @Override
-    public String getSecurityPolicy() {
-        return securityPolicy;
-    }
 
     /**
      * Sets the simple type for this field.
@@ -114,16 +91,6 @@ public abstract class AbstractFieldElement extends MetamodelElement implements A
      */
     public void setRequired(Boolean required) {
         this.required = required;
-    }
-
-    /**
-     * Sets the protection policy URN for this field.
-     * 
-     * @param protectionPolicy
-     *            protection policy URN
-     */
-    public void setProtectionPolicy(String protectionPolicy) {
-        this.protectionPolicy = protectionPolicy;
     }
 
     /**
@@ -147,23 +114,12 @@ public abstract class AbstractFieldElement extends MetamodelElement implements A
     }
 
     /**
-     * Sets the security policy URN for this field.
-     *
-     * @param securityPolicy
-     *            security policy URN
-     */
-    public void setSecurityPolicy(String securityPolicy) {
-        this.securityPolicy = securityPolicy;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public void validate() {
         super.validate();
 
-        validateProtectionPolicy();
         validateEthicsPolicy();
         validateDriftPolicy();
 
@@ -171,14 +127,6 @@ public abstract class AbstractFieldElement extends MetamodelElement implements A
             validation.validate();
         }
 
-    }
-
-    private void validateProtectionPolicy() {
-        if (protectionPolicy != null && StringUtils.isBlank(protectionPolicy)) {
-            protectionPolicy = null;
-            addEmptyPolicyUrnMessage("protectionPolicy");
-
-        }
     }
 
     private void addEmptyPolicyUrnMessage(String fieldName) {

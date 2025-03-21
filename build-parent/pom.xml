@@ -456,10 +456,6 @@
                                 <operatorAndVersion>${version.aissemble}</operatorAndVersion>
                             </packageDefinition>
                             <packageDefinition>
-                                <packageName>aissemble-foundation-encryption-policy-python</packageName>
-                                <operatorAndVersion>${version.aissemble}</operatorAndVersion>
-                            </packageDefinition>
-                            <packageDefinition>
                                 <packageName>aissemble-foundation-transform-core-python</packageName>
                                 <operatorAndVersion>${version.aissemble}</operatorAndVersion>
                             </packageDefinition>
@@ -485,10 +481,6 @@
                             </packageDefinition>
                             <packageDefinition>
                                 <packageName>aissemble-extensions-transform-spark-python</packageName>
-                                <operatorAndVersion>${version.aissemble}</operatorAndVersion>
-                            </packageDefinition>
-                            <packageDefinition>
-                                <packageName>aissemble-extensions-encryption-vault-python</packageName>
                                 <operatorAndVersion>${version.aissemble}</operatorAndVersion>
                             </packageDefinition>
                             <packageDefinition>

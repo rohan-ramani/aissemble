@@ -3,6 +3,12 @@
 # Breaking Changes
 _Note: instructions for adapting to these changes are outlined in the upgrade instructions below._
 
+- The data encryption modules marked for deletion in 1.13.0 have been removed. Follow **How to Upgrade** section for migration instructions. In addition, the following artifacts were removed:
+  - extensions-encryption-vault-java java data encryption
+  - foundation-encryption-policy-java java encryption policy
+  - aissemble-extensions-encryption-vault-python python data encryption
+  - aissemble-foundation-encryption-policy-python python encryption policy
+
 # Known Issues
 
 ## Docker Module Build Failures
@@ -36,6 +42,8 @@ To reduce burden of upgrading aiSSEMBLE, the Baton project is used to automate t
 | upgrade-tiltfile-aissemble-version-migration       | Updates the aiSSEMBLE version within your project's Tiltfile                                                                                                                 |
 | upgrade-v2-chart-files-aissemble-version-migration | Updates the Helm chart dependencies within your project's deployment resources (`<YOUR_PROJECT>-deploy/src/main/resources/apps/`) to use the latest version of the aiSSEMBLE |
 | upgrade-v1-chart-files-aissemble-version-migration | Updates the docker image tags within your project's deployment resources (`<YOUR_PROJECT>-deploy/src/main/resources/apps/`) to use the latest version of the aiSSEMBLE       |
+| data-encryption-removal-pom-migration              | Remove the data encryption dependencies from the pom file                                                                                                                    |
+| data-encryption-removal-pyproject-migration        | Remove the data encryption dependencies from the pyproject.toml file                                                                                                         |
 
 To deactivate any of these migrations, add the following configuration to the `baton-maven-plugin` within your root `pom.xml`:
 
@@ -73,12 +81,47 @@ To start your aiSSEMBLE upgrade, update your project's pom.xml to use the 1.13.0
 
 ## Conditional Steps
 
+## For projects leveraging Data Encryption
+With data encryption removal, we are no longer supporting below functions/policy in the project. If you are using any of these functions/policy, please make changes accordingly:
+
+- Spark/Pyspark Pipeline
+  - encryptUDF
+  - checkAndApplyEncryptionPolicy
+  
+- Pyspark Pipeline
+  - aissemble_encrypt_simple_aes
+  - aissemble_encrypt_with_vault_key
+  - aissemble_encrypt_aes_udf
+  - aissemble_encrypt_vault_udf
+  - check_and_apply_encryption_policy
+  - apply_encryption_when_native_collection_is_supplied
+  - apply_encryption_to_dataset
+
+- Spark/Pyspark Pipeline Dictionary Model
+  - protectionPolicy
+
+## For projects leveraging the Configuration Store
+With data encryption removal, the encrypt.properties have been migrated to configuration store. If you
+are using the configuration store with vault, please ensure to rename the `encrypt.properties` to be 
+`config-store-vault.properties`. For the vault deployment, you can add below content to the vault 
+values.yaml file to enable configuration store access vault:
+```yaml
+  aissemble-configuration-store-chart:
+    configMapProperties:
+      enabled: true
+      name: configuration-store-config
+      baseConfigFiles:
++       config-store-valut.properties: |-
++         secrets.host.url=http://127.0.0.1:8200
++         secrets.root.key=<key>
++         secrets.unseal.keys==key1,key2,key3
+```
+
 ## Final Steps - Required for All Projects
 ### Finalizing the Upgrade
-1. Run `./mvnw org.technologybrewery.baton:baton-maven-plugin:baton-migrate` to apply the automatic migrations
-2. Run `./mvnw clean install` and resolve any manual actions that are suggested
+1. Run `./mvnw clean install` and resolve any manual actions that are suggested
     - **NOTE:** This will update any aiSSEMBLE dependencies in 'pyproject.toml' files automatically
-3. Repeat the previous step until all manual actions are resolved
+2. Repeat the previous step until all manual actions are resolved
 
 # What's Changed
 _to be auto-generated when published_

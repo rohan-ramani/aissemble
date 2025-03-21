@@ -65,9 +65,6 @@ import com.boozallen.aiops.data.delivery.spark.SparkConfig;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.spark.sql.api.java.UDF1;
-import org.apache.spark.sql.api.java.UDF2;
-import com.boozallen.aissemble.data.encryption.policy.config.EncryptAlgorithm;
 import org.apache.spark.sql.types.DataTypes;
 
 import jakarta.inject.Inject;
@@ -83,11 +80,6 @@ import static com.boozallen.aissemble.data.lineage.util.LineageUtil.recordLineag
 import io.openlineage.client.OpenLineage.ParentRunFacet;
 #end
 
-import com.boozallen.aissemble.data.encryption.AiopsEncrypt;
-import com.boozallen.aissemble.data.encryption.SimpleAesEncrypt;
-import com.boozallen.aissemble.data.encryption.VaultEncrypt;
-import com.boozallen.aissemble.data.encryption.policy.EncryptionPolicy;
-import com.boozallen.aissemble.data.encryption.policy.EncryptionPolicyManager;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.functions;
@@ -199,9 +191,6 @@ public abstract class ${step.capitalizedName}Base extends AbstractPipelineStep {
         recordLineage(createLineageStartEvent(runId, jobName, defaultNamespace, parentRunFacet, eventData, eventParams));
         #end
 		try {
-		#if ($step.inbound)
-			inbound = checkAndApplyEncryptionPolicy(inbound);
-		#end
 			#if (!$step.provenance || $step.provenance.enabled)
 			recordProvenance();
 			#end
@@ -347,32 +336,6 @@ public abstract class ${step.capitalizedName}Base extends AbstractPipelineStep {
 	protected String getErrorMessage(Exception e) {
 		return action + " failed due to error: " + e.getMessage();
 	}
-#end
-
-    /**
-     * Spark User Defined Function for running encryption on columns.
-     * Note: must be registered with the spark session.
-     * @return The cipher text
-     */
-    protected UDF2<String, String, String> encryptUDF() {
-        return (plainText, encryptAlgorithm) -> {
-            if (plainText != null) {
-                // Default algorithm is AES
-                AiopsEncrypt aiopsEncrypt = new SimpleAesEncrypt();
-
-                if(encryptAlgorithm.equals("VAULT_ENCRYPT")) {
-                    aiopsEncrypt = new VaultEncrypt();
-                }
-
-                return aiopsEncrypt.encryptValue(plainText);
-            } else {
-                return "";
-            }
-        };
-    }
-
-#if ($step.inbound)
-	#parse("templates/data-delivery-spark/encryption.java.vm")
 #end
 
 #foreach ($store in $step.decoratedFileStores)

@@ -179,47 +179,6 @@ public class PythonStep extends BaseStepDecorator {
         return createSignature("execute_step_impl", inputType, outputType, isAsynchronous());
     }
 
-    /**
-     * Calculates the signature for the encryption.
-     *
-     * @return encryption method signature
-     */
-    public String getEncryptionSignature() {
-        String inputType = getInputType(true);
-        String outputType = getOutputType(true);
-        return createSignature("check_and_apply_encryption_policy", inputType, outputType, false);
-    }
-
-    /**
-     * Calculates the signature for the encryption.
-     *
-     * @return encryption method signature
-     */
-    public String getApplyEncryptionSignature() {
-        String inputType = getInputType(true);
-        String outputType = getOutputType(true);
-
-        return createSignatureWithAdditionalParameter("apply_encryption_to_dataset", inputType, inputType,
-                false, "fields_to_update: List[str], algorithm: str");
-    }
-
-    /**
-     * Calculates the signature for get_fields_list.
-     *
-     * @return get_fields_list method signature
-     */
-    public String getFieldListSignature() {
-        String inputType = getInputType(true);
-        if (hasInboundNativeCollectionType() && !hasInboundRecordType()) {
-            // The inbound type for this condition is actually Set<DataFrame>, but for
-            // this method signature we are only interested in DataFrame
-            inputType = "DataFrame";
-        }
-        String outputType = "List[str]";
-
-        return createSignature("get_fields_list", inputType, outputType, false);
-    }
-
     public void setRecordGenerationInPipelineModule(boolean isRecordGenerationInPipelineModule){
         this.isRecordGenerationInPipelineModule = isRecordGenerationInPipelineModule;
     }

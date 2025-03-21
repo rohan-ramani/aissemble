@@ -92,14 +92,6 @@ public class BaseDictionaryTypeDecorator implements DictionaryType {
      * {@inheritDoc}
      */
     @Override
-    public String getProtectionPolicy() {
-        return wrapped.getProtectionPolicy();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String getEthicsPolicy() {
         return wrapped.getEthicsPolicy();
     }
@@ -110,14 +102,6 @@ public class BaseDictionaryTypeDecorator implements DictionaryType {
     @Override
     public String getDriftPolicy() {
         return wrapped.getDriftPolicy();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getSecurityPolicy() {
-        return wrapped.getSecurityPolicy();
     }
 
     protected void validateValidations(List<String> validatableTypes, boolean isString, boolean isDecimal) {
@@ -193,9 +177,8 @@ public class BaseDictionaryTypeDecorator implements DictionaryType {
     public boolean isComplex() {
         boolean hasDriftPolicy = StringUtils.isNotBlank(getDriftPolicy());
         boolean hasEthicsPolicy = StringUtils.isNotBlank(getEthicsPolicy());
-        boolean hasProtectionPolicy = StringUtils.isNotBlank(getProtectionPolicy());
 
-        return hasValidationConstraints() || hasDriftPolicy || hasEthicsPolicy || hasProtectionPolicy;
+        return hasValidationConstraints() || hasDriftPolicy || hasEthicsPolicy;
     }
 
     /**

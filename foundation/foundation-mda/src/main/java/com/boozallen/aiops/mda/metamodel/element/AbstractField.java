@@ -39,14 +39,6 @@ public interface AbstractField extends Validatable {
     Boolean isRequired();
 
     /**
-     * Returns the protection policy for this type. This should be a URN to an applicable policy in the Secrets as a
-     * Service module. This value will override a dictionary type setting, if appropriate.
-     * 
-     * @return protection policy urn
-     */
-    String getProtectionPolicy();
-
-    /**
      * Returns the ethics policy for this type. This should be a URN to an applicable policy in the Ethics/Bias module.
      * This value will override a dictionary type setting, if appropriate.
      * 
@@ -61,13 +53,4 @@ public interface AbstractField extends Validatable {
      * @return drift policy urn
      */
     String getDriftPolicy();
-
-    /**
-     * Returns the security policy for this type. This should be a URN to an applicable policy in the Security module.
-     * This value will override a dictionary type setting, if appropriate.
-     *
-     * @return security policy urn
-     */
-    String getSecurityPolicy();
-
 }

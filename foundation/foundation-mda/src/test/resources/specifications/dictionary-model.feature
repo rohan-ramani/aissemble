@@ -129,21 +129,6 @@ Feature: Specify dictionary of semantically defined types
       |    -1 |
       |   -10 |
 
-  Scenario Outline: specify a potection policy within a type
-    Given a dictionary type with protection policy URN of "<protectionPolicyUrn>"
-    When dictionaries are read
-    Then a valid dictionary type is available that contains the protection policy URN "<protectionPolicyUrn>"
-
-    Examples: 
-      | protectionPolicyUrn                              |
-      | urn:com:boozallen:secrets:maskUnlessOwner        |
-      | urn:mil:dod:authorization:encrypt:unlessFiveEyes |
-
-  Scenario Outline: does not try to apply empty protection policies
-    Given a dictionary type with an empty protection policy URN
-    When dictionaries are read
-    Then a valid dictionary type is available that contains no protection policy URN
-
   Scenario Outline: specify a ethics policy within a type
     Given a dictionary type with ethics policy URN of "<ethicsPolicyUrn>"
     When dictionaries are read

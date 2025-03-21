@@ -213,14 +213,6 @@
             <artifactId>extensions-data-delivery-spark-neo4j</artifactId>
         </dependency>
         #end
-        <dependency>
-            <groupId>com.boozallen.aissemble</groupId>
-            <artifactId>foundation-encryption-policy-java</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.boozallen.aissemble</groupId>
-            <artifactId>extensions-encryption-vault-java</artifactId>
-        </dependency>
         #if ($pipeline.getDataLineage())
         <dependency>
             <groupId>com.boozallen.aissemble</groupId>

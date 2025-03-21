@@ -3,6 +3,28 @@
     "group": "version-specific",
     "type": "ordered",
     "migrations": [
+      {
+        "name": "data-encryption-removal-pom-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.DataEncryptionRemovalPomMigration",
+        "fileSets": [
+          {
+            "includes": [
+              "pom.xml"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "data-encryption-removal-pyproject-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.DataEncryptionRemovalPyprojectMigration",
+        "fileSets": [
+          {
+            "includes": [
+              "pyproject.toml"
+            ]
+          }
+        ]
+      }
     ]
   },
   {

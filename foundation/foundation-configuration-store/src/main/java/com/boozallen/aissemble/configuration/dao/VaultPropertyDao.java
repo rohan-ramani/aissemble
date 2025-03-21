@@ -17,11 +17,11 @@ import com.bettercloud.vault.api.mounts.MountPayload;
 import com.bettercloud.vault.api.mounts.MountType;
 import com.bettercloud.vault.response.LogicalResponse;
 import com.bettercloud.vault.response.MountResponse;
+import com.boozallen.aissemble.configuration.config.ConfigStoreVaultConfiguration;
 import com.boozallen.aissemble.configuration.exception.PropertyDaoException;
 import com.boozallen.aissemble.configuration.store.Property;
 import com.boozallen.aissemble.configuration.store.PropertyKey;
-import com.boozallen.aissemble.data.encryption.VaultUtil;
-import com.boozallen.aissemble.data.encryption.config.DataEncryptionConfiguration;
+import com.boozallen.aissemble.configuration.util.VaultUtil;
 import org.aeonbits.owner.KrauseningConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,7 +125,7 @@ public class VaultPropertyDao implements PropertyDao {
 
 
     private Vault getVault() throws VaultException {
-        DataEncryptionConfiguration config = KrauseningConfigFactory.create(DataEncryptionConfiguration.class);
+        ConfigStoreVaultConfiguration config = KrauseningConfigFactory.create(ConfigStoreVaultConfiguration.class);
         final VaultConfig vaultConfig = new VaultConfig()
                 .address(config.getSecretsHostUrl())
                 .token(config.getSecretsRootKey())

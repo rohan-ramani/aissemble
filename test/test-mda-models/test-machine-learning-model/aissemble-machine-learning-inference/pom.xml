@@ -138,18 +138,6 @@
             <version>${project.version}</version>
             <type>habushu</type>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>aissemble-foundation-encryption-policy-python</artifactId>
-            <version>${project.version}</version>
-            <type>habushu</type>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>aissemble-extensions-encryption-vault-python</artifactId>
-            <version>${project.version}</version>
-            <type>habushu</type>
-        </dependency>
     </dependencies>
 
 </project>

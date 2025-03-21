@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /**
  * Represents a field with specific to records.
  */
-@JsonPropertyOrder({ "name", "description", "type", "column", "required", "validation", "protectionPolicy",
+@JsonPropertyOrder({ "name", "description", "type", "column", "required", "validation",
         "ethicsPolicy", "driftPolicy" })
 public class RecordFieldElement extends AbstractFieldElement implements RecordField {
 
@@ -45,31 +45,6 @@ public class RecordFieldElement extends AbstractFieldElement implements RecordFi
     @Override
     public RecordFieldType getType() {
         return type;
-    }
-
-    /**
-     * Checks for a local override, then goes to the dictionary type, if appropriate, for the protection policy value.
-     * 
-     * {@inheritDoc}
-     */
-    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = RecordProtectionPolicyFilter.class)
-    @Override
-    public String getProtectionPolicy() {
-        String protectionPolicy = super.getProtectionPolicy();
-        if (StringUtils.isBlank(protectionPolicy)) {
-            RecordFieldType recordFieldType = getType();
-            if (recordFieldType.isDictionaryTyped()) {
-                DictionaryType dictionaryType = recordFieldType.getDictionaryType();
-                protectionPolicy = dictionaryType.getProtectionPolicy();
-            }
-        }
-        return protectionPolicy;
-    }
-
-    boolean protectionPolicyOverrideExists() {
-        String overidePolicy = super.getProtectionPolicy();
-        String backingPolicy = type.isDictionaryTyped() ? type.getDictionaryType().getProtectionPolicy() : null;
-        return StringUtils.compare(overidePolicy, backingPolicy) != 0;
     }
     
     /**
@@ -119,31 +94,6 @@ public class RecordFieldElement extends AbstractFieldElement implements RecordFi
     boolean driftPolicyOverrideExists() {
         String overidePolicy = super.getDriftPolicy();
         String backingPolicy = type.isDictionaryTyped() ? type.getDictionaryType().getDriftPolicy() : null;
-        return StringUtils.compare(overidePolicy, backingPolicy) != 0;
-    }      
-
-    /**
-     * Checks for a local override, then goes to the dictionary type, if appropriate, for the security policy value.
-     *
-     * {@inheritDoc}
-     */
-    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = RecordSecurityPolicyFilter.class)
-    @Override
-    public String getSecurityPolicy() {
-        String securityPolicy = super.getSecurityPolicy();
-        if (StringUtils.isBlank(securityPolicy)) {
-            RecordFieldType recordFieldType = getType();
-            if (recordFieldType.isDictionaryTyped()) {
-                DictionaryType dictionaryType = recordFieldType.getDictionaryType();
-                securityPolicy = dictionaryType.getSecurityPolicy();
-            }
-        }
-        return securityPolicy;
-    }
-
-    boolean securityPolicyOverrideExists() {
-        String overidePolicy = super.getSecurityPolicy();
-        String backingPolicy = type.isDictionaryTyped() ? type.getDictionaryType().getSecurityPolicy() : null;
         return StringUtils.compare(overidePolicy, backingPolicy) != 0;
     }
 

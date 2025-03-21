@@ -137,22 +137,6 @@ public class DictionarySteps extends AbstractModelInstanceSteps {
         createDictionaryWithType(scaleDictionaryTestType);
     }
 
-    @Given("a dictionary type with protection policy URN of {string}")
-    public void a_dictionary_type_with_protection_policy_urn_of(String protectionPolicyUrn) throws Exception {
-        DictionaryTypeElement protectionPolicyDictionaryTestType = createDictionaryType("protectionPolicy", "string");
-        protectionPolicyDictionaryTestType.setProtectionPolicy(protectionPolicyUrn);
-
-        createDictionaryWithType(protectionPolicyDictionaryTestType);
-    }
-
-    @Given("a dictionary type with an empty protection policy URN")
-    public void a_dictionary_type_with_an_empty_protection_policy_urn() throws Exception {
-        DictionaryTypeElement protectionPolicyType = createDictionaryType("emptyProtectionPolicy", "string");
-        protectionPolicyType.setProtectionPolicy("    ");
-
-        createDictionaryWithType(protectionPolicyType);
-    }
-
     @Given("a dictionary type with ethics policy URN of {string}")
     public void a_dictionary_type_with_ethics_policy_urn_of(String ethicsPolicyUrn) throws Exception {
         DictionaryTypeElement ethicsPolicyDictionaryTestType = createDictionaryType("ethicsPolicy", "string");
@@ -163,10 +147,10 @@ public class DictionarySteps extends AbstractModelInstanceSteps {
 
     @Given("a dictionary type with an empty ethics policy URN")
     public void a_dictionary_type_with_an_empty_ethics_policy_urn() throws Exception {
-        DictionaryTypeElement protectionPolicyDictionaryTestType = createDictionaryType("emptyEthicsPolicy", "string");
-        protectionPolicyDictionaryTestType.setEthicsPolicy("");
+        DictionaryTypeElement ethicsPolicyTestType = createDictionaryType("emptyEthicsPolicy", "string");
+        ethicsPolicyTestType.setEthicsPolicy("");
 
-        createDictionaryWithType(protectionPolicyDictionaryTestType);
+        createDictionaryWithType(ethicsPolicyTestType);
     }
 
     @Given("a dictionary type with drift policy URN of {string}")
@@ -179,10 +163,10 @@ public class DictionarySteps extends AbstractModelInstanceSteps {
 
     @Given("a dictionary type with an empty drift policy URN")
     public void a_dictionary_type_with_an_empty_drift_policy_urn() throws Exception {
-        DictionaryTypeElement protectionPolicyDictionaryTestType = createDictionaryType("emptyDriftPolicy", "string");
-        protectionPolicyDictionaryTestType.setDriftPolicy("\t");
+        DictionaryTypeElement driftPolicyDictionaryTestType = createDictionaryType("emptyDriftPolicy", "string");
+        driftPolicyDictionaryTestType.setDriftPolicy("\t");
 
-        createDictionaryWithType(protectionPolicyDictionaryTestType);
+        createDictionaryWithType(driftPolicyDictionaryTestType);
     }
 
     @When("dictionaries are read")
@@ -301,22 +285,6 @@ public class DictionarySteps extends AbstractModelInstanceSteps {
     @Then("a valid dictionary type returns an error around scale validation")
     public void a_valid_dictionary_type_returns_an_error_around_scale_validation() {
         assertTrue("Expected a scale-related!", encounteredError);
-    }
-
-    @Then("a valid dictionary type is available that contains the protection policy URN {string}")
-    public void a_valid_dictionary_type_is_available_that_contains_the_protection_policy_urn(
-            String expectedProtectionPolicyUrn) {
-
-        DictionaryType foundDictionaryType = assertNoErrorsAndReturnDictionaryType();
-        assertEquals("Unexpected protection policy encountered!", expectedProtectionPolicyUrn,
-                foundDictionaryType.getProtectionPolicy());
-    }
-
-    @Then("a valid dictionary type is available that contains no protection policy URN")
-    public void a_valid_dictionary_type_is_available_that_contains_no_protection_policy_urn() {
-        DictionaryType foundDictionaryType = assertNoErrorsAndReturnDictionaryType();
-        assertEquals("Protection policy should NOT have been encountered!", null,
-                foundDictionaryType.getProtectionPolicy());
     }
 
     @Then("a valid dictionary type is available that contains the ethics policy URN {string}")

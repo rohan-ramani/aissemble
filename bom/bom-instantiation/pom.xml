@@ -113,16 +113,20 @@
                 <artifactId>foundation-drift-detection-client-java</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <!-- Taking 2 steps process to remove the data encryption dependencies
+                     this will help to ease the migration process
+                     TODO: remove this package after 1.13.0 release -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>foundation-encryption-policy-java</artifactId>
-                <version>${project.version}</version>
+                <version>1.12.1</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>extensions-encryption-vault-java</artifactId>
-                <version>${project.version}</version>
+                <version>1.12.1</version>
             </dependency>
+            <!-- end of removal after release 1.13.0 -->
             <dependency>
                 <groupId>com.boozallen.feature.discovery</groupId>
                 <artifactId>feature-discovery-registration</artifactId>

@@ -16,8 +16,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -25,11 +23,8 @@ import java.util.Set;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.spi.CDI;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.technologybrewery.krausening.Krausening;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.vault.VaultContainer;
 
 import com.boozallen.aissemble.configuration.ConfigStoreInit;
@@ -272,7 +267,7 @@ public class LoadConfigurationsSteps {
     }
 
     private void setupVaultContainer() {
-        final Properties encryptProperties = Krausening.getInstance().getProperties("encrypt.properties");
+        final Properties encryptProperties = Krausening.getInstance().getProperties("config-store-vault.properties");
         vaultContainer = new VaultContainer<>("hashicorp/vault:1.19.0")
                 .withVaultToken(VAULT_TOKEN);
         vaultContainer.setWaitStrategy(Wait.forListeningPort());
@@ -295,9 +290,9 @@ public class LoadConfigurationsSteps {
         expectedProperties.add(new Property("microprofile-config-data-lineage", "added-property", "example-value"));
         expectedProperties.add(new Property("microprofile-config-messaging", "connector", "smallrye-kafka"));
         expectedProperties.add(new Property("microprofile-config-messaging", "serializer", "apache.StringSerializer"));
-        expectedProperties.add(new Property("encrypt", "secrets.unseal.keys", "<unseal.keys>"));
-        expectedProperties.add(new Property("encrypt", "secrets.root.key", "<root.key>"));
-        expectedProperties.add(new Property("encrypt", "secrets.host.url", "http://127.0.0.1:8200"));
+        expectedProperties.add(new Property("config-store-vault", "secrets.unseal.keys", "<unseal.keys>"));
+        expectedProperties.add(new Property("config-store-vault", "secrets.root.key", "<root.key>"));
+        expectedProperties.add(new Property("config-store-vault", "secrets.host.url", "http://127.0.0.1:8200"));
         expectedProperties.add(expectedProperty);
 
         return expectedProperties;

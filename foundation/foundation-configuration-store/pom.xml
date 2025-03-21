@@ -183,11 +183,6 @@
             <version>${version.vault}</version>
         </dependency>
         <dependency>
-            <groupId>com.boozallen.aissemble</groupId>
-            <artifactId>extensions-encryption-vault-java</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>vault</artifactId>
             <version>${version.testcontainers}</version>

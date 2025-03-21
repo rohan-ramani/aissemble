@@ -133,22 +133,6 @@ public class RecordSteps extends AbstractModelInstanceSteps {
         saveRecordToFile(newRecord);
     }
 
-    @Given("a record with a field that has dictionary type named {string} and a protection policy of {string}")
-    public void a_record_with_a_field_that_has_dictionary_type_named_and_a_protection_policy_of(
-            String dictionaryTypeName, String overrideProtectionPolicy) {
-
-        RecordElement newRecord = createNewRecordWithNameAndPackage("ProtectionPolicyOverrideTest", BOOZ_ALLEN_PACKAGE);
-        RecordFieldElement field = new RecordFieldElement();
-        field.setName("testPolicyOverride");
-        RecordFieldTypeElement type = new RecordFieldTypeElement();
-        type.setPackage(BOOZ_ALLEN_PACKAGE);
-        type.setName(dictionaryTypeName);
-        field.setType(type);
-        field.setProtectionPolicy(overrideProtectionPolicy);
-        newRecord.addField(field);
-        saveRecordToFile(newRecord);
-    }
-
     @Given("a record with a field that has dictionary type named {string} and a ethics policy of {string}")
     public void a_record_with_a_field_that_has_dictionary_type_named_and_a_ethics_policy_of(String dictionaryTypeName,
             String overrideEthicsPolicy) {
@@ -272,20 +256,6 @@ public class RecordSteps extends AbstractModelInstanceSteps {
     public void the_record_field_is_available_and_marked_as_optional() {
         RecordField foundField = getAndValidateSingleField();
         assertTrue("Expected an optional value for field '" + foundField.getName() + "'!", !foundField.isRequired());
-    }
-
-    @Then("the record field is available and has a protection policy of {string}")
-    public void the_record_field_is_available_and_has_a_protection_policy_of(String expectedProtectionPolicy) {
-        RecordField foundField = getAndValidateSingleField();
-        assertEquals("Unexpected protection policy URN for field '" + foundField.getName() + "'!",
-                expectedProtectionPolicy, foundField.getProtectionPolicy());
-    }
-
-    @Then("the record field is available and has a no protection policy specified")
-    public void the_record_field_is_available_and_has_a_no_protection_policy_specified() {
-        RecordField foundField = getAndValidateSingleField();
-        assertEquals("Expected NO protection policy URN for field '" + foundField.getName() + "'!", null,
-                foundField.getProtectionPolicy());
     }
 
     @Then("the record field is available and has a ethics policy of {string}")

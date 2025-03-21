@@ -41,9 +41,6 @@ public abstract class ${dictionaryType.capitalizedName}Base {
 #if ($dictionaryType.ethicsPolicy)
     public static final String ETHICS_POLICY = "${dictionaryType.ethicsPolicy}";
 #end
-#if ($dictionaryType.protectionPolicy)
-    public static final String PROTECTION_POLICY = "${dictionaryType.protectionPolicy}";
-#end
 
     private ${dictionaryType.shortType} value;
 

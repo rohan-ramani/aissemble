@@ -105,16 +105,6 @@ public class JavaStep extends BaseStepDecorator {
         return getImplSignature(false);
     }
 
-    /**
-     * Calculates the signature for the encryption.
-     *
-     * @return encryption method signature
-     */
-    public String getEncryptionSignature() {
-        String inputType = getBaseInboundType();
-        return createSignature("checkAndApplyEncryptionPolicy", "protected", inputType, inputType, false);
-    }
-
     private String getImplSignature(boolean isAbstract) {
         String inputType;
         String outboundType;

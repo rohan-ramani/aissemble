@@ -15,16 +15,15 @@ class ${record.capitalizedName}Field(Enum):
     """
 
 #foreach ($field in $record.fields)
-    ${field.upperSnakecaseName} = ${foreach.index}, ${field.driftPolicyEnumValue}, ${field.ethicsPolicyEnumValue}, ${field.protectionPolicyEnumValue}
+    ${field.upperSnakecaseName} = ${foreach.index}, ${field.driftPolicyEnumValue}, ${field.ethicsPolicyEnumValue}
 #end
 
 
-    def __new__(cls, index: int, drift_policy: str, ethics_policy: str, protection_policy: str):
+    def __new__(cls, index: int, drift_policy: str, ethics_policy: str):
         field = object.__new__(cls)
         field.index = index
         field._drift_policy = drift_policy
         field._ethics_policy = ethics_policy
-        field._protection_policy = protection_policy
         return field
 
 
@@ -44,15 +43,6 @@ class ${record.capitalizedName}Field(Enum):
 
     def has_ethics_policy(self) -> bool:
         return True if self._ethics_policy and self._ethics_policy.strip() else False
-
-
-    @property
-    def protection_policy(self) -> str:
-        return self._protection_policy
-
-
-    def has_protection_policy(self) -> bool:
-        return True if self._protection_policy and self._protection_policy.strip() else False
 
 
     @classmethod
@@ -79,14 +69,3 @@ class ${record.capitalizedName}Field(Enum):
 
         return fields_with_ethics_policy
 
-    @classmethod
-    def get_fields_with_protection_policy(cls) -> List[${record.capitalizedName}Field]:
-        """
-        Returns the list of fields that have a protection policy.
-        """
-        fields_with_protection_policy = []
-        for field in ${record.capitalizedName}Field:
-            if field.has_protection_policy():
-                fields_with_protection_policy.append(field)
-
-        return fields_with_protection_policy
