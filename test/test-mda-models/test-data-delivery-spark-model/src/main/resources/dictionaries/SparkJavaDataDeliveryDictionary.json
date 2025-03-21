@@ -78,8 +78,7 @@
 		    "name": "typeWithPolicies",
 		    "simpleType": "string",
 		    "driftPolicy": "dictionaryTypeDriftPolicy",
-		    "ethicsPolicy": "dictionaryTypeEthicsPolicy",
-		    "protectionPolicy": "dictionaryTypeProtectionPolicy"
+		    "ethicsPolicy": "dictionaryTypeEthicsPolicy"
 		},
 		{
 			"name": "binarydata",

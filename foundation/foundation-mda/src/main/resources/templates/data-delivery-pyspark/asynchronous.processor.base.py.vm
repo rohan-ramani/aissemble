@@ -34,78 +34,16 @@ from aissemble_core_config import MessagingConfig
 #end
 from pathlib import Path
 from policy_manager.configuration import PolicyConfiguration
-from aissemble_encrypt_policy import DataEncryptionPolicy, DataEncryptionPolicyManager
 from typing import List
 import os
 #if ($step.inbound)
 from pyspark.sql.functions import udf, col, lit, when
 from pyspark.sql.types import StringType
-from aissemble_encrypt.vault_key_util import VaultKeyUtil
-from aissemble_encrypt.aes_cbc_encryption_strategy import AesCbcEncryptionStrategy
-from aissemble_encrypt.aes_gcm_96_encryption_strategy import AesGcm96EncryptionStrategy
-from aissemble_encrypt.vault_remote_encryption_strategy import VaultRemoteEncryptionStrategy
-from aissemble_encrypt.vault_local_encryption_strategy import VaultLocalEncryptionStrategy
 #end
 #if ($pipeline.getDataLineage())
 from uuid import uuid4
 from datetime import datetime
 #end
-
-#if ($step.inbound)
-def aissemble_encrypt_simple_aes(plain_text):
-    '''
-    Pyspark User Defined Function for running encryption on columns.
-    Note: must be registered with the spark session.
-    return The cipher text
-    '''
-    # TODO: Due to issues with defining the udf inside the class we are defining them outside.  It would be good to revisit this issue in future releases.
-    if (plain_text is not None):
-        if not os.environ.get('KRAUSENING_BASE'):
-            ${step.capitalizedName}Base.logger.warn('KRAUSENING_BASE environment variable was not set.  Using default path -> ./krausening/base')
-            os.environ['KRAUSENING_BASE'] = 'krausening/base/'
-
-        encryption_strategy = AesCbcEncryptionStrategy()
-
-        encrypted_column_value = encryption_strategy.encrypt(plain_text)
-
-        # Depending on the encryption algorithm the return value may be bytes or bytesarray which requires decoding
-        try:
-            encrypted_column_value = encrypted_column_value.decode('utf-8')
-        except (UnicodeDecodeError, AttributeError):
-            pass
-
-        return encrypted_column_value
-    else:
-        return ''
-
-
-def aissemble_encrypt_with_vault_key(key, plain_text):
-    '''
-    Pyspark User Defined Function for running encryption on columns.
-    Vault supplies an AES GCM 96 encryption key which will be used here.
-    Note: must be registered with the spark session.
-    return The cipher text
-    '''
-    if (plain_text is not None):
-        if not os.environ.get('KRAUSENING_BASE'):
-            ${step.capitalizedName}Base.logger.warn('KRAUSENING_BASE environment variable was not set.  Using default path -> ./config')
-            os.environ['KRAUSENING_BASE'] = 'krausening/base/'
-
-        encryption_strategy = AesGcm96EncryptionStrategy(key)
-
-        encrypted_column_value = encryption_strategy.encrypt(plain_text)
-
-        # Depending on the encryption algorithm the return value may be bytes or bytesarray which requires decoding
-        try:
-            encrypted_column_value = encrypted_column_value.decode('utf-8')
-        except (UnicodeDecodeError, AttributeError):
-            pass
-
-        return encrypted_column_value
-    else:
-        return ''
-#end
-
 
 class ${step.capitalizedName}Base(AbstractPipelineStep):
     """
@@ -208,10 +146,6 @@ class ${step.capitalizedName}Base(AbstractPipelineStep):
         start = time_ns()
         ${step.capitalizedName}Base.logger.info('START: step execution...')
 
-        #if ($step.inbound)
-        inbound = self.check_and_apply_encryption_policy(inbound)
-        #end
-
         #if ($pipeline.getDataLineage())
         run_id = uuid4()
         parent_run_facet = PipelineBase().get_pipeline_run_as_parent_run_facet()
@@ -284,9 +218,7 @@ class ${step.capitalizedName}Base(AbstractPipelineStep):
         for message in self.consumer:
             start = time_ns()
             ${step.capitalizedName}Base.logger.info('START: step execution...')
-
-            message_value = message.value.decode('utf-8')
-            inbound = self.check_and_apply_encryption_policy(message_value)
+            inbound = message.value.decode('utf-8')
 
             #if ($pipeline.getDataLineage())
             run_id = uuid4()
@@ -359,9 +291,6 @@ class ${step.capitalizedName}Base(AbstractPipelineStep):
 
   #end
 
-#if ($step.inbound)
-    #parse("templates/data-delivery-pyspark/encryption.py.vm")
-#end
 
     def get_logger(self):
         return self.logger

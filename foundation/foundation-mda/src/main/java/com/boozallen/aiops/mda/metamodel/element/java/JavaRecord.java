@@ -80,7 +80,7 @@ public class JavaRecord extends BaseRecordDecorator {
     public Set<String> getEnumImports() {
         for (RecordField field : getFields()) {
             JavaRecordField javaField = (JavaRecordField) field;
-            if (hasDriftPolicy(javaField) || hasEthicsPolicy(javaField) || hasProtectionPolicy(javaField)) {
+            if (hasDriftPolicy(javaField) || hasEthicsPolicy(javaField)) {
                 addDictionaryTypeImports(javaField, true);
             }
         }
@@ -98,10 +98,6 @@ public class JavaRecord extends BaseRecordDecorator {
 
     private boolean hasEthicsPolicy(JavaRecordField javaField) {
         return StringUtils.isNotBlank(javaField.getEthicsPolicy()) && !javaField.hasOverriddenEthicsPolicy();
-    }
-
-    private boolean hasProtectionPolicy(JavaRecordField javaField) {
-        return StringUtils.isNotBlank(javaField.getProtectionPolicy()) && !javaField.hasOverriddenProtectionPolicy();
     }
 
     private void addFieldImports(JavaRecordField field) {

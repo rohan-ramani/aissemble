@@ -22,7 +22,6 @@
     <modules>
         <module>extensions-security</module>
         <module>extensions-transform</module>
-        <module>extensions-encryption</module>
         <module>extensions-data-delivery</module>
         <module>extensions-data-lineage</module>
         <module>extensions-docker</module>

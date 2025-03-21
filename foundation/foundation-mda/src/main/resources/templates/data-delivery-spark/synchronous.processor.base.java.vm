@@ -44,9 +44,6 @@ import ${basePackage}.filestore.${store.fullName};
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.spark.sql.api.java.UDF1;
-import org.apache.spark.sql.api.java.UDF2;
-import com.boozallen.aissemble.data.encryption.policy.config.EncryptAlgorithm;
 import org.apache.spark.sql.types.DataTypes;
 
 import jakarta.inject.Inject;
@@ -64,13 +61,8 @@ import io.openlineage.client.OpenLineage.ParentRunFacet;
 #end
 import com.boozallen.aissemble.security.client.PolicyDecisionPointClient;
 import com.boozallen.aissemble.security.authorization.policy.PolicyDecision;
-import com.boozallen.aissemble.data.encryption.policy.EncryptionPolicy;
-import com.boozallen.aissemble.data.encryption.policy.EncryptionPolicyManager;
 import com.boozallen.aissemble.security.exception.AissembleSecurityException;
 import com.boozallen.aissemble.security.authorization.models.PDPRequest;
-import com.boozallen.aissemble.data.encryption.AiopsEncrypt;
-import com.boozallen.aissemble.data.encryption.SimpleAesEncrypt;
-import com.boozallen.aissemble.data.encryption.VaultEncrypt;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.functions;
@@ -143,12 +135,6 @@ public abstract class ${step.capitalizedName}Base extends AbstractPipelineStep {
     #end
     protected ${step.capitalizedName}Base(String subject, String action) {
         super(subject, action);
-
-        // Register the encryption UDF
-        sparkSession
-                .sqlContext()
-                .udf()
-                .register("encryptUDF", encryptUDF(), DataTypes.StringType);
     }
 
     #if (${step.hasMessagingInbound()})
@@ -181,9 +167,6 @@ public abstract class ${step.capitalizedName}Base extends AbstractPipelineStep {
     #end
     try {
 
-        #if ($step.inbound)
-            inbound = checkAndApplyEncryptionPolicy(inbound);
-        #end
         #if (${step.hasMessagingInbound()})
             inboundPayload = inbound.getPayload();
         #elseif (${step.hasNativeInbound()})
@@ -368,32 +351,6 @@ public abstract class ${step.capitalizedName}Base extends AbstractPipelineStep {
 
         return policyDecisionPointClient.getPolicyDecision(pdpRequest);
     }
-
-    /**
-     * Spark User Defined Function for running encryption on columns.
-     * Note: must be registered with the spark session.
-     * @return The cipher text
-     */
-    protected UDF2<String, String, String> encryptUDF () {
-        return (plainText, encryptAlgorithm) -> {
-            if (plainText != null) {
-                // Default algorithm is AES
-                AiopsEncrypt aiopsEncrypt = new SimpleAesEncrypt();
-
-                if (encryptAlgorithm.equals("VAULT_ENCRYPT")) {
-                    aiopsEncrypt = new VaultEncrypt();
-                }
-
-                return aiopsEncrypt.encryptValue(plainText);
-            } else {
-                return "";
-            }
-        };
-    }
-
-    #if ($step.inbound)
-        #parse("templates/data-delivery-spark/encryption.java.vm")
-    #end
 
 #foreach ($store in $step.decoratedFileStores)
     public AbstractFileStore get$store.fullName () {

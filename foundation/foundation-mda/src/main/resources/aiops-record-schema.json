@@ -61,16 +61,10 @@
 					"required": {
 						"type": "boolean"
 					},
-					"protectionPolicy": {
-						"type": "string"
-					},
 					"ethicsPolicy": {
 						"type": "string"
 					},
 					"driftPolicy": {
-						"type": "string"
-					},
-					"securityPolicy": {
 						"type": "string"
 					}
 				},

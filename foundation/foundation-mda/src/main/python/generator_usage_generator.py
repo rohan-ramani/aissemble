@@ -384,10 +384,8 @@ def update_generators():
     fail = False
     known_embedded_templates = [
         'data-delivery-common/pipeline.chart.pom.configuration.vm',
-        'data-delivery-pyspark/encryption.py.vm',
         'data-delivery-pyspark/persist.py.vm',
         'data-delivery-pyspark/rdbms.config.extension.py.vm',
-        'data-delivery-spark/encryption.java.vm',
         'data-delivery-spark/persist.java.vm',
         'python.lineage.py.vm'
     ]

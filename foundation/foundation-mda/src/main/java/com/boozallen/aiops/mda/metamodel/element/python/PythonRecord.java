@@ -85,7 +85,7 @@ public class PythonRecord extends BaseRecordDecorator {
     public Set<String> getEnumImports() {
         for (RecordField field : getFields()) {
             PythonRecordField pythonField = (PythonRecordField) field;
-            if (hasDriftPolicy(pythonField) || hasEthicsPolicy(pythonField) || hasProtectionPolicy(pythonField)) {
+            if (hasDriftPolicy(pythonField) || hasEthicsPolicy(pythonField)) {
                 addFieldImports(pythonField, true);
             }
         }
@@ -99,10 +99,6 @@ public class PythonRecord extends BaseRecordDecorator {
 
     private boolean hasEthicsPolicy(PythonRecordField oythonField) {
         return StringUtils.isNotBlank(oythonField.getEthicsPolicy()) && !oythonField.hasOverriddenEthicsPolicy();
-    }
-
-    private boolean hasProtectionPolicy(PythonRecordField pythonField) {
-        return StringUtils.isNotBlank(pythonField.getProtectionPolicy()) && !pythonField.hasOverriddenProtectionPolicy();
     }
 
     private void addFieldImports(PythonRecordField field, boolean forEnum) {

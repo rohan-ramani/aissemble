@@ -153,11 +153,11 @@ public abstract class AbstractModelInstanceSteps {
     }
 
     protected DictionaryTypeElement createDictionaryType(String name, String type) {
-        DictionaryTypeElement protectionPolicyDictionaryTestType = new DictionaryTypeElement();
-        protectionPolicyDictionaryTestType.setName(name);
-        protectionPolicyDictionaryTestType.setSimpleType(type);
+        DictionaryTypeElement testDictionaryTestType = new DictionaryTypeElement();
+        testDictionaryTestType.setName(name);
+        testDictionaryTestType.setSimpleType(type);
 
-        return protectionPolicyDictionaryTestType;
+        return testDictionaryTestType;
     }
 
     protected void createSampleDictionary(List<DictionaryTypeElement> dictionaryTypes) throws Exception {

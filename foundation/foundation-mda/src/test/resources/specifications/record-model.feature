@@ -3,14 +3,14 @@ Feature: Specify record of semantically defined types
 
   Background: 
     Given the following dictionary types:
-      | name            | simpleType | protectionPolicy | driftPolicy      | ethicsPolicy             |
-      | ssn             | string     | hashValuePolicy  |                  |                          |
-      | phoneNumber     | string     | hashValuePolicy  |                  |                          |
-      | singleSlaInDays | decimal    |                  | oneZScorePolicy  |                          |
-      | doubleSlaInDays | decimal    |                  | twoZScoresPolicy |                          |
-      | archivable      | boolean    |                  |                  | sampleMinimumPolicy      |
-      | gender          | string     |                  |                  | genderDistributionPolicy |
-      | binarydata      | byte[]     |                  |                  |                          |
+      | name            | simpleType | driftPolicy      | ethicsPolicy             |
+      | ssn             | string     |                  |                          |
+      | phoneNumber     | string     |                  |                          |
+      | singleSlaInDays | decimal    | oneZScorePolicy  |                          |
+      | doubleSlaInDays | decimal    | twoZScoresPolicy |                          |
+      | archivable      | boolean    |                  | sampleMinimumPolicy      |
+      | gender          | string     |                  | genderDistributionPolicy |
+      | binarydata      | byte[]     |                  |                          |
 
   Scenario Outline: Create a valid record file
     Given a record described by "<name>", "<package>"
@@ -90,36 +90,6 @@ Feature: Specify record of semantically defined types
     Given a record with a field specifying the column as optional
     When records are read
     Then the record field is available and marked as optional
-
-  Scenario Outline: A record field inherits the protection policy of the dictionary type it references
-    Given a record with a field that has dictionary type named "<dictionaryTypeFromBackground>"
-    When records are read
-    Then the record field is available and has a protection policy of "<expectedProtectionPolicyFromBackground>"
-
-    Examples: 
-      | dictionaryTypeFromBackground | expectedProtectionPolicyFromBackground |
-      | ssn                          | hashValuePolicy                        |
-      | phoneNumber                  | hashValuePolicy                        |
-
-  Scenario Outline: A record field inherits the empty protection policy of the dictionary type it references
-    Given a record with a field that has dictionary type named "<dictionaryTypeFromBackground>"
-    When records are read
-    Then the record field is available and has a no protection policy specified
-
-    Examples: 
-      | dictionaryTypeFromBackground |
-      | singleSlaInDays              |
-      | archivable                   |
-
-  Scenario Outline: A record field overrides the protection policy of the dictionary type it references with a new value
-    Given a record with a field that has dictionary type named "<dictionaryTypeFromBackground>" and a protection policy of "<overrideProtectionPolicy>"
-    When records are read
-    Then the record field is available and has a protection policy of "<overrideProtectionPolicy>"
-
-    Examples: 
-      | dictionaryTypeFromBackground | overrideProtectionPolicy      |
-      | ssn                          | hashAllButLastFourOfSsnPolicy |
-      | phoneNumber                  | noOpPolicy                    |
 
   Scenario Outline: A record field inherits the ethics policy of the dictionary type it references
     Given a record with a field that has dictionary type named "<dictionaryTypeFromBackground>"

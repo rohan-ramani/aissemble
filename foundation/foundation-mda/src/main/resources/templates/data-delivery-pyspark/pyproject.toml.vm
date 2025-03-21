@@ -19,8 +19,6 @@ pyyaml = "^6.0"
 
 aissemble-foundation-core-python = "${aissemblePythonVersion}"
 aissemble-foundation-pdp-client-python = "${aissemblePythonVersion}"
-aissemble-foundation-encryption-policy-python = "${aissemblePythonVersion}"
-aissemble-extensions-encryption-vault-python = "${aissemblePythonVersion}"
 aissemble-extensions-data-delivery-spark-py = "${aissemblePythonVersion}"
 #if ($pipeline.getDataLineage())
 aissemble-foundation-data-lineage-python = "${aissemblePythonVersion}"

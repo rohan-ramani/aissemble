@@ -10,8 +10,6 @@ include = ["src/aissemble_machine_learning_inference/generated/**/*"]
 [tool.poetry.dependencies]
 aissemble-foundation-pdp-client-python = {path = "../../../../foundation/foundation-security/aissemble-foundation-pdp-client-python", develop = true}
 aissemble-foundation-core-python = {path = "../../../../foundation/aissemble-foundation-core-python", develop = true}
-aissemble-foundation-encryption-policy-python = {path = "../../../../foundation/foundation-encryption/aissemble-foundation-encryption-policy-python", develop = true}
-aissemble-extensions-encryption-vault-python = {path = "../../../../extensions/extensions-encryption/aissemble-extensions-encryption-vault-python", develop = true}
 python = ">=3.8"
 mlflow = "^2.3.1"
 fastapi = ">=0.95.0"

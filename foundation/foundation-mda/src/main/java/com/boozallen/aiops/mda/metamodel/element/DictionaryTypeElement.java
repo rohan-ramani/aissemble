@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /**
  * Represents a dictionary type instance.
  */
-@JsonPropertyOrder({ "name", "package", "simpleType", "validation", "protectionPolicy", "ethicsPolicy", "driftPolicy" })
+@JsonPropertyOrder({ "name", "package", "simpleType", "validation", "ethicsPolicy", "driftPolicy" })
 public class DictionaryTypeElement extends NamespacedMetamodelElement implements DictionaryType {
 
     private String simpleType;
@@ -29,16 +29,10 @@ public class DictionaryTypeElement extends NamespacedMetamodelElement implements
     private Validation validation;
 
     @JsonInclude(Include.NON_NULL)
-    private String protectionPolicy;
-
-    @JsonInclude(Include.NON_NULL)
     private String ethicsPolicy;
 
     @JsonInclude(Include.NON_NULL)
     private String driftPolicy;
-
-    @JsonInclude(Include.NON_NULL)
-    private String securityPolicy;
 
     /**
      * {@inheritDoc}
@@ -62,15 +56,6 @@ public class DictionaryTypeElement extends NamespacedMetamodelElement implements
      */
     @JsonInclude(Include.NON_NULL)
     @Override
-    public String getProtectionPolicy() {
-        return protectionPolicy;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @JsonInclude(Include.NON_NULL)
-    @Override
     public String getEthicsPolicy() {
         return ethicsPolicy;
     }
@@ -82,15 +67,6 @@ public class DictionaryTypeElement extends NamespacedMetamodelElement implements
     @Override
     public String getDriftPolicy() {
         return driftPolicy;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @JsonInclude(Include.NON_NULL)
-    @Override
-    public String getSecurityPolicy() {
-        return securityPolicy;
     }
 
     /**
@@ -114,16 +90,6 @@ public class DictionaryTypeElement extends NamespacedMetamodelElement implements
     }
 
     /**
-     * Sets the protection policy URN for this dictionary type.
-     * 
-     * @param protectionPolicy
-     *            protection policy URN
-     */
-    public void setProtectionPolicy(String protectionPolicy) {
-        this.protectionPolicy = protectionPolicy;
-    }
-
-    /**
      * Sets the ethics policy URN for this dictionary type.
      * 
      * @param ethicsPolicy
@@ -143,16 +109,6 @@ public class DictionaryTypeElement extends NamespacedMetamodelElement implements
         this.driftPolicy = driftPolicy;
     }
 
-    /**
-     * Sets the security policy URN for this dictionary type.
-     *
-     * @param securityPolicy
-     *            security policy URN
-     */
-    public void setSecurityPolicy(String securityPolicy) {
-        this.securityPolicy = securityPolicy;
-    }
-
     @Override
     public void validate() {
         super.validate();
@@ -162,7 +118,6 @@ public class DictionaryTypeElement extends NamespacedMetamodelElement implements
 
         }
 
-        validateProtectionPolicy();
         validateEthicsPolicy();
         validateDriftPolicy();
 
@@ -170,14 +125,6 @@ public class DictionaryTypeElement extends NamespacedMetamodelElement implements
             validation.validate();
         }
 
-    }
-
-    private void validateProtectionPolicy() {
-        if (protectionPolicy != null && StringUtils.isBlank(protectionPolicy)) {
-            protectionPolicy = null;
-            addEmptyPolicyUrnMessage("protectionPolicy");
-
-        }
     }
 
     private void addEmptyPolicyUrnMessage(String fieldName) {

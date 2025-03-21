@@ -45,34 +45,6 @@ public class EncryptedFieldSteps extends AbstractModelInstanceSteps {
         createSampleDictionary(dictionaryTypes);
     }
 
-    @Given("a record with a field specifying the column name {string} as secure")
-    public void a_record_with_a_field_specifying_the_column_name_as_secure(String columnName) {
-        RecordElement newRecord = createNewRecordWithNameAndPackage("ColumnTest", BOOZ_ALLEN_PACKAGE);
-        RecordFieldElement field = createDefaultField("testColumn" + StringUtils.capitalize(columnName));
-        field.setColumn(columnName);
-        field.setSecurityPolicy("someEncryptID");
-        newRecord.addField(field);
-        saveRecordToFile(newRecord);
-    }
-
-    @When("encrypted records are read")
-    public void encrypted_records_are_read() {
-        readMetadata();
-
-        Map<String, Record> records = metadataRepo.getRecords(recordPackageName);
-        record = records.values().iterator().next();
-
-        MessageTracker messageTracker = MessageTracker.getInstance();
-        encounteredError = messageTracker.hasErrors();
-    }
-
-    @Then("the record field is available and encrypted with the encryption policy {string}")
-    public void the_record_field_is_available_and_encrypted_with_the_encryption_policy(String expectedPolicy) {
-        RecordField foundField = getAndValidateSingleField();
-        assertEquals("Unexpected encryption policy for field '" + foundField.getName() + "'!", expectedPolicy,
-                foundField.getSecurityPolicy());
-    }
-
     private RecordElement createNewRecordWithNameAndPackage(String name, String packageName) {
         RecordElement newRecord = new RecordElement();
         if (StringUtils.isNotBlank(name)) {

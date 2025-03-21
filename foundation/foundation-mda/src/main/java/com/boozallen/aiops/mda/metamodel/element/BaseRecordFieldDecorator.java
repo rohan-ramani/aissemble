@@ -65,14 +65,6 @@ public class BaseRecordFieldDecorator implements RecordField {
      * {@inheritDoc}
      */
     @Override
-    public String getProtectionPolicy() {
-        return wrapped.getProtectionPolicy();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String getEthicsPolicy() {
         return wrapped.getEthicsPolicy();
     }
@@ -83,14 +75,6 @@ public class BaseRecordFieldDecorator implements RecordField {
     @Override
     public String getDriftPolicy() {
         return wrapped.getDriftPolicy();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getSecurityPolicy() {
-        return wrapped.getSecurityPolicy();
     }
 
     /**
@@ -228,28 +212,6 @@ public class BaseRecordFieldDecorator implements RecordField {
         return ethicsPolicyValue;
     }
 
-    /**
-     * Returns the protection policy value for the field's enum.
-     *
-     * @return protection policy value for the field's enum
-     */
-    public String getProtectionPolicyEnumValue() {
-        String protectionPolicyValue;
-        if (StringUtils.isNotBlank(getProtectionPolicy())) {
-            if (hasOverriddenProtectionPolicy()) {
-                protectionPolicyValue = getQuotationString() + getProtectionPolicy() + getQuotationString();
-            } else {
-                // use dictionary type's PROTECTION_POLICY constant
-                BaseDictionaryTypeDecorator dictionaryType = (BaseDictionaryTypeDecorator) getType().getDictionaryType();
-                protectionPolicyValue = dictionaryType.getCapitalizedName() + ".PROTECTION_POLICY";
-            }
-        } else {
-            protectionPolicyValue = getNullString();
-        }
-
-        return protectionPolicyValue;
-    }
-
     protected String getQuotationString() {
         return "\"";
     }
@@ -286,21 +248,6 @@ public class BaseRecordFieldDecorator implements RecordField {
         }
 
         return StringUtils.isNotBlank(getEthicsPolicy()) && !getEthicsPolicy().equals(baseEthicsPolicy);
-    }
-
-    /**
-     * Whether this field overrides a dictionary type protection policy.
-     *
-     * @return true if this field overrides a dictionary type protection policy
-     */
-    public boolean hasOverriddenProtectionPolicy() {
-        String baseProtectionPolicy = null;
-        RecordFieldType fieldType = getType();
-        if (fieldType.isDictionaryTyped()) {
-            baseProtectionPolicy = fieldType.getDictionaryType().getProtectionPolicy();
-        }
-
-        return StringUtils.isNotBlank(getProtectionPolicy()) && !getProtectionPolicy().equals(baseProtectionPolicy);
     }
 
     /**

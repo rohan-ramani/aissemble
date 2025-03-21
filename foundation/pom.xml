@@ -25,7 +25,6 @@
         <module>aissemble-foundation-core-python</module>
         <module>foundation-lineage</module>
         <module>foundation-security</module>
-        <module>foundation-encryption</module>
         <module>foundation-metadata</module>
         <module>foundation-transform</module>
         <module>foundation-messaging</module>

@@ -21,7 +21,6 @@ public class TransformerRegistrationSteps extends AbstractModelInstanceSteps {
         DictionaryTypeElement dictionaryType = createDictionaryType(entry.get("name"), entry.get("simpleType"));
         
         dictionaryType.setEthicsPolicy(entry.get("ethicsPolicy"));
-        dictionaryType.setProtectionPolicy(entry.get("protectionPolicy"));
         dictionaryType.setDriftPolicy(entry.get("driftPolicy"));
         
         return dictionaryType;

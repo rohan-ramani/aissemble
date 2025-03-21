@@ -93,11 +93,6 @@ The following options are available on the `dictionaryType` dictionary element:
 | None
 | The default xref:drift-detection.adoc[drift detection] policy applied when this type is used in a record metamodel.
 
-| `dictionaryTypes/dictionaryType/protectionPolicy`
-| No
-| None
-| The default xref:data-encryption.adoc[data encryption] policy applied when this type is used in a record metamodel.
-
 | `dictionaryTypes/dictionaryType/ethicsPolicy`
 | No
 | None

@@ -32,14 +32,6 @@ public interface DictionaryType extends NamespacedMetamodel {
     Validation getValidation();
 
     /**
-     * Returns the protection policy for this type. This should be a URN to an applicable policy in the Secrets as a
-     * Service module.
-     * 
-     * @return protection policy urn
-     */
-    String getProtectionPolicy();
-
-    /**
      * Returns the ethics policy for this type. This should be a URN to an applicable policy in the Ethics/Bias module.
      * 
      * @return ethics policy urn
@@ -52,12 +44,5 @@ public interface DictionaryType extends NamespacedMetamodel {
      * @return drift policy urn
      */
     String getDriftPolicy();
-
-    /**
-     * Returns the security policy for this type. This should be a URN to an applicable policy in the encryption module.
-     *
-     * @return security policy urn
-     */
-    String getSecurityPolicy();
 
 }

@@ -10,8 +10,7 @@
 				"package": "com.boozallen.aiops.mda.pattern.dictionary"
 			},
 			"driftPolicy": "fieldDriftPolicy",
-		    "ethicsPolicy": "fieldEthicsPolicy",
-		    "protectionPolicy": "fieldProtectionPolicy"
+		    "ethicsPolicy": "fieldEthicsPolicy"
 		},
 		{
 			"name": "fieldWithDictionaryTypePolicies",
@@ -27,8 +26,7 @@
 				"package": "com.boozallen.aiops.mda.pattern.dictionary"
 			},
 		    "driftPolicy": "overriddenDriftPolicy",
-		    "ethicsPolicy": "overriddenEthicsPolicy",
-		    "protectionPolicy": "overriddenProtectionPolicy"
+		    "ethicsPolicy": "overriddenEthicsPolicy"
 		}
 	]
 }

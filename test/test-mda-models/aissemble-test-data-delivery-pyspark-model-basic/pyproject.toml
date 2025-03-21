@@ -17,8 +17,6 @@ aissemble-foundation-data-lineage-python = {path = "../../../foundation/foundati
 aissemble-foundation-core-python = {path = "../../../foundation/aissemble-foundation-core-python", develop = true}
 aissemble-extensions-data-delivery-spark-py = {path = "../../../extensions/extensions-data-delivery/aissemble-extensions-data-delivery-spark-py", develop = true}
 apache-sedona = "~1.4.0"
-aissemble-foundation-encryption-policy-python = {path = "../../../foundation/foundation-encryption/aissemble-foundation-encryption-policy-python", develop = true}
-aissemble-extensions-encryption-vault-python = {path = "../../../extensions/extensions-encryption/aissemble-extensions-encryption-vault-python", develop = true}
 kafka-python = "^2.0.2"
 python = ">=3.8"
 krausening = ">=20"

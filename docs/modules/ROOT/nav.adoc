@@ -21,7 +21,6 @@
 ** xref:bias-detection.adoc[]
 ** xref:configuration-store.adoc[]
 ** xref:data-access-details.adoc[]
-** xref:data-encryption.adoc[]
 ** xref:data-profiling-details.adoc[]
 ** xref:data-validation.adoc[]
 ** xref:drift-detection.adoc[]
