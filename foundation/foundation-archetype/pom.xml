@@ -147,7 +147,7 @@
                         <executions>
                             <execution>
                                 <id>test-project-archetype</id>
-                                <phase>generate-resources</phase>
+                                <phase>integration-test</phase>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
