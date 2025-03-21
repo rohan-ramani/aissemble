@@ -61,7 +61,7 @@ function updatePomBasedOnChildDirs {
   # always exists, this mitigates the errant behavior caused by the build cache completely skipping execution which was
   # resulting in a module named "*" being inserted into the pom file
   for d in * ; do
-    if [ -d "$d" ] && [ "$d" != "target/" ]; then
+    if [ -d "$d" ] && [ "$d" != "target" ]; then
       # Drop / from the end of the directory
       d="${d/\//}"
       modules+="<module>$d</module>"$'\n        '
