@@ -85,8 +85,10 @@ jobs:
             poetry-cache-
       # Generate the settings.xml for ghcr.io, pypi, & dev-pypi server profiles
       - name: Create settings.xml
+        id: create-settings-xml
         run: |
           echo "<settings><servers><server><id>ghcr.io</id><username>${{ secrets.GHCR_IO_USERNAME }}</username><password>${{ secrets.GHCR_IO_TOKEN }}</password></server><server><id>pypi</id><username>${{ secrets.PYPI_USERNAME }}</username><password>${{ secrets.PYPI_TOKEN }}</password></server><server><id>dev-pypi</id><username>${{ secrets.TEST_PYPI_USERNAME }}</username><password>${{ secrets.TEST_PYPI_TOKEN }}</password></server> </servers></settings>" > $HOME/.m2/settings.xml
+          echo "HOME_DIR=$HOME" >> "$GITHUB_OUTPUT"
       # Run build with the gh-build profile
       - name: Build aiSSEMBLE
         run: |
@@ -100,6 +102,10 @@ jobs:
       - name: Run Archetype Tests
         run: |
           ./mvnw -B clean install -Parchetype-test -pl :foundation-archetype
+      - name: Submit Dependency Graph
+        uses: advanced-security/maven-dependency-submission-action@v4
+        with:
+          settings-file: ${{ steps.create-settings-xml.outputs.HOME_DIR }}/.m2/settings.xml
       - name: Save docker build cache
         id: save-docker-build
         uses: runs-on/cache/save@v4
