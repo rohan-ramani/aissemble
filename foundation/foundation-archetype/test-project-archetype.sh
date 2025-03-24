@@ -23,6 +23,17 @@ mkdir -p target/temp
 cd target/temp
 
 #---
+## Capture non-zero exits and clear the build-cache. This prevents the cache from hiding failures.
+#---
+function exit {
+  if [ "$1" -ne 0 ]; then
+    rm -rf ~/.m2/build-cache/v1/com.bah.aiops
+  fi
+  POSIXLY_CORRECT=1; unset exit
+  exit "$1"
+}
+
+#---
 ## Replacement for `sed -i` that formats the command correctly for MacOS and Linux
 ##
 ## @args: $1 and $2 are passed in unchanged to `sed`
