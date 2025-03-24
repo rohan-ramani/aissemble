@@ -12,6 +12,8 @@ package com.boozallen.aissemble.alerting.core.cdi;
 
 import java.util.List;
 
+import com.boozallen.aissemble.alerting.core.AlertDeserializer;
+import com.boozallen.aissemble.alerting.core.AlertSerializer;
 import com.boozallen.aissemble.messaging.core.cdi.MessagingCdiContext;
 
 import com.boozallen.aissemble.alerting.core.AlertProducer;
@@ -26,6 +28,8 @@ public class AlertingCdiContext extends MessagingCdiContext {
         classes.add(AlertLogger.class);
         classes.add(AlertProducer.class);
         classes.add(AlertProducerApi.class);
+        classes.add(AlertSerializer.class);
+        classes.add(AlertDeserializer.class);
         return classes;
     }
 

@@ -18,8 +18,8 @@ mp.messaging.outgoing.metadata-ingest.value.serializer=com.boozallen.aissemble.c
 $header Alert Producer configs $header
 mp.messaging.outgoing.alerts.connector=smallrye-kafka
 mp.messaging.outgoing.alerts.topic=alerts
-##TODO: StringSerializer actually throws an exception. We need an AlertSerializer in alerting-core
-mp.messaging.outgoing.alerts.value.serializer=org.apache.kafka.common.serialization.StringSerializer
+mp.messaging.outgoing.alerts.value.serializer=com.boozallen.aissemble.alerting.core.AlertSerializer
+mp.messaging.outgoing.alerts.value.deserializer=com.boozallen.aissemble.alerting.core.AlertDeserializer
 #end
 
 #if (${pipeline.getDataLineage()})

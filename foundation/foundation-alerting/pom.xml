@@ -32,6 +32,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>${version.kafka.client}</version>
+        </dependency>
+        <dependency>
             <groupId>com.boozallen.aissemble</groupId>
             <artifactId>foundation-messaging-java</artifactId>
             <version>${project.version}</version>

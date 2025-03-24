@@ -127,7 +127,8 @@ kafka.bootstrap.servers=kafka-cluster:9093 <1>
 mp.messaging.outgoing.alerts.connector=smallrye-kafka
 mp.messaging.outgoing.alerts.topic=kafka-alert-topic-name <2>
 mp.messaging.outgoing.alerts.key.serializer=org.apache.kafka.common.serialization.StringSerializer
-mp.messaging.outgoing.alerts.value.serializer=org.apache.kafka.common.serialization.StringSerializer
+mp.messaging.outgoing.alerts.value.serializer=com.boozallen.aissemble.alerting.core.AlertSerializer
+mp.messaging.outgoing.alerts.value.deserializer=com.boozallen.aissemble.alerting.core.AlertDeserializer
 ----
 <1> The hostname and port of the Messaging server to connect to.
 <2> The name of the Messaging topic to publish the alerts to.
