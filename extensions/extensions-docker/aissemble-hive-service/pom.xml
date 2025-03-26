@@ -116,6 +116,17 @@
             <artifactId>zookeeper</artifactId>
             <version>3.9.3</version>
         </dependency>
+        <!-- Patch for CVE-2025-24970 -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler</artifactId>
+            <version>4.1.118.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>bundle</artifactId>
+            <version>${version.aws.sdk.bundle}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -230,6 +241,7 @@
                                                 </network>
                                                 <wait>
                                                     <tcp>
+                                                        <mode>direct</mode>
                                                         <ports>
                                                             <port>9083</port>
                                                         </ports>

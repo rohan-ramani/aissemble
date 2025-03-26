@@ -112,6 +112,7 @@ update_maven_jars "com.google.code.gson:gson:2.8.9 \
                    io.netty:netty-codec-http2:4.1.116.Final \
                    io.netty:netty-codec-http:4.1.116.Final \
                    io.netty:netty-common:4.1.116.Final \
+                   io.netty:netty-handler:4.1.118.Final \
                    org.apache.avro:avro-ipc:1.11.4 \
                    org.apache.avro:avro-mapred:1.11.4 \
                    org.apache.avro:avro:1.11.4 \
