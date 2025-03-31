@@ -32,6 +32,7 @@ hs_err_pid*
 .project
 .classpath
 .DS_Store
+.factorypath
 generated/
 generated-test/
 
