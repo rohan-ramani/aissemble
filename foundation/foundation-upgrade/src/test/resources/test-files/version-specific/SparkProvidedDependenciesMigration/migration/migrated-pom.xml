@@ -1,19 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  aiSSEMBLE::Foundation::Upgrade
+  %%
+  Copyright (C) 2021 Booz Allen
+  %%
+  This software package is licensed under the Booz Allen Public License. All Rights Reserved.
+  #L%
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>${groupId}</groupId>
-        <artifactId>${parentArtifactId}</artifactId>
-        <version>${version}</version>
+        <groupId>org.test</groupId>
+        <artifactId>test-pipelines</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>${moduleArtifactId}</artifactId>
+    <artifactId>spark-pipeline</artifactId>
     <packaging>jar</packaging>
 
-    <name>${parentDescriptiveName}::${descriptiveName}</name>
+    <name>Test Project::Pipelines::Spark Pipeline</name>
     <description>${pipeline.description}</description>
 
     <build>
@@ -22,14 +32,14 @@
                 <groupId>org.technologybrewery.fermenter</groupId>
                 <artifactId>fermenter-mda</artifactId>
                 <configuration>
-                    <basePackage>${pipeline.package}</basePackage>
+                    <basePackage>org.test</basePackage>
                     <profile>data-delivery-spark-pipeline</profile>
                     <propertyVariables>
-                        <targetPipeline>${pipeline.name}</targetPipeline>
+                        <targetPipeline>SparkPipeline</targetPipeline>
                         <aissembleVersion>${version.aissemble}</aissembleVersion>
                         <dockerProjectRepositoryUrl>${docker.project.repository.url}</dockerProjectRepositoryUrl>
                     </propertyVariables>
-                    <!-- see ${parentArtifactId} for base configuration settings -->
+                    <!-- see test-pipelines for base configuration settings -->
                 </configuration>
             </plugin>
             <plugin>
@@ -57,7 +67,7 @@
                                 you may need to add additional transformers depending on your implementation. -->
                                 <transformer
                                     implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>${basePackage}.${pipeline.name}Driver</mainClass>
+                                    <mainClass>org.test.SparkPipelineDriver</mainClass>
                                 </transformer>
                                 <transformer
                                     implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
@@ -72,42 +82,81 @@
                                     <!-- It seems the shaded jar only has javax.* providers at the moment. Re-evaluate after JDK 17 upgrade is complete. -->
                                     <resource>META-INF/services/javax.ws.rs.ext.Providers</resource>
                                 </transformer>
-                                #if ($pipeline.fileStores)
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>META-INF/services/org.jclouds.apis.ApiMetadata</resource>
-                                </transformer>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>META-INF/services/org.jclouds.providers.ProviderMetadata</resource>
-                                </transformer>
-                                #end
                             </transformers>
-                            #if ($pipeline.fileStores)
-                            <!-- Spark relies on older, incompatible versions of several of Google's libraries, but JClouds
-                            depends on newer versions, so re-package Guava, Guice, and Gson libraries under different package
-                            in the shaded JAR. This allows for older versions of these JARs to be on Spark's classpath while
-                            everything within the shaded uber JAR leverages the newer, repackaged versions.
-                            -->
-                            <relocations>
-                                <relocation>
-                                    <pattern>com.google</pattern>
-                                    <shadedPattern>repackaged.com.google</shadedPattern>
-                                    <includes>
-                                        <include>com.google.common.**</include>
-                                        <include>com.google.inject.**</include>
-                                        <include>com.google.gson.**</include>
-                                    </includes>
-                                </relocation>
-                            </relocations>
-                            #end
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-            #set($mainValuesPath = "src/main/resources/apps")
-            #set($testValuesPath = "src/test/resources/apps")
-            #parse("templates/data-delivery-common/pipeline.chart.pom.configuration.vm")
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>main-chart</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>helm</executable>
+                            <arguments>
+                                <argument>template</argument>
+                                <argument>${aissemble.helm.repo.protocol}://${aissemble.helm.repo}/aissemble-spark-application-chart</argument>
+                                <argument>--version</argument>
+                                <argument>${version.aissemble}</argument>
+                                <argument>--values</argument>
+                                <argument>src/main/resources/apps/spark-pipeline-base-values.yaml,src/main/resources/apps/spark-pipeline-dev-values.yaml</argument>
+                                <argument>-s</argument>
+                                <argument>templates/deployment.yaml</argument>
+                            </arguments>
+                            <outputFile>target/apps/spark-pipeline-dev-chart.yaml</outputFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-chart</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>helm</executable>
+                            <arguments>
+                                <argument>template</argument>
+                                <argument>${aissemble.helm.repo.protocol}://${aissemble.helm.repo}/aissemble-spark-application-chart</argument>
+                                <argument>--version</argument>
+                                <argument>${version.aissemble}</argument>
+                                <argument>--values</argument>
+                                <argument>src/main/resources/apps/spark-pipeline-base-values.yaml,src/test/resources/apps/spark-pipeline-test-values.yaml</argument>
+                                <argument>-s</argument>
+                                <argument>templates/deployment.yaml</argument>
+                            </arguments>
+                            <outputFile>target/apps/spark-pipeline-test-chart.yaml</outputFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>ci-chart</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>helm</executable>
+                            <arguments>
+                                <argument>template</argument>
+                                <argument>${aissemble.helm.repo.protocol}://${aissemble.helm.repo}/aissemble-spark-application-chart</argument>
+                                <argument>--version</argument>
+                                <argument>${version.aissemble}</argument>
+                                <argument>--values</argument>
+                                <argument>src/main/resources/apps/spark-pipeline-base-values.yaml,src/main/resources/apps/spark-pipeline-ci-values.yaml</argument>
+                                <argument>-s</argument>
+                                <argument>templates/deployment.yaml</argument>
+                            </arguments>
+                            <outputFile>target/apps/spark-pipeline-ci-chart.yaml</outputFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>net.masterthought</groupId>
                 <artifactId>maven-cucumber-reporting</artifactId>
@@ -151,12 +200,6 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>${version.javax.servlet}</version>
         </dependency>
-        #if ($pipeline.isAlertingSupportNeeded())
-        <dependency>
-            <groupId>com.boozallen.aissemble</groupId>
-            <artifactId>foundation-alerting</artifactId>
-        </dependency>
-        #end
         <dependency>
             <groupId>com.boozallen.aissemble</groupId>
             <artifactId>foundation-pdp-client-java</artifactId>
@@ -165,79 +208,16 @@
             <groupId>com.boozallen.aissemble</groupId>
             <artifactId>extensions-authzforce</artifactId>
         </dependency>
-        #if ($enableSedonaSupport)
-        <dependency>
-            <groupId>org.apache.sedona</groupId>
-            <artifactId>sedona-python-adapter-3.0_2.12</artifactId>
-            <version>${version.sedona}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.sedona</groupId>
-            <artifactId>sedona-viz-3.0_2.12</artifactId>
-            <version>${version.sedona}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.datasyslab</groupId>
-            <artifactId>geotools-wrapper</artifactId>
-            <version>${version.geotools.wrapper}</version>
-        </dependency>
-        #end
-        #if ($enablePostgresSupport)
-        <dependency>
-            <groupId>com.boozallen.aissemble</groupId>
-            <artifactId>extensions-data-delivery-spark-postgres</artifactId>
-        </dependency>
-        #end
-        #if ($enableElasticsearchSupport)
-        <!-- Version must match the version set in the elasticsearch helm chart-->
-        <dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch-spark-30_2.12</artifactId>
-            <version>${version.elasticsearch}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.janino</groupId>
-            <artifactId>commons-compiler</artifactId>
-            <version>${version.janino}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.janino</groupId>
-            <artifactId>janino</artifactId>
-            <version>${version.janino}</version>
-        </dependency>
-        #end
-        #if ($enableNeo4jSupport)
-        <dependency>
-            <groupId>com.boozallen.aissemble</groupId>
-            <artifactId>extensions-data-delivery-spark-neo4j</artifactId>
-        </dependency>
-        #end
-        #if ($pipeline.getDataLineage())
-        <dependency>
-            <groupId>com.boozallen.aissemble</groupId>
-            <artifactId>foundation-data-lineage-java</artifactId>
-        </dependency>
-        #end
         <dependency>
             <groupId>io.smallrye.reactive</groupId>
             <artifactId>smallrye-reactive-messaging-kafka</artifactId>
             <version>${version.smallrye.reactive.messaging}</version>
         </dependency>
-        #if ($pipeline.fileStores)
         <dependency>
-            <groupId>org.apache.jclouds</groupId>
-            <artifactId>jclouds-allblobstore</artifactId>
-            <version>${version.jclouds}</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>test-data-records-java</artifactId>
+            <version>${project.version}</version>
         </dependency>
-        #end
-        #if($enableSemanticDataSupport)
-        <dependency>
-            <groupId>#[[${project.groupId}]]#</groupId>
-            <artifactId>${javaDataRecords}</artifactId>
-            <version>#[[${project.version}]]#</version>
-        </dependency>
-        #end
         <!-- Test dependencies: -->
         <dependency>
             <groupId>io.cucumber</groupId>
@@ -271,14 +251,6 @@
             <artifactId>cucumber-reporting</artifactId>
             <scope>test</scope>
         </dependency>
-        #if ($pipeline.fileStores)
-        <dependency>
-            <groupId>org.apache.jclouds.api</groupId>
-            <artifactId>filesystem</artifactId>
-            <version>${version.jclouds}</version>
-            <scope>test</scope>
-        </dependency>
-        #end
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_2.12</artifactId>

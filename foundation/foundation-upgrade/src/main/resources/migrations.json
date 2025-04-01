@@ -24,6 +24,17 @@
             ]
           }
         ]
+      },
+      {
+        "name": "spark-provided-dependency-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.SparkProvidedDependenciesMigration",
+        "fileSets": [
+          {
+            "includes": [
+              "pom.xml"
+            ]
+          }
+        ]
       }
     ]
   },
