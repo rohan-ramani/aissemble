@@ -1,7 +1,12 @@
 #HABUSHU_BUILDER_STAGE - HABUSHU GENERATED CODE (DO NOT MODIFY)
 FROM docker.io/python:3.11 AS habushu_builder
+
+ENV POETRY_CACHE_DIR="/.cache/pypoetry"
+
 # Poetry and supporting plugin installations
-RUN python -m ensurepip --upgrade && \
+RUN --mount=type=cache,target=/root/.cache/pip \
+    --mount=type=cache,target=/.cache/pypoetry/ \
+    python -m ensurepip --upgrade && \
     pip install poetry && \
     poetry self add poetry-monorepo-dependency-plugin && \
     poetry self add poetry-plugin-bundle
@@ -12,7 +17,6 @@ RUN find . -type f -name pyproject.toml -exec sed -i 's|develop[[:blank:]]*=[[:b
 
 USER root
 WORKDIR /work-dir/containerize-support/foundation/aissemble-foundation-versioning-service
-ENV POETRY_CACHE_DIR="/.cache/pypoetry"
 
 # export target project's virtual environment to /opt/venv
 RUN --mount=type=cache,target=/.cache/pypoetry/ \
@@ -43,11 +47,11 @@ WORKDIR /app
 
 # Install Java (needed for Maven)
 RUN mkdir -p /usr/share/man/man1
-RUN echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list  \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list  \
     && apt-get update -y \
-    && apt-get install -y openjdk-11-jre-headless \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+    && apt-get install -y openjdk-11-jre-headless
 
 # Copy over Maven
 COPY --from=builder /opt/apache-maven-* /opt/apache-maven

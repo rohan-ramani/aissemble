@@ -19,6 +19,9 @@
             <plugin>
                 <groupId>org.technologybrewery.habushu</groupId>
                 <artifactId>habushu-maven-plugin</artifactId>
+                <configuration>
+                  <updateDockerfile>false</updateDockerfile>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>${group.fabric8.plugin}</groupId>

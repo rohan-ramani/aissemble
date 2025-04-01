@@ -9,9 +9,9 @@ RUN printf '#!/bin/bash\n\nif [[ "$1" == "-r" ]] ;then\n echo '4.9.250'\n exit\n
 RUN chmod 755 /bin/uname
 # Workaround for ubuntu fix end
 
-RUN apt-get update \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y openjdk-17-jdk \
-    && update-ca-certificates \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+    && update-ca-certificates

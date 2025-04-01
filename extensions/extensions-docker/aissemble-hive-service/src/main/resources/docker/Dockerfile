@@ -28,8 +28,8 @@ RUN --mount=source=${BIN_DIR},target=/tmp/bin cd /tmp \
 
 # Update library jars used by Hive and Hadoop
 COPY --chmod=755 ./src/main/resources/scripts/setup.sh $HIVE_HOME/setup.sh
-ADD ${PATCH_DIR}/* /tmp/patch-jars
-RUN $HIVE_HOME/setup.sh /tmp/patch-jars && rm -rf /tmp/patch-jars
+RUN --mount=target=/tmp/patch-jars,type=bind,source=${PATCH_DIR} \
+    $HIVE_HOME/setup.sh /tmp/patch-jars
 
 # Hadoop ships with source jars, which aren't necessary and bloat the image, also remove YARN support as we only support K8s
 RUN rm -rf $HADOOP_HOME/share/hadoop/common/sources \
