@@ -7,6 +7,7 @@ FROM docker.io/apache/spark:${SPARK_VERSION}-scala${SCALA_VERSION}-java17-python
 #pull var from global scope to build stage
 ARG SPARK_VERSION
 ARG HADOOP_VERSION
+ARG PATCH_DIR
 ARG PYTHON_VERSION=3.11
 
 LABEL org.opencontainers.image.source="https://github.com/boozallen/aissemble"
@@ -22,12 +23,16 @@ RUN mkdir $SPARK_HOME/checkpoint && \
   mkdir $SPARK_HOME/logs
 
 # Update repositories and add necessary ones
-RUN apt-get -y update \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get -y update \
     && apt-get install -y software-properties-common \
     && add-apt-repository ppa:deadsnakes/ppa
 
 # git and build-essential are used during pip install of some dependencies (e.g. python-deequ)
-RUN apt-get update -y && apt-get install --assume-yes \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+  apt-get update -y && apt-get install --assume-yes \
   build-essential \
   curl \
   python${PYTHON_VERSION} \
@@ -35,8 +40,6 @@ RUN apt-get update -y && apt-get install --assume-yes \
   python${PYTHON_VERSION}-distutils \
 #Patch for CVE-2023-4863: upgrade libwebp7 to 1.3.2+
   && apt-get upgrade -y libwebp7 \
-  && rm -rf /var/lib/apt/lists/* \
-  && apt-get clean \
   && ln -s /usr/bin/python${PYTHON_VERSION} /usr/bin/python \
 #Patch for CVE-2023-0286: upgrade cryptography to 39.0.1+ (https://github.com/advisories/GHSA-x4qr-2fvf-3mr5) \
   && apt-get remove python3-cryptography -y \
@@ -51,7 +54,8 @@ COPY --from=docker.io/tianon/gosu:1.17-debian /gosu /usr/sbin/gosu
 
 # Update library jars used by Spark and register PySpark as an available python package
 COPY --chmod=755 ./src/main/resources/scripts/setup.sh $SPARK_HOME/setup.sh
-RUN $SPARK_HOME/setup.sh $SPARK_HOME $SPARK_VERSION $HADOOP_VERSION
+RUN --mount=target=/tmp/patch-jars,type=bind,source=${PATCH_DIR} \
+    $SPARK_HOME/setup.sh /tmp/patch-jars $SPARK_HOME $SPARK_VERSION $HADOOP_VERSION
 
 ## Add spark configurations
 COPY ./src/main/resources/conf/ $SPARK_HOME/conf/

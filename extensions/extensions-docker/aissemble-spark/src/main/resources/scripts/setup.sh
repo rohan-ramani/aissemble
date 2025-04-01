@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ###
 # #%L
 # aiSSEMBLE::Extensions::Docker::Spark
@@ -10,53 +10,82 @@
 ###
 
 #---
-## Updates a Spark's JARs based on a list of Maven coordinates
-##
-## @Arguments: list of maven coordinates in `group:artifact:version:classifier` format where `:classifier` is optional
+## Same as `cut` but reads fields from the end. E.g.:
+##     cutr -d : -f 2 <<< "one:two:three:four"
+##     > 'three'
+## Note that open-ended ranges might be opposite of intuition if you think of them as "before" and "after"
+##     cutr -d : -f -2 <<< "one:two:three:four"
+##     > 'three:four'
+##     cutr -d : -f 2- <<< "one:two:three:four"
+##     > 'one:two:three'
 #---
-update_maven_jars() {
-  echo
-  echo "Updating jars in $SPARK_JARS ($SPARK_VERSION)"
-  echo
-  mvnjars="$1"
+cutr() {
+  rev | cut "$@" | rev
+}
 
-  mkdir /tmp/jars || exit $?
-  for gav in $mvnjars; do
+#---
+## Patches a lib directory with given updated JARs by matching on base name. For example, given the replace directory has
+## the jar `commons-math-3.4.jar` and the target directory has `commons-math-2.1.jar`, the existing 2.1 JAR is deleted
+## and the updated 3.4 jar is copied into the directory.
+##
+## @Param: location of replacement JARs
+## @Param: location to search for JARs to replace
+#---
+update_jars() {
+  updated="$1"
+  target="$2"
+  echo
+  echo "Updating jars in $target with jars from $updated"
+  echo
+
+  while read -r jarpath; do
     #Parse GAV into separate variables, classifier may or may not be present as the last item
-    group=$(echo "$gav" | cut -d : -f 1)
-    artifact=$(echo "$gav" | cut -d : -f 2)
-    version=$(echo "$gav" | cut -d : -f 3)
-    classifier=$(echo "$gav" | cut -d : -f 4)
-    if [ -n "$classifier" ]; then
-      classifier="-$classifier"
-    fi
+    group=$(echo "$jarpath" | cutr -d / -f 4-)
+    group=$(echo "${group#$updated/}" | tr / .)
+    artifact=$(echo "$jarpath" | cutr -d / -f 3)
+    version=$(echo "$jarpath" | cutr -d / -f 2)
+    jar=$(echo "$jarpath" | cutr -d / -f 1)
+    classifier=${jar#$artifact-$version}
+    classifier=${classifier%\.jar}
     echo "-------------------------------------------"
-    echo "Replacing $group:$artifact with updated JAR"
-
-    # Fetch the updated JAR from Maven Central
-    jar="$artifact-$version$classifier.jar"
-    path=$(echo "$group" | sed 's|\.|/|g')
-    url="https://repo1.maven.org/maven2/$path/$artifact/$version/$jar"
-    echo "Fetching $url"
-    wget -q "$url" -P /tmp/jars || exit $?
+    echo "Replacing $group:$artifact with updated JAR ($artifact-$version$classifier.jar)"
 
     # Find the old jar that is being replaced
-    replaceable=$(find / -type f -regex "$SPARK_JARS/$artifact-[^-]*$classifier.jar" 2>/dev/null)
-    echo "Replacing '$replaceable'"
-    count=$(echo "$replaceable" | wc -w )
-    if [  "$count" -gt 1 ]; then
-      echo "Unexpected number of matches to replace!"
-      exit 1
-    fi
-
-    # Delete the old JAR and move the new one into the Spark classpath
-  if [ -n "$replaceable" ]; then
+    REPLACED=1
+    echo find "$target" -type f -regex ".*/$artifact-[^-]*$classifier.jar"
+     while read -r replaceable; do
+      echo "  replacing '$replaceable'"
       rm "$replaceable" || exit $?
+      cp "$jarpath" "$(dirname "$replaceable")" || exit $?
+      REPLACED=0
+    done < <(find "$target" -type f -regex ".*/$artifact-[^-]*$classifier.jar")
+    # Guava version sometimes includes `-jre` at the end
+    if [ "$artifact" = "guava" ]; then
+      #We could do something fancier/generic like count dashes in version and use sed regex like:
+      #find "$target" -type f -regextype sed -regex ".*/$artifact\(-[^-]*\)\{1,$(VER_DASH_COUNT+1)\}.jar"
+      # But only Guava has this issue so it's not worth it.
+      while read -r replaceable; do
+        echo "  replacing '$replaceable'"
+        rm "$replaceable" || exit $?
+        cp "$jarpath" "$(dirname "$replaceable")" || exit $?
+        REPLACED=0
+      done < <(find "$target" -type f -regex ".*/$artifact-[^-]*-jre.jar")
     fi
-    mv "/tmp/jars/$jar" "$SPARK_JARS" || exit $?
+    if [ $REPLACED -ne 0 ]; then
+      #derbyshared and derbytools provide classes that were extraced from derby in the newer version
+      if [ $artifact = "derbyshared" ] || [ $artifact = "derbytools" ]; then
+          echo "  no existing jars -- adding '$jar'"
+          cp "$jarpath" "$target" || exit $?
+      else
+        echo "No replacement candidates found for $jar"
+        exit 1
+      fi
+    fi
     echo
-  done
+  done < <(find "$updated" -type f -name '*.jar')
 }
+
+
 
 #---
 ## Updates Spark's jackson-mapper JAR to a RedHat version
@@ -89,7 +118,7 @@ remove_mesos() {
 ## @param: the Spark version
 #---
 register_pyspark() {
-  echo "Register PySpark installation with PIP"
+  echo "Register PySpark installation with PIP (ver. $2)"
   # Following approach mentioned in https://github.com/pypa/pip/issues/10458
   echo "\
 from setuptools import setup
@@ -102,52 +131,12 @@ setup(
   python3 -m pip install "$1/python"
 }
 
-SPARK_JARS="$1/jars"
-SPARK_VERSION=$2
-HADOOP_VERSION=$3
+PATCH_JARS="$1"
+SPARK_JARS="$2/jars"
+SPARK_VERSION=$3
+HADOOP_VERSION=$4
 
-update_maven_jars "com.google.code.gson:gson:2.8.9 \
-                   com.google.guava:guava:33.3.1-jre \
-                   com.squareup.okhttp3:okhttp:3.14.9 \
-                   io.netty:netty-codec-http2:4.1.116.Final \
-                   io.netty:netty-codec-http:4.1.116.Final \
-                   io.netty:netty-common:4.1.116.Final \
-                   io.netty:netty-handler:4.1.118.Final \
-                   org.apache.avro:avro-ipc:1.11.4 \
-                   org.apache.avro:avro-mapred:1.11.4 \
-                   org.apache.avro:avro:1.11.4 \
-                   org.apache.commons:commons-compress:1.27.1 \
-                   commons-io:commons-io:2.16.1 \
-                   commons-codec:commons-codec:1.17.2 \
-                   org.apache.derby:derby:10.16.1.1 \
-                   org.apache.derby:derbytools:10.16.1.1 \
-                   org.apache.derby:derbyshared:10.16.1.1 \
-                   org.apache.hadoop.thirdparty:hadoop-shaded-guava:1.3.0 \
-                   org.apache.hadoop:hadoop-client-api:$HADOOP_VERSION \
-                   org.apache.hadoop:hadoop-client-runtime:$HADOOP_VERSION \
-                   org.apache.hadoop:hadoop-yarn-server-web-proxy:$HADOOP_VERSION \
-                   org.apache.hive:hive-beeline:2.3.10 \
-                   org.apache.hive:hive-cli:2.3.10 \
-                   org.apache.hive:hive-common:2.3.10 \
-                   org.apache.hive:hive-exec:2.3.10:core \
-                   org.apache.hive:hive-jdbc:2.3.10 \
-                   org.apache.hive:hive-llap-common:2.3.10 \
-                   org.apache.hive:hive-metastore:2.3.10 \
-                   org.apache.hive:hive-serde:2.3.10 \
-                   org.apache.hive:hive-shims:2.3.10 \
-                   org.apache.hive.shims:hive-shims-0.23:2.3.10 \
-                   org.apache.hive.shims:hive-shims-common:2.3.10 \
-                   org.apache.hive.shims:hive-shims-scheduler:2.3.10 \
-                   org.apache.thrift:libthrift:0.16.0 \
-                   org.apache.ivy:ivy:2.5.3 \
-                   org.apache.parquet:parquet-column:1.15.0 \
-                   org.apache.parquet:parquet-format-structures:1.15.0 \
-                   org.apache.parquet:parquet-encoding:1.15.0 \
-                   org.apache.parquet:parquet-jackson:1.15.0 \
-                   org.apache.parquet:parquet-hadoop:1.15.0 \
-                   org.apache.parquet:parquet-common:1.15.0 \
-                   org.apache.zookeeper:zookeeper-jute:3.9.3 \
-                   org.apache.zookeeper:zookeeper:3.9.3"
+update_jars "$PATCH_JARS" "$SPARK_JARS"
 update_jackson '1.9.14.jdk17-redhat-00001'
 remove_mesos
-register_pyspark $SPARK_HOME $SPARK_VERSION
+register_pyspark "$SPARK_HOME" "$SPARK_VERSION"

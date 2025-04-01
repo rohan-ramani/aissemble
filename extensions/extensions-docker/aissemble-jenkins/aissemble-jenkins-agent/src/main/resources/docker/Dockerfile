@@ -2,9 +2,11 @@ FROM docker.io/jenkins/ssh-agent:latest-debian-jdk17
 
 LABEL org.opencontainers.image.source="https://github.com/boozallen/aissemble"
 
-USER root
-RUN apt --yes update && apt install --yes pipx && pipx ensurepath && apt clean
-RUN pipx install poetry
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt --yes update && apt install --yes pipx && pipx ensurepath
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pipx install poetry
 
 RUN mkdir /var/pyenv
 RUN ls -l -a /var/pyenv
