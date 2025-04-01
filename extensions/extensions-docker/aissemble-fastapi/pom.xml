@@ -30,6 +30,9 @@
                     <plugin>
                         <groupId>${group.fabric8.plugin}</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
+                        <configuration>
+                            <buildArchiveOnly>false</buildArchiveOnly>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>test-image</id>

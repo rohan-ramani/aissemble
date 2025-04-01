@@ -62,13 +62,13 @@
                     <plugin>
                         <groupId>${group.fabric8.plugin}</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
+                        <configuration>
+                            <buildArchiveOnly>false</buildArchiveOnly>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>test-image</id>
                                 <phase>integration-test</phase>
-                                <goals>
-                                    <goal>start</goal>
-                                </goals>
                                 <configuration>
                                     <images>
                                         <image>

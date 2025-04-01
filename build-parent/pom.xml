@@ -551,7 +551,7 @@
                                                 </driverOpts>
                                                 <!-- When performing multi-platform builds on k8s driver with local external cache, some ADD/COPY layers end up with
                                                      colliding hashes between the two architectures. This results in a cache export error that should be ignored. -->
-                                                <cacheTo>type=local,dest=${user.home}/.docker/cache,mode=max,ignore-error=true</cacheTo>
+                                                <cacheTo>type=local,dest=${user.home}/.docker/cache,ignore-error=true</cacheTo>
                                                 <cacheFrom>type=local,src=${user.home}/.docker/cache</cacheFrom>
                                             </buildx>
                                         </build>
@@ -968,6 +968,13 @@ To suppress enforce-helm-version rule, you must add following plugin to the root
                                 <rewriteLocalPathDepsInArchives>true</rewriteLocalPathDepsInArchives>
                                 <addPypiRepoAsPackageSources>false</addPypiRepoAsPackageSources>
                                 <useDevRepository>true</useDevRepository>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>${group.fabric8.plugin}</groupId>
+                            <artifactId>docker-maven-plugin</artifactId>
+                            <configuration>
+                                <buildArchiveOnly>true</buildArchiveOnly>
                             </configuration>
                         </plugin>
                     </plugins>

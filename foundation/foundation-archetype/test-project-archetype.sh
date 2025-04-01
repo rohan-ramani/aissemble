@@ -269,6 +269,10 @@ echo "{
 # Thus not updating it with file contents with manual actions
 echo -e "\n# maven-suppress-warnings" >> Tiltfile
 
+echo -e "\nINFO: updating the test-generator-deploy/pom.xml based on static code as it's hard to predict\n"
+plugins=$(esc < ../../../plugins-to-add-to-archetype_test-generator-deploy_pom.xml)
+sub "s/ *<\/plugins>/$plugins        <\/plugins>/" test-generator-deploy/pom.xml
+
 echo -e "\nINFO: Running full build to generate project structure\n"
 updates=false
 if runBuildAndUpdateDeploy; then
@@ -308,13 +312,12 @@ cd ../..
 echo -e "\nINFO: Generating project structure for ml pipelines\n"
 runBuildAndUpdateDeploy
 
-echo -e "\nINFO: updating the test-generator-deploy/pom.xml based on static code as it's hard to predict\n"
-plugins=$(esc < ../../../plugins-to-add-to-archetype_test-generator-deploy_pom.xml)
-sub "s/ *<\/plugins>/$plugins        <\/plugins>/" test-generator-deploy/pom.xml
+echo -e "\nINFO: Running final build to ensure success"
+./mvnw clean install || { echo -e '\n\n\t**** MAVEN BUILD FAILED ****\n\n' ; exit 1; }
 
-echo -e "\nINFO: Running full build to check that the build passes w/o any manual actions needed\n"
+echo -e "\nINFO: Running fermenter generation to check for left over manual actions\n"
 # NOTE: because fermenter results are cached, the build-cache will hide remaining manual actions that were missed in previous steps
-./mvnw clean install -Dmaven.build.cache.skipCache -Dfermenter.display.message.keys=true | tee >(awk '/WARNING/ {print}' > maven-build.log) \
+./mvnw clean generate-sources -Dmaven.build.cache.skipCache -Dfermenter.display.message.keys=true | tee >(awk '/WARNING/ {print}' > maven-build.log) \
     || { echo -e '\n\n\t**** MAVEN BUILD FAILED ****\n\n' ; exit 1; }
 if grep -iq 'Manual action' maven-build.log; then
   echo -e "\n\n **** ERROR: Manual action still found in build **** \n    Look at **archetype/target/temp/test-generator/maven-build.log** to see what the problem was. \n\n"
