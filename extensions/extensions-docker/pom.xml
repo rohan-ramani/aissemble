@@ -150,78 +150,36 @@
         <profile>
             <id>gh-build</id>
             <properties>
-                <docker.builder.name>k8s-multiarch</docker.builder.name>
-                <!-- Ideally, we'd pass this in with `config` flag while provisioning the builder, but it doesn't appear to be working. -->
+                <docker.builder.name>${env.DOCKER_BUILDER_NAME}</docker.builder.name>
                 <docker.builder.stateDir>~/.docker</docker.builder.stateDir>
             </properties>
             <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <inherited>false</inherited>
-                        <executions>
-                            <execution>
-                                <id>provision-docker-builder-amd</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>docker</executable>
-                                    <arguments>
-                                        <argument>builder</argument>
-                                        <argument>create</argument>
-                                        <argument>--name=${docker.builder.name}</argument>
-                                        <argument>--bootstrap</argument>
-                                        <argument>--driver=kubernetes</argument>
-                                        <argument>--platform=linux/amd64</argument>
-                                        <argument>--driver-opt="nodeselector=kubernetes.io/arch=amd64","image=docker.io/moby/buildkit:v0.19.0"</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>provision-docker-builder-arm</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>docker</executable>
-                                    <arguments>
-                                        <argument>builder</argument>
-                                        <argument>create</argument>
-                                        <argument>--name=${docker.builder.name}</argument>
-                                        <argument>--bootstrap</argument>
-                                        <argument>--append</argument>
-                                        <argument>--driver=kubernetes</argument>
-                                        <argument>--platform=linux/arm64</argument>
-                                        <argument>--driver-opt="nodeselector=kubernetes.io/arch=arm64","image=docker.io/moby/buildkit:v0.19.0"</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
                 <pluginManagement>
                     <plugins>
                         <plugin>
                             <groupId>${group.fabric8.plugin}</groupId>
                             <artifactId>docker-maven-plugin</artifactId>
+                            <configuration>
+                                <images>
+                                    <image>
+                                        <build>
+                                            <buildx>
+                                                <builderName>${docker.builder.name}</builderName>
+                                                <dockerStateDir>${docker.builder.stateDir}</dockerStateDir>
+                                            </buildx>
+                                        </build>
+                                    </image>
+                                </images>
+                            </configuration>
                             <executions>
                                 <execution>
                                     <id>default-push</id>
-                                    <phase>deploy</phase>
-                                    <goals>
-                                        <goal>push</goal>
-                                    </goals>
                                     <configuration>
                                         <images>
                                             <image>
                                                 <build>
                                                     <buildx>
                                                         <builderName>${docker.builder.name}</builderName>
-                                                        <dockerStateDir>${docker.builder.stateDir}</dockerStateDir>
                                                     </buildx>
                                                 </build>
                                             </image>
