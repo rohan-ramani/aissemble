@@ -1,0 +1,5 @@
+You must add the following to helmfile.yaml to configure it for deployment!
+
+#foreach ($item in $items)
+${item}
+#end

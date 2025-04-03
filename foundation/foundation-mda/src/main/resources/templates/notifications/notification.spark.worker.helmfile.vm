@@ -1,0 +1,24 @@
+#set($path = "/src/${pythonPipelineArtifactId}/resources/apps/")
+#if(${pipelineImplementation} == "data-delivery-spark")
+  #set($path = "/src/main/resources/apps/")
+#end
+  {{- if eq .Values.pipeline "${pipelineArtifactId}" }}
+  - name: ${pipelineArtifactId}
+    namespace: ${namespace}
+    chart: oci://ghcr.io/boozallen/aissemble-spark-application-chart
+    version: {{ .Values.aissembleVersion }}
+    needs:
+      #foreach( $need in ${needs} )
+      - ${need}
+      #end
+    labels:
+      pipeline: ${pipelineArtifactId}
+    values:
+      - ${parentArtifactId}/${pipelineArtifactId}${path}${pipelineArtifactId}-base-values.yaml
+      {{ if eq .Environment.Name "default" }}
+      - ${parentArtifactId}/${pipelineArtifactId}${path}${pipelineArtifactId}-dev-values.yaml
+      {{- end }}
+      {{ if eq .Environment.Name "ci" }}
+      - ${parentArtifactId}/${pipelineArtifactId}${path}${pipelineArtifactId}-ci-values.yaml
+      {{- end }}
+  {{- end }}

@@ -102,6 +102,8 @@ public class SparkDockerPomGenerator extends AbstractMavenModuleGenerator {
                 pipelineArtifactId = deriveArtifactIdFromCamelCase(pipeline.getName());
                 manualActionNotificationService.addSparkWorkerTiltResources(context, pipelinesArtifactId,
                         pipelineArtifactId, pipeline.getType().getImplementation());
+                manualActionNotificationService.addSparkWorkerHelmfileRelease(context, pipelinesArtifactId,
+                        pipelineArtifactId, pipeline.getType().getImplementation(), rootArtifactId);
             }
 
             if (dataFlowStrategy.isMetadataNeeded()) {

@@ -35,6 +35,15 @@
             ]
           }
         ]
+      },
+      {
+        "name": "helmfile-generation-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.HelmfileGenerationMigration",
+        "fileSets": [
+          {
+            "includes": ["pom.xml"]
+          }
+        ]
       }
     ]
   },
@@ -72,6 +81,15 @@
               "**/model-training-api/values.yaml",
               "**/pipeline-invocation-service/values.yaml"
             ]
+          }
+        ]
+      },
+      {
+        "name": "helmfile-aissemble-version-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.HelmFileVersionMigration",
+        "fileSets": [
+          {
+            "includes": ["*-deploy/src/main/resources/values-*-helmfile.yaml"]
           }
         ]
       }

@@ -1,0 +1,19 @@
+  - name: ${appName}
+    namespace: ${namespace}
+    chart: ${deployArtifactId}/src/main/resources/apps/${appName}
+    #if(${wait})
+    wait: ${wait}
+    #end
+    #if(${condition})
+    condition: ${condition}
+    #end
+    #if(${needs})
+    needs:
+      #foreach( $need in ${needs} )
+      - ${need}
+      #end
+    #end
+    values:
+      {{- range .Values.helm.valueFiles }}
+      - ${deployArtifactId}/src/main/resources/apps/${appName}/{{ . }}
+      {{- end }}

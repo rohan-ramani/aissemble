@@ -13,7 +13,8 @@ package com.boozallen.aiops.mda;
 import com.boozallen.aiops.mda.generator.util.MavenUtil;
 import com.boozallen.aiops.mda.generator.util.PipelineUtils;
 import org.apache.commons.collections4.CollectionUtils;
-import org.codehaus.plexus.util.StringUtils;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.technologybrewery.fermenter.mda.generator.GenerationContext;
@@ -40,6 +41,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -47,7 +50,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -58,7 +60,12 @@ public class ManualActionNotificationService {
     private static final Logger logger = LoggerFactory.getLogger(ManualActionNotificationService.class);
     private static final String EMPTY_LINE = "\n";
     private static final String SUPPRESS_WARNINGS = "maven-suppress-warnings";
-    public static final String GROUP_TILT = "tilt";
+    private static final String GROUP_TILT = "tilt";
+    private static final String GROUP_HELMFILE = "helmfile";
+    private static final String APP_NAME = "appName";
+    private static final String CONFIGURATION_STORE = "configuration-store";
+    private static final Map<String, String> HELMFILE_CONDITIONALS = Collections.singletonMap("s3-local", "helm.s3local.enabled");
+    private static final Map<String, String> HELMFILE_NAMESPACES = Collections.singletonMap(CONFIGURATION_STORE, "-config");
 
     public void addSchemaElementDeprecationNotice(String illegalElement, String objectType) {
         final String SCHEMA_ELEMENT_DEPRECATION_KEY = "schema_element_deprecation";
@@ -231,6 +238,61 @@ public class ManualActionNotificationService {
     }
 
     /**
+     * Adds a notification to update the helmfile with releases.
+     *
+     * @param context          the generation context
+     * @param appName          the application name
+     * @param deployArtifactId the deploy artifact ID
+     */
+    public void addHelmfileReleaseMessage(final GenerationContext context, final String appName,
+                                       final String deployArtifactId, String projectName) {
+
+        final File rootDir = context.getExecutionRootDirectory();
+        if (!rootDir.exists() || !helmfileFound(rootDir)) {
+            logger.warn("Unable to find helmfile.yaml. Will not be able to direct manual release updates for " +
+                    "helmfile.");
+        } else {
+            final String helmfilePath = rootDir.toPath().resolve("helmfile.yaml").toString();
+            final String text = "apps/" + appName;
+
+            boolean helmfileContainsArtifact = existsInFile(helmfilePath, text);
+            if (!helmfileContainsArtifact && showWarnings(helmfilePath)) {
+                final String key = getMessageKey("helmfile", "release", appName);
+                VelocityNotification notification = new VelocityNotification(key, GROUP_HELMFILE, new HashSet<>(),
+                        "templates/notifications/notification.helm.helmfile.vm");
+
+                Map<String, String> helmfileNeeds = getHelmfileNeeds(projectName);
+                // All deployments have a "need" on the configuration store to be up first
+                if(!StringUtils.equals(appName, CONFIGURATION_STORE)) {
+                    notification.addToVelocityContext("needs",
+                            Collections.singletonList(helmfileNeeds.get(CONFIGURATION_STORE)));
+                }
+
+                // Some releases have conditions to be disabled for certain environments
+                if (HELMFILE_CONDITIONALS.containsKey(appName)) {
+                    notification.addToVelocityContext("condition", HELMFILE_CONDITIONALS.get(appName));
+                }
+
+                notification.addToVelocityContext("namespace", projectName);
+                // Some releases have different namespaces
+                if (HELMFILE_NAMESPACES.containsKey(appName)) {
+                    notification.addToVelocityContext("namespace", projectName + HELMFILE_NAMESPACES.get(appName));
+                }
+
+                // These applications need to have helm wait until they are up before moving on. This is because they
+                // are needed by other releases
+                if (helmfileNeeds.containsKey(appName)) {
+                    notification.addToVelocityContext("wait", true);
+                }
+
+                notification.addToVelocityContext(APP_NAME, appName);
+                notification.addToVelocityContext("deployArtifactId", deployArtifactId);
+                addManualAction(helmfilePath, notification);
+            }
+        }
+    }
+
+    /**
      * Adds a notification to update the Tiltfile.
      *
      * @param context          the generation context
@@ -251,42 +313,11 @@ public class ManualActionNotificationService {
             if (!tiltFileContainsArtifact && showWarnings(tiltFilePath)) {
                 final String key = getMessageKey("Tiltfile", "helm", appName);
                 VelocityNotification notification = new VelocityNotification(key, GROUP_TILT, new HashSet<String>(), "templates/notifications/notification.helm.tilt.vm");
-                notification.addToVelocityContext("appName", appName);
+                notification.addToVelocityContext(APP_NAME, appName);
                 notification.addToVelocityContext("deployArtifactId", deployArtifactId);
                 addManualAction(tiltFilePath, notification);
             }
 
-        }
-    }
-
-
-    /**
-     * Adds a notification to update the Tiltfile for resources dependent on another resource
-     *
-     * @param context         the generation context
-     * @param appName         the application name
-     * @param appDependencies application names this resource is dependent on
-     */
-    public void addResourceDependenciesTiltFileMessage(GenerationContext context, String appName, List<String> appDependencies) {
-        final File rootDir = context.getExecutionRootDirectory();
-        if (!rootDir.exists() || !tiltFileFound(rootDir)) {
-            logger.warn("Unable to find Tiltfile. Will not be able to direct manual resource dependency updates to for Tiltfile");
-        } else {
-            final String tiltFilePath = rootDir.getAbsolutePath() + File.separator + "Tiltfile";
-
-            final StringBuilder item = new StringBuilder();
-            final String formattedAppDependencies = appDependencies.stream().map(s -> "'" + s + "'").collect(Collectors.joining(","));
-            item.append(String.format("k8s_resource('%s', resource_deps=[%s])\n\n", appName, formattedAppDependencies));
-
-            boolean tiltFileContainsArtifact = existsInFile(tiltFilePath, item.toString().trim());
-            if (!tiltFileContainsArtifact && showWarnings(tiltFilePath)) {
-                final String key = getMessageKey("Tiltfile", "resource-dependencies", appName);
-
-                VelocityNotification notification = new VelocityNotification(key, new HashSet<>(), "templates/notifications/notification.resource.tilt.vm");
-                notification.addToVelocityContext("appName", appName);
-                notification.addToVelocityContext("formattedAppDependencies", formattedAppDependencies);
-                addManualAction(tiltFilePath, notification);
-            }
         }
     }
 
@@ -385,14 +416,41 @@ public class ManualActionNotificationService {
     }
 
     /**
-     * Adds a notification to update the pom.xml for the deploy module.
+     * Adds a notification to update the helmfile with necessary spark worker releases
      *
-     * @param context the generation context
-     * @param profile the profile to add
-     * @param appName the application name to add
+     * @param context                the generation context
+     * @param parentArtifactId       the name of the parent directory the pipelines are in
+     * @param pipelineArtifactId     the artifact id of the pipeline
+     * @param pipelineImplementation the implementation of the pipeline
      */
-    public void addDeployPomMessage(final GenerationContext context, final String profile, final String appName) {
-        addDeployPomMessage(context, profile, appName, null);
+    public void addSparkWorkerHelmfileRelease(final GenerationContext context, final String parentArtifactId,
+                                            final String pipelineArtifactId, final String pipelineImplementation,
+                                              String projectName) {
+
+        final File rootDir = context.getExecutionRootDirectory();
+        if (!rootDir.exists() || !helmfileFound(rootDir)) {
+            logger.warn("Unable to find helmfile.yaml. Will not be able to direct Spark Worker manual release updates" +
+                    " to for helmfile.");
+        } else {
+            final String helmfilePath = rootDir.toPath().resolve("helmfile.yaml").toString();
+            final String text = parentArtifactId + "/" + pipelineArtifactId;
+
+            boolean helmfileContainsArtifact = existsInFile(helmfilePath, text);
+            if (!helmfileContainsArtifact && showWarnings(helmfilePath)) {
+                final String key = getMessageKey("helmfile", "release", pipelineArtifactId);
+
+                VelocityNotification notification = new VelocityNotification(key, GROUP_HELMFILE, new HashSet<>(),
+                        "templates/notifications/notification.spark.worker.helmfile.vm");
+                notification.addToVelocityContext("parentArtifactId", parentArtifactId);
+                notification.addToVelocityContext("pipelineArtifactId", pipelineArtifactId);
+                notification.addToVelocityContext("pipelineImplementation", pipelineImplementation);
+                notification.addToVelocityContext("pythonPipelineArtifactId", PipelineUtils.deriveLowerSnakeCaseNameFromHyphenatedString(pipelineArtifactId));
+                notification.addToVelocityContext("namespace", projectName);
+                Map<String, String> helmfileNeeds = getHelmfileNeeds(projectName);
+                notification.addToVelocityContext("needs", helmfileNeeds.values());
+                addManualAction(helmfilePath, notification);
+            }
+        }
     }
 
     /**
@@ -401,37 +459,26 @@ public class ManualActionNotificationService {
      * @param context         the generation context
      * @param profile         the profile to add
      * @param appName         the application name to add
-     * @param appDependencies application names this resource is dependent on
      */
-    public void addDeployPomMessage(final GenerationContext context, final String profile, final String appName, List<String> appDependencies) {
+    public void addDeployPomMessage(final GenerationContext context, final String profile, final String appName) {
         final File rootDir = context.getExecutionRootDirectory();
         if (!rootDir.exists() || !deployModuleFoundPom(rootDir)) {
             logger.warn("Unable to find Docker module. Will not be able to direct manual updates for the deploy module's POM.xml");
         } else {
             if (StringUtils.isNotEmpty(profile)) {
                 NotificationParams params = configureNotification(rootDir, profile, appName, MavenUtil::getDeployModuleName);
-                boolean hasAppDependencies = appDependencies != null;
 
                 if (!params.isExistsInFileOrNotification()) {
 
-                    VelocityNotification notification = new VelocityNotification(params.getKey(), "deploypom", new HashSet<>(), "templates/notifications/notification.deploy.pom.vm");
-                    notification.addToVelocityContext("appName", appName);
+                    VelocityNotification notification = new VelocityNotification(params.getKey(), "deploypom",
+                            new HashSet<>(), "templates/notifications/notification.deploy.pom.vm");
+                    notification.addToVelocityContext(APP_NAME, appName);
                     notification.addToVelocityContext(("profile"), profile);
                     notification.addToVelocityContext("basePackage", context.getBasePackage());
                     notification.addToVelocityContext("profileConfiguration", params.getProfileConfiguration());
-                    notification.addToVelocityContext("hasAppDependencies", hasAppDependencies);
-                    notification.addToVelocityContext("appDependencies", appDependencies);
 
                     notification.addToExternalVelocityContextProperties("deployArtifactId", params.getArtifactId());
 
-                    addManualAction(params.getPomFilePath(), notification);
-                } else if (hasAppDependencies && !propertyVariableExistsInPomFile(params.getPomFile(), appName, "appDependencies", String.join(",", appDependencies))) {
-
-                    params.setKey(getMessageKey(params.getPomFilePath(), "execution", "appDependencies", appName));
-                    VelocityNotification notification = new VelocityNotification(params.getKey(), new HashSet<String>(), "templates/notifications/notification.deploy.pom.property.variables.vm");
-                    notification.addToVelocityContext("profile", profile);
-                    notification.addToVelocityContext("deployArtifactId", params.getArtifactId());
-                    notification.addToVelocityContext("appDependencies", appDependencies);
                     addManualAction(params.getPomFilePath(), notification);
                 }
             }
@@ -454,7 +501,7 @@ public class ManualActionNotificationService {
                 if (!params.isExistsInFileOrNotification()) {
                     VelocityNotification notification = new VelocityNotification(params.getKey(), "dockerpom", new HashSet<>(), "templates/notifications/notification.docker.pom.vm");
                     notification.addToVelocityContext(("profile"), profile);
-                    notification.addToVelocityContext("appName", artifactId);
+                    notification.addToVelocityContext(APP_NAME, artifactId);
                     notification.addToVelocityContext("basePackage", context.getBasePackage());
                     notification.addToVelocityContext("profileConfiguration", params.getProfileConfiguration());
                     notification.addToExternalVelocityContextProperties("dockerArtifactId", params.getArtifactId());
@@ -500,7 +547,7 @@ public class ManualActionNotificationService {
     }
     
     private boolean executionAppExistsInPomFile(File file, String appName) {
-        return propertyVariableExistsInPomFile(file, appName, "appName", appName);
+        return propertyVariableExistsInPomFile(file, appName, APP_NAME, appName);
     }
 
     private boolean propertyVariableExistsInPomFile(File file, String appName, String propertyVariableName, String propertyVariableValue) {
@@ -522,7 +569,7 @@ public class ManualActionNotificationService {
                         Node cNode = getChildNodeByName(nNode, "configuration");
                         cNode = getChildNodeByName(cNode, "propertyVariables");
                         if (cNode != null) {
-                            Node appNode = getChildNodeByName(cNode, "appName");
+                            Node appNode = getChildNodeByName(cNode, APP_NAME);
                             if (appNode != null && appName.equals(appNode.getTextContent())) {
                                 Node pvNode = getChildNodeByName(cNode, propertyVariableName);
                                 if (pvNode != null && propertyVariableValue.equals(pvNode.getTextContent())) {
@@ -723,6 +770,10 @@ public class ManualActionNotificationService {
         return MavenUtil.fileExists(rootProjectDirectory, "Tiltfile");
     }
 
+    private boolean helmfileFound(final File rootProjectDirectory) {
+        return MavenUtil.fileExists(rootProjectDirectory, "helmfile.yaml");
+    }
+
     private void addManualAction(String file, Notification notification) {
         NotificationCollector.addNotification(file, notification);
     }
@@ -786,6 +837,19 @@ public class ManualActionNotificationService {
         params.setExistsInFileOrNotification(executionAppExistsInPomFile(params.getPomFile(), appName) || executionAppExistsInNotification(params.getPomFilePath(), params.getKey(), appName));
 
         return params;
+    }
+
+    /**
+     * Creates a map containing the `needs` for helmfile releases. Key is appName and Value is the helmfile needs
+     * @param projectName the name of the project. Used to derive the namespace
+     * @return The map of appNames and needs value
+     */
+    private Map<String, String> getHelmfileNeeds(String projectName){
+        Map<String, String> helmfileNeeds = new HashMap<>();
+        helmfileNeeds.put(CONFIGURATION_STORE, projectName + "-config/configuration-store");
+        helmfileNeeds.put("spark-operator", projectName + "/spark-operator");
+        helmfileNeeds.put("spark-infrastructure", projectName + "/spark-infrastructure");
+        return helmfileNeeds;
     }
 
     /**

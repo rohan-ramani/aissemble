@@ -1,0 +1,7 @@
+namespace: default
+skipDeps: false
+aissembleVersion: 1.12.1
+
+chart:
+  valueFiles:
+    - values.yaml

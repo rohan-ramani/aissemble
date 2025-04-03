@@ -30,7 +30,7 @@ public abstract class AbstractAissembleMigration extends AbstractMigration {
     @Override
     protected abstract boolean performMigration(File file);
 
-    protected String getProjectPrefix() {
+    protected String getRootArtifactId() {
         MavenProject project = getRootProject();
         if(!project.hasParent()) {
             throw new RuntimeException("The migration is not being run on an aissemble-based project");

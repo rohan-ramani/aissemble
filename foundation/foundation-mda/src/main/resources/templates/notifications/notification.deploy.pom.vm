@@ -11,11 +11,6 @@
                                  to customize the deployment artifacts. -->
                             <propertyVariables>
                                 <appName>${appName}</appName>
-                                #if(${hasAppDependencies} == true)
-                                    #foreach ($item in $appDependencies)
-                                    <appDependencies>${item}</appDependencies>
-                                    #end
-                                #end
                             </propertyVariables>
                         </configuration>
                     </execution>
