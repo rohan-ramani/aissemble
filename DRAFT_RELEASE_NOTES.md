@@ -1,5 +1,8 @@
 # Major Additions
 
+## Reduced Spark Pipeline Size
+We have pulled the Spark, Hadoop and Hive dependencies out of the shaded pipeline jar since they are already provided by Spark. This change can reduce the spark worker Docker image size and help resolve future CVEs faster.
+
 # Breaking Changes
 _Note: instructions for adapting to these changes are outlined in the upgrade instructions below._
 
@@ -44,6 +47,7 @@ To reduce burden of upgrading aiSSEMBLE, the Baton project is used to automate t
 | upgrade-v1-chart-files-aissemble-version-migration | Updates the docker image tags within your project's deployment resources (`<YOUR_PROJECT>-deploy/src/main/resources/apps/`) to use the latest version of the aiSSEMBLE       |
 | data-encryption-removal-pom-migration              | Remove the data encryption dependencies from the pom file                                                                                                                    |
 | data-encryption-removal-pyproject-migration        | Remove the data encryption dependencies from the pyproject.toml file                                                                                                         |
+| spark-provided-dependency-migration                | Remove the Hadoop, Hive, and Spark dependencies from the pipeline shaded jar                                                                                                 |
 
 To deactivate any of these migrations, add the following configuration to the `baton-maven-plugin` within your root `pom.xml`:
 
@@ -119,9 +123,10 @@ values.yaml file to enable configuration store access vault:
 
 ## Final Steps - Required for All Projects
 ### Finalizing the Upgrade
-1. Run `./mvnw clean install` and resolve any manual actions that are suggested
+1. Run `./mvnw org.technologybrewery.baton:baton-maven-plugin:baton-migrate` to apply the automatic migrations
+2. Run `./mvnw clean install` and resolve any manual actions that are suggested
     - **NOTE:** This will update any aiSSEMBLE dependencies in 'pyproject.toml' files automatically
-2. Repeat the previous step until all manual actions are resolved
+3. Repeat the previous step until all manual actions are resolved
 
 # What's Changed
 _to be auto-generated when published_
