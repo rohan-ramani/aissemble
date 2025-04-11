@@ -16,7 +16,7 @@ aissemble-foundation-pdp-client-python = {path = "../../../foundation/foundation
 aissemble-foundation-data-lineage-python = {path = "../../../foundation/foundation-lineage/foundation-data-lineage/aissemble-foundation-data-lineage-python", develop = true}
 aissemble-foundation-core-python = {path = "../../../foundation/aissemble-foundation-core-python", develop = true}
 aissemble-extensions-data-delivery-spark-py = {path = "../../../extensions/extensions-data-delivery/aissemble-extensions-data-delivery-spark-py", develop = true}
-apache-sedona = "~1.4.0"
+apache-sedona = "~1.7.1"
 kafka-python = "^2.0.2"
 python = ">=3.8"
 krausening = ">=20"

@@ -26,9 +26,8 @@ sparkApp:
         - io.delta:delta-storage:${versionDelta}
         #end
         #if (${enableSedonaSupport})
-        - org.apache.sedona:sedona-sql-3.0_2.12:${versionSedona}
+        - org.apache.sedona:sedona-spark-shaded-3.5_2.12:${versionSedona}
         #if (${enablePySparkSupport})
-        - org.apache.sedona:sedona-python-adapter-3.0_2.12:${versionSedona}
         - org.datasyslab:geotools-wrapper:${versionGeotools}
         #end
         #end

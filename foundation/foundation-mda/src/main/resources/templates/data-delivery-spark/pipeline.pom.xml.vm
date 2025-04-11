@@ -168,12 +168,7 @@
         #if ($enableSedonaSupport)
         <dependency>
             <groupId>org.apache.sedona</groupId>
-            <artifactId>sedona-python-adapter-3.0_2.12</artifactId>
-            <version>${version.sedona}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.sedona</groupId>
-            <artifactId>sedona-viz-3.0_2.12</artifactId>
+            <artifactId>sedona-spark-shaded-3.5_2.12</artifactId>
             <version>${version.sedona}</version>
         </dependency>
         <dependency>

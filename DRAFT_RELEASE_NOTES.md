@@ -3,6 +3,10 @@
 ## Reduced Spark Pipeline Size
 We have pulled the Spark, Hadoop and Hive dependencies out of the shaded pipeline jar since they are already provided by Spark. This change can reduce the spark worker Docker image size and help resolve future CVEs faster.
 
+## Sedona upgraded to 1.7.1
+Previously, Sedona jars were on version 1.4.0. However, there are compatibility issues with this version of Sedona and Spark 3.5. The latest version also comes with a change to the names of the Sedona dependencies. It's recommended to replace all `sedona-*` dependencies with `sedona-spark-shaded-3.5_2.12`, which now includes all Sedona libraries. Accordingly, the geotools wrapper has also been updated from 1.4.0-28.2 to 1.7.1-28.5. See the [Sedona docs](https://sedona.apache.org/1.7.1/setup/maven-coordinates/) for more details.
+
+
 # Breaking Changes
 _Note: instructions for adapting to these changes are outlined in the upgrade instructions below._
 

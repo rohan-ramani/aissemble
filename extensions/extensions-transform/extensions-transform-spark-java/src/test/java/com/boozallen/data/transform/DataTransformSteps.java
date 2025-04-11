@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.boozallen.data.transform.spark.DataTransformer;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
