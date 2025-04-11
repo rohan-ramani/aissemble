@@ -115,7 +115,6 @@
             <groupId>io.delta</groupId>
             <artifactId>delta-spark_2.12</artifactId>
             <version>${version.delta}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
