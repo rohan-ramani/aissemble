@@ -10,6 +10,9 @@ We have pulled the Spark, Hadoop and Hive dependencies out of the shaded pipelin
 Previously, Sedona jars were on version 1.4.0. However, there are compatibility issues with this version of Sedona and Spark 3.5. The latest version also comes with a change to the names of the Sedona dependencies. It's recommended to replace all `sedona-*` dependencies with `sedona-spark-shaded-3.5_2.12`, which now includes all Sedona libraries. Accordingly, the geotools wrapper has also been updated from 1.4.0-28.2 to 1.7.1-28.5. See the [Sedona docs](https://sedona.apache.org/1.7.1/setup/maven-coordinates/) for more details.
 
 
+## Spark Upgraded to 3.5.5 
+Spark upgraded from 3.5.4 to 3.5.5. For upgrade information, see the Spark [release notes](https://spark.apache.org/news/spark-3-5-5-released.html).
+
 # Breaking Changes
 _Note: instructions for adapting to these changes are outlined in the upgrade instructions below._
 
