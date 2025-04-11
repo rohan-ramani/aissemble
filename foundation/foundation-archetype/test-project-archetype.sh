@@ -89,19 +89,27 @@ function updatePomBasedOnChildDirs {
 }
 
 #---
-## Runs maven build and captures any manual actions for adding Fermenter executions to the deploy POM, then updates the
-## deploy POM based on the detected manual actions.
+## Runs maven build and captures any manual actions for adding Fermenter executions to the deploy POM and helmfile
+# release additions. It applies these manual actions to the deploy POM and the helmfile.yaml.
 #---
-function runBuildAndUpdateDeploy {
+function runBuildAndApplyManualActions {
   deployInsert="<!-- Add executions for each deployment module -->"
-  outputstart='executions to test-generator-deploy'
-  outputend='\[WARNING\]'
-  # $outputstart match at end ensures the match line isn't captured. NF ensures blank lines aren't captured.
+  helmfileInsert="# Add deployment releases here"
+  deployOutputStart='executions to test-generator-deploy'
+  helmfileOutputStart='add the following to helmfile.yaml'
+  outputEnd='\[WARNING\]'
+
+  # $deployOutputStart match at end ensures the match line isn't captured. NF ensures blank lines aren't captured.
   ./mvnw clean install | \
-    tee >(awk "BEGIN {output=0} /$outputend/ {output=0} NF && output {print} /$outputstart/ {output=1}">tmp.out ) \
-    || { echo -e '\n\n\t**** MAVEN BUILD FAILED ****\n\n' ; exit 1; }
-  execs=$(cat tmp.out)
-  rm -f tmp.out
+      tee >(awk "BEGIN {output=0} /$outputEnd/ {output=0} NF && output {print} /$deployOutputStart/ {output=1}">deploy.out ) | \
+      tee >(awk "BEGIN {output=0} /$outputEnd/ {output=0} NF && output {print} /$helmfileOutputStart/ {output=1}">helmfile.out ) \
+      || { echo -e '\n\n\t**** MAVEN BUILD FAILED ****\n\n' ; exit 1; }
+
+    execs=$(cat deploy.out)
+    releases=$(cat helmfile.out)
+  rm -f deploy.out
+  rm -f helmfile.out
+  updates=0
   if [ -n "$execs" ]; then
     #re-adding insert comment allows for subsequent insertions
     execs=$deployInsert$'\n'$execs
@@ -109,8 +117,15 @@ function runBuildAndUpdateDeploy {
     echo -e "\n INFO: Adding execution profiles to deploy POM: \n$execs"
     sub "s/$deployInsert/$execs/" test-generator-deploy/pom.xml
   else
-    return 1
+    updates=1
   fi
+  if [ -n "$releases" ]; then
+    releases=$helmfileInsert$'\n'$releases
+    releases=$(esc <<< "$releases")
+    echo -e "\n INFO: Adding releases to helmfile: \n$releases"
+    sub "s/$helmfileInsert/$releases/" helmfile.yaml
+  fi
+  return $updates
 }
 
 package='com.bah.aiops'
@@ -275,7 +290,7 @@ sub "s/ *<\/plugins>/$plugins        <\/plugins>/" test-generator-deploy/pom.xml
 
 echo -e "\nINFO: Running full build to generate project structure\n"
 updates=false
-if runBuildAndUpdateDeploy; then
+if runBuildAndApplyManualActions; then
   updates=true
 fi
 
@@ -302,7 +317,7 @@ fi
 cd ..
 
 echo -e "\nINFO: Generating project structure for pipelines and data records\n"
-runBuildAndUpdateDeploy
+runBuildAndApplyManualActions
 
 cd test-generator-pipelines/example-machine-learning-pipeline/ || exit
 updatePomBasedOnChildDirs "<!-- TODO: replace with your step-specific modules here -->"
@@ -310,7 +325,7 @@ updatePomBasedOnChildDirs "<!-- TODO: replace with your step-specific modules he
 cd ../..
 
 echo -e "\nINFO: Generating project structure for ml pipelines\n"
-runBuildAndUpdateDeploy
+runBuildAndApplyManualActions
 
 echo -e "\nINFO: Running final build to ensure success"
 ./mvnw clean install || { echo -e '\n\n\t**** MAVEN BUILD FAILED ****\n\n' ; exit 1; }

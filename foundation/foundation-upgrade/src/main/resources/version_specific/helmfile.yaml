@@ -1,0 +1,33 @@
+# Helmfile is a declarative spec for deploying helm charts.
+# Full list of configs can be found here - https://helmfile.readthedocs.io/en/stable/#configuration
+
+environments:
+  default:
+    values:
+      - aissembleVersion: ${archetypeVersion}
+        # Used for disabling auto-deployment of pipelines
+      - pipeline: null
+      - helm:
+          valueFiles:
+            - values.yaml
+            - values-dev.yaml
+          s3local:
+            enabled: true
+  ci:
+    values:
+      - aissembleVersion: ${archetypeVersion}
+        # Used for disabling auto-deployment of pipelines
+      - pipeline: null
+      - helm:
+          valueFiles:
+            - values.yaml
+            - values-ci.yaml
+          s3local:
+            enabled: false
+    kubeContext: PLACEHOLDER-kubernetes-ci-context
+
+helmDefaults:
+  skipDeps: {{ eq .Environment.Name "default" }}
+
+releases:
+  # Add deployment releases here

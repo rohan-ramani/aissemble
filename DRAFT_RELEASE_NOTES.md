@@ -1,5 +1,8 @@
 # Major Additions
 
+## Helmfile Integration
+Currently, aiSSEMBLE provides automation for the path to production tool Tilt and ArgoCD. Having the local and higher environment deployment methods not aligned can cause hard-to-diagnose bugs and slow development. In an effort to have one tool to deploy to all environments, going forward aiSSEMBLE will support [Helmfile](https://helmfile. readthedocs.io/en/latest/) instead of Tilt and ArgoCD. New project will be generated with Helmfile and existing projects are encouraged to use it but are not required to.
+
 ## Reduced Spark Pipeline Size
 We have pulled the Spark, Hadoop and Hive dependencies out of the shaded pipeline jar since they are already provided by Spark. This change can reduce the spark worker Docker image size and help resolve future CVEs faster.
 
@@ -51,6 +54,8 @@ To reduce burden of upgrading aiSSEMBLE, the Baton project is used to automate t
 | upgrade-v1-chart-files-aissemble-version-migration | Updates the docker image tags within your project's deployment resources (`<YOUR_PROJECT>-deploy/src/main/resources/apps/`) to use the latest version of the aiSSEMBLE       |
 | data-encryption-removal-pom-migration              | Remove the data encryption dependencies from the pom file                                                                                                                    |
 | data-encryption-removal-pyproject-migration        | Remove the data encryption dependencies from the pyproject.toml file                                                                                                         |
+| helmfile-generation-migration                      | Generates an initial helmfile.yaml for manual actions to be added to. After its ran once, it will automatically be added to the deactivated list                             |
+| helmfile-aissemble-version-migration               | Updates the aiSSEMBLE version in the deployment values file. This version is used by the helmfile.yaml                                                                       |
 | spark-provided-dependency-migration                | Remove the Hadoop, Hive, and Spark dependencies from the pipeline shaded jar                                                                                                 |
 
 To deactivate any of these migrations, add the following configuration to the `baton-maven-plugin` within your root `pom.xml`:

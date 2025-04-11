@@ -71,6 +71,10 @@ public abstract class AbstractMigrationTest {
         return testFile;
     }
 
+    protected void setTestFileToBaseMigration(String migrationName, String fileName) {
+        testFile = getTestFile(Path.of(migrationName, "migration", fileName).toString());
+    }
+
     protected void setTestFileToVersionMigration(String migrationName, String fileName) {
         testFile = getTestFile(Path.of("version-specific", migrationName, "migration", fileName).toString());
     }
