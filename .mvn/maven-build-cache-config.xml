@@ -50,7 +50,8 @@
             </dirNames>
         </attachedOutputs>
         <local>
-            <maxBuildsCached>5</maxBuildsCached>
+            <!-- NB saving more than 1 build can cause issues because it does not restore the prior docker image to the docker daemon. -->
+            <maxBuildsCached>1</maxBuildsCached>
         </local>
         <projectVersioning adjustMetaInf="true"/>
     </configuration>
