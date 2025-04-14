@@ -1,7 +1,7 @@
 # Major Additions
 
 ## Helmfile Integration
-Currently, aiSSEMBLE provides automation for the path to production tool Tilt and ArgoCD. Having the local and higher environment deployment methods not aligned can cause hard-to-diagnose bugs and slow development. In an effort to have one tool to deploy to all environments, going forward aiSSEMBLE will support [Helmfile](https://helmfile. readthedocs.io/en/latest/) instead of Tilt and ArgoCD. New project will be generated with Helmfile and existing projects are encouraged to use it but are not required to.
+Given that the local and higher environment deployment methods not aligned can cause hard-to-diagnose bugs and slow development, in an effort to have one tool to deploy to all environments, going forward aiSSEMBLE will support [Helmfile](https://helmfile.readthedocs.io/en/latest/) instead of Tilt and ArgoCD. New project will be generated with Helmfile and existing projects are encouraged to use it but are not required to. Follow **Finalizing the Upgrade** section for migration instructions.
 
 ## Reduced Spark Pipeline Size
 We have pulled the Spark, Hadoop and Hive dependencies out of the shaded pipeline jar since they are already provided by Spark. This change can reduce the spark worker Docker image size and help resolve future CVEs faster.
@@ -21,6 +21,8 @@ _Note: instructions for adapting to these changes are outlined in the upgrade in
   - foundation-encryption-policy-java java encryption policy
   - aissemble-extensions-encryption-vault-python python data encryption
   - aissemble-foundation-encryption-policy-python python encryption policy
+- The default behavior on the `aissemble-infrastructure-chart` has been changed. The ArgoCD chart will no longer be deployed by default. To enable the ArgoCD deployment, follow the **How to Upgrade** section for details.
+- Removed local deployment tool Tilt, and the remote deployment tool ArgoCD as we migrated to use Helmfile as the aiSSEMBLE deployment tool.
 
 # Known Issues
 
@@ -52,6 +54,7 @@ To reduce burden of upgrading aiSSEMBLE, the Baton project is used to automate t
 
 | Migration Name                                     | Description                                                                                                                                                                  |
 |----------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| argocd-removal-migration                           | Remove the ArgoCD related application templates and values, Chart yaml files and etc.                                                                                        |
 | upgrade-tiltfile-aissemble-version-migration       | Updates the aiSSEMBLE version within your project's Tiltfile                                                                                                                 |
 | upgrade-v2-chart-files-aissemble-version-migration | Updates the Helm chart dependencies within your project's deployment resources (`<YOUR_PROJECT>-deploy/src/main/resources/apps/`) to use the latest version of the aiSSEMBLE |
 | upgrade-v1-chart-files-aissemble-version-migration | Updates the docker image tags within your project's deployment resources (`<YOUR_PROJECT>-deploy/src/main/resources/apps/`) to use the latest version of the aiSSEMBLE       |
@@ -133,9 +136,19 @@ values.yaml file to enable configuration store access vault:
 +         secrets.unseal.keys==key1,key2,key3
 ```
 
+## For projects leveraging the ArgoCD chart
+With disabling the ArgoCD chart deployment configuration in the `aissemble-infrastructure-chart` by default, if you are using argocd locally, you will need to add the `argo-cd.enabled` configuration to your local values.yaml file as following:
+```yaml
+aissemble-infrastructure-chart:
+  argo-cd:
++   enable: true
+
+```
+
 ## Final Steps - Required for All Projects
 ### Finalizing the Upgrade
 1. Run `./mvnw org.technologybrewery.baton:baton-maven-plugin:baton-migrate` to apply the automatic migrations
+    - **Note:** To enable the helmfile generation and ArgoCD removal migration, include the `aissemble.enable.helmfile.migration` property key when run the migration script, e.g.: `./mvnw org.technologybrewery.baton:baton-maven-plugin:baton-migrate -Daissemble.enable.helmfile.migration`
 2. Run `./mvnw clean install` and resolve any manual actions that are suggested
     - **NOTE:** This will update any aiSSEMBLE dependencies in 'pyproject.toml' files automatically
 3. Repeat the previous step until all manual actions are resolved

@@ -2,7 +2,7 @@ spec:
   destination:
     server: https://kubernetes.default.svc
   targetRevision: dev
-  repo: ${projectGitUrl}
+  repo: test.org/test-argo-removal
   helm:
     valueFiles:
       - values.yaml
