@@ -18,7 +18,7 @@
         <dockerbuild.patch.directory>target/dockerbuild/patch</dockerbuild.patch.directory>
         <version.netty>4.1.118.Final</version.netty>
         <version.avro>1.11.4</version.avro>
-        <version.derby>10.16.1.1</version.derby>
+        <version.derby>10.17.1.0</version.derby>
         <version.hive.client>2.3.10</version.hive.client>
         <version.parquet>1.15.0</version.parquet>
         <version.zookeeper>3.9.3</version.zookeeper>
