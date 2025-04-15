@@ -45,7 +45,6 @@ public class SharedInfrastructureGenerator extends KubernetesGenerator {
         if (mlStrategy.isVersioningSupportNeeded() || mlStrategy.isMlflowNeeded() || mlStrategy.isAirflowNeeded() || dataFlowStrategy.isAirflowNeeded()) {
             super.generate(context);
             final String projectName = context.getRootArtifactId();
-            manualActionNotificationService.addHelmTiltFileMessage(context, "shared-infrastructure", context.getArtifactId());
             manualActionNotificationService.addHelmfileReleaseMessage(context, "shared-infrastructure",
                     context.getArtifactId(), projectName);
         }

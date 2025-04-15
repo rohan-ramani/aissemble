@@ -60,7 +60,6 @@ public class ManualActionNotificationService {
     private static final Logger logger = LoggerFactory.getLogger(ManualActionNotificationService.class);
     private static final String EMPTY_LINE = "\n";
     private static final String SUPPRESS_WARNINGS = "maven-suppress-warnings";
-    private static final String GROUP_TILT = "tilt";
     private static final String GROUP_HELMFILE = "helmfile";
     private static final String APP_NAME = "appName";
     private static final String CONFIGURATION_STORE = "configuration-store";
@@ -213,31 +212,6 @@ public class ManualActionNotificationService {
     }
 
     /**
-     * Checks if there are deployment changes necessary in the Tiltfile for Spark Worker and
-     * adds a message if so.
-     *
-     * @param context the generation context
-     */
-    public void addSparkApplicationTiltMessage(final GenerationContext context) {
-
-        final File rootDir = context.getExecutionRootDirectory();
-        if (!rootDir.exists() || !tiltFileFound(rootDir)) {
-            logger.warn("Unable to find Tiltfile. Will not be able to direct manual Spark Worker resources to Tiltfile");
-        } else {
-            final String tiltFilePath = rootDir.getAbsolutePath() + File.separator + "Tiltfile";
-            final String text = "k8s_kind('SparkApplication'";
-
-            boolean tiltFileContainsArtifact = existsInFile(tiltFilePath, text);
-            if (!tiltFileContainsArtifact && showWarnings(tiltFilePath)) {
-                final String key = getMessageKey("Tiltfile", "pipeline-spark-application");
-                VelocityNotification notification = new VelocityNotification(key, GROUP_TILT, new HashSet<>(),
-                        "templates/notifications/notification.spark.worker.docker.build.tilt.vm");
-                addManualAction(tiltFilePath, notification);
-            }
-        }
-    }
-
-    /**
      * Adds a notification to update the helmfile with releases.
      *
      * @param context          the generation context
@@ -288,129 +262,6 @@ public class ManualActionNotificationService {
                 notification.addToVelocityContext(APP_NAME, appName);
                 notification.addToVelocityContext("deployArtifactId", deployArtifactId);
                 addManualAction(helmfilePath, notification);
-            }
-        }
-    }
-
-    /**
-     * Adds a notification to update the Tiltfile.
-     *
-     * @param context          the generation context
-     * @param appName          the application name
-     * @param deployArtifactId the deploy artifact ID
-     */
-    public void addHelmTiltFileMessage(final GenerationContext context, final String appName,
-                                       final String deployArtifactId) {
-
-        final File rootDir = context.getExecutionRootDirectory();
-        if (!rootDir.exists() || !tiltFileFound(rootDir)) {
-            logger.warn("Unable to find Tiltfile. Will not be able to direct manual Helm updates to for Tiltfile");
-        } else {
-            final String tiltFilePath = rootDir.getAbsolutePath() + File.separator + "Tiltfile";
-            final String text = "apps/" + appName + "'";
-
-            boolean tiltFileContainsArtifact = existsInFile(tiltFilePath, text);
-            if (!tiltFileContainsArtifact && showWarnings(tiltFilePath)) {
-                final String key = getMessageKey("Tiltfile", "helm", appName);
-                VelocityNotification notification = new VelocityNotification(key, GROUP_TILT, new HashSet<String>(), "templates/notifications/notification.helm.tilt.vm");
-                notification.addToVelocityContext(APP_NAME, appName);
-                notification.addToVelocityContext("deployArtifactId", deployArtifactId);
-                addManualAction(tiltFilePath, notification);
-            }
-
-        }
-    }
-
-    private void appendTiltHelmBuild(String appName, String deployArtifactId, StringBuilder builder) {
-        builder.append("yaml = helm(\n");
-        builder.append("   '")
-                .append(deployArtifactId)
-                .append("/src/main/resources/apps/")
-                .append(appName)
-                .append("',\n");
-        builder.append("   values=['")
-                .append(deployArtifactId)
-                .append("/src/main/resources/apps/")
-                .append(appName)
-                .append("/values.yaml',\n");
-        builder.append("       '")
-                .append(deployArtifactId)
-                .append("/src/main/resources/apps/")
-                .append(appName)
-                .append("/values-dev.yaml']\n");
-        builder.append(")\n");
-        builder.append("k8s_yaml(yaml)\n");
-        builder.append(EMPTY_LINE);
-    }
-
-    /**
-     * Adds a notification to update the tiltfile with necessary elasticsearch resources
-     *
-     * @param context    the generation context
-     * @param appName    the application name
-     * @param artifactId the artifact ID
-     */
-    public void addElasticsearchTiltResources(final GenerationContext context, final String appName, final String artifactId) {
-        final File rootDir = context.getExecutionRootDirectory();
-        if (!rootDir.exists() || !tiltFileFound(rootDir)) {
-            logger.warn("Unable to find Tiltfile. Will not be able to direct manual Helm updates to for Tiltfile");
-        } else {
-            final String tiltFilePath = rootDir.getAbsolutePath() + File.separator + "Tiltfile";
-            final String[] elasticSearchResources = {"k8s_kind('Elasticsearch')", "k8s_resource('elasticsearch')"};
-
-            HashSet<String> items = new HashSet<String>();
-
-            //loop through each resource to see if it's in the tiltfile
-            for (String resource : elasticSearchResources) {
-                boolean tiltFileContainsArtifact = existsInFile(tiltFilePath, resource);
-                if (!tiltFileContainsArtifact && showWarnings(tiltFilePath)) {
-                    items.add(resource);
-                }
-            }
-
-            //add a manual action for any resources that may need to be added
-            if (items.size() > 0) {
-                final String key = getMessageKey("Tiltfile", "elasticsearch");
-
-                VelocityNotification notification = new VelocityNotification(key, GROUP_TILT, items,
-                        "templates/notifications/notification.elastic.search.tilt.vm");
-                addManualAction(tiltFilePath, notification);
-            }
-        }
-    }
-
-
-    /**
-     * Adds a notification to update the tiltfile with necessary spark worker resources
-     * NOTE: Consider refactor to leverage addYamlTiltFileMessage() for "k8s_yaml" line
-     *
-     * @param context                the generation context
-     * @param parentArtifactId       the name of the parent directory the pipelines are in
-     * @param pipelineArtifactId     the artifact id of the pipeline
-     * @param pipelineImplementation the implementation of the pipeline
-     */
-    public void addSparkWorkerTiltResources(final GenerationContext context, final String parentArtifactId,
-                                            final String pipelineArtifactId, final String pipelineImplementation) {
-
-        final File rootDir = context.getExecutionRootDirectory();
-        if (!rootDir.exists() || !tiltFileFound(rootDir)) {
-            logger.warn("Unable to find Tiltfile. Will not be able to direct manual Spark Worker resources to Tiltfile");
-        } else {
-            final String tiltFilePath = rootDir.getAbsolutePath() + File.separator + "Tiltfile";
-            final String text = "--values " + parentArtifactId + "/" + pipelineArtifactId;
-
-            boolean tiltFileContainsArtifact = existsInFile(tiltFilePath, text);
-            if (!tiltFileContainsArtifact && showWarnings(tiltFilePath)) {
-                final String key = getMessageKey("Tiltfile", "spark-application");
-
-                VelocityNotification notification = new VelocityNotification(key, GROUP_TILT, new HashSet<>(),
-                        "templates/notifications/notification.spark.worker.tilt.vm");
-                notification.addToVelocityContext("parentArtifactId", parentArtifactId);
-                notification.addToVelocityContext("pipelineArtifactId", pipelineArtifactId);
-                notification.addToVelocityContext("pipelineImplementation", pipelineImplementation);
-                notification.addToVelocityContext("pythonPipelineArtifactId", PipelineUtils.deriveLowerSnakeCaseNameFromHyphenatedString(pipelineArtifactId));
-                notification.addToVelocityContext("aissembleVersion", PipelineUtils.getAiSSEMBLEVersion(context));
-                addManualAction(tiltFilePath, notification);
             }
         }
     }
@@ -764,10 +615,6 @@ public class ManualActionNotificationService {
 
     private boolean dockerModuleFoundPom(final File rootProjectDirectory) {
         return moduleFoundPom(rootProjectDirectory, MavenUtil.getDockerModuleName(rootProjectDirectory));
-    }
-
-    private boolean tiltFileFound(final File rootProjectDirectory) {
-        return MavenUtil.fileExists(rootProjectDirectory, "Tiltfile");
     }
 
     private boolean helmfileFound(final File rootProjectDirectory) {

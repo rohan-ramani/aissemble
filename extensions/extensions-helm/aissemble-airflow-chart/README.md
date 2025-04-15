@@ -119,19 +119,3 @@ aissemble-airflow-chart.airflow.createUserJob.args
 aissemble-airflow-chart.airflow.migrateDatabaseJob.args
 aissemble-airflow-chart.airflow.webserver.args
 ```
-
-### Tiltfile
-Within your Tiltfile, update the airflow docker_build to look like the following:
-
-**Note**: *the addition of the `extra_tag` argument with `latest` on the end*
-
-```
-# airflow
-docker_build(
-    ref='boozallen/<YOUR-PROJECT>-airflow-docker',
-    context='<YOUR-PROJECT>-docker/<YOUR-PROJECT>-airflow-docker',
-    build_args=build_args,
-    extra_tag='boozallen/<YOUR-PROJECT>-airflow-docker:latest',
-    dockerfile='<YOUR-PROJECT>docker/<YOUR-PROJECT>-airflow-docker/src/main/resources/docker/Dockerfile'
-)
-```

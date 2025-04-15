@@ -46,7 +46,7 @@ to generate Spark code. (please see xref:pipeline-metamodel.adoc[Detailed Pipeli
 |A blank template for continuous integration environment values, to be filled out as needed for your project.
 
 |`<project-name>-pipelines/<pipeline-name>/src/<package_name>/resources/apps/<pipeline-name>-dev-values.yaml`
-|Used by Tilt and CLI executions.
+|Used by Helmfile and CLI executions.
 
 |`<project-name>-pipelines/<pipeline-name>/tests/resources/apps/<pipeline-name>-test-values.yaml`
 |Parsed to configure the spark session for unit testing.

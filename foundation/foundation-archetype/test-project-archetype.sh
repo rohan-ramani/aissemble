@@ -279,11 +279,6 @@ echo "{
         ]
       }" > test-generator-pipeline-models/src/main/resources/pipelines/ExampleMachineLearningPipeline.json
 
-
-# The tiltfile is only testable locally and not on the CI build
-# Thus not updating it with file contents with manual actions
-echo -e "\n# maven-suppress-warnings" >> Tiltfile
-
 echo -e "\nINFO: updating the test-generator-deploy/pom.xml based on static code as it's hard to predict\n"
 plugins=$(esc < ../../../plugins-to-add-to-archetype_test-generator-deploy_pom.xml)
 sub "s/ *<\/plugins>/$plugins        <\/plugins>/" test-generator-deploy/pom.xml

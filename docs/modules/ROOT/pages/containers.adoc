@@ -58,65 +58,14 @@ Once the appropriate configuration has been added, run
 ----
 Once the build completes, check the logs for the following information:
 
-* Additions to the deploy module
-** Example:
-----
-***********************************************************************
-*** MANUAL ACTION NEEDED!                                           ***
-***********************************************************************
-You must add the execution to example-deploy/pom.xml to activate it in your build!
+* *Additions to the deploy module*
+** You must add the executions/plugins to your `<project-name>-deploy/pom.xml` to activate it in your build. This will ensure the proper generation of deployment resources for your application.
 
-Example:
-    <execution>
-        <id>airflow</id>
-        <phase>generate-sources</phase>
-        <goals>
-           <goal>generate-sources</goal>
-        </goals>
-        <configuration>
-           <basePackage>com.boozallen</basePackage>
-           <profile>aissemble-airflow-deploy</profile>
-           <!-- The property variables below are passed to the Generation Context and utilized
-                            to customize the deployment artifacts. -->
-           <propertyVariables>
-               <appName>airflow</appName>
-           </propertyVariables>
-        </configuration>
-    </execution>
+* *Additions to the Helmfile*
+** You must add the appropriate configurations to `helmfile.yaml` to enable deployment of your application. This will include the chart reference, namespace configuration, dependencies, and value file paths.
 
-***********************************************************************
-***********************************************************************
 
-----
-* Additions to the Tiltfile
-** Example:
-[source,bash]
-----
-    ***********************************************************************
-    *** MANUAL ACTION NEEDED!                                           ***
-    ***********************************************************************
-    You must add the following to Tiltfile to configure it for local deployment!
-
-    Example:
-    # airflow
-    docker_build(
-        ref='example-airflow-docker',
-        context='example-docker/example-airflow-docker',
-        build_args=build_args,
-        dockerfile='example-docker/example-airflow-docker/src/main/resources/docker/Dockerfile'
-    )
-
-    yaml = helm(
-       'example-deploy/src/main/resources/apps/airflow',
-       values=['example-deploy/src/main/resources/apps/airflow/values.yaml',
-           'example-deploy/src/main/resources/apps/airflow/values-dev.yaml']
-    )
-    k8s_yaml(yaml)
-
-    ***********************************************************************
-    ***********************************************************************
-----
-Be sure to add each artifact to the Tiltfile and Deploy module as appropriate. Once completed, rerun the build with
+Be sure to add each artifact to the Helmfile and Deploy module as appropriate. Once completed, rerun the build with
 [source,bash]
 ----
 ./mvnw clean install
@@ -371,12 +320,8 @@ spec:
 You can deploy with Kubernetes using the following command from the root directory of the project in a new terminal
 [source,bash]
 ----
-tilt up
+helmfile apply
 ----
-This will start the Tilt server that will build, monitor, and deploy the Kubernetes resources. Changes to the root
-Tiltfile are recommended to take advantage of live reloading, snapshots, etc. that Tilt has to offer.
-See the https://docs.tilt.dev[Tilt documentation,role=external,window=_blank] for details.
-
 TIP: Note that the default ports within a given module do not conflict; however, it is possible that mixing the
 outputs of various components may result in port conflicts. In that case edits to the relevant port mappings in the
 Kubernetes service manifests may be necessary.

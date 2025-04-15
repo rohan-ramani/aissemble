@@ -96,12 +96,9 @@ public class SparkDockerPomGenerator extends AbstractMavenModuleGenerator {
             manualActionNotificationService.addNoticeToAddModuleToParentBuild(context, sparkDockerArtifactId, "docker");
             manualActionNotificationService.addDeployPomMessage(context, "spark-operator-deploy-v2", sparkOperatorAppName);
             manualActionNotificationService.addDeployPomMessage(context, "spark-infrastructure-deploy-v2", sparkInfrastructureAppName);
-            manualActionNotificationService.addSparkApplicationTiltMessage(context);
             String pipelineArtifactId;
             for (Pipeline pipeline: dataFlowPipelines) {
                 pipelineArtifactId = deriveArtifactIdFromCamelCase(pipeline.getName());
-                manualActionNotificationService.addSparkWorkerTiltResources(context, pipelinesArtifactId,
-                        pipelineArtifactId, pipeline.getType().getImplementation());
                 manualActionNotificationService.addSparkWorkerHelmfileRelease(context, pipelinesArtifactId,
                         pipelineArtifactId, pipeline.getType().getImplementation(), rootArtifactId);
             }
@@ -112,7 +109,6 @@ public class SparkDockerPomGenerator extends AbstractMavenModuleGenerator {
             if (dataFlowStrategy.isElasticsearchSupportNeeded()) {
                 manualActionNotificationService.addDeployPomMessage(context, "elasticsearch-operator-deploy-v2", "elasticsearch-operator");
                 manualActionNotificationService.addDeployPomMessage(context, "elasticsearch-deploy-v2", "elasticsearch");
-                manualActionNotificationService.addElasticsearchTiltResources(context, "elasticsearch", context.getArtifactId().replace("-docker", ""));
             }
             if (dataFlowStrategy.isNeo4jSupportNeeded()) {
                 manualActionNotificationService.addDeployPomMessage(context, "neo4j-deploy", "neo4j");

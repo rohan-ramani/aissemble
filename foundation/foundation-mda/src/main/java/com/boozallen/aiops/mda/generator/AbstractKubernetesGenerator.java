@@ -22,7 +22,7 @@ import com.boozallen.aiops.mda.generator.common.VelocityProperty;
  * such as the application name, Aissemble version, and app dependencies. This class uses those retrieved values to configure the Velocity context and generate the Kubernetes resources.
  * 
  * This generator also interacts with the `ManualActionNotificationService` to handle 
- * application-specific notifications, such as Helm Tilt file messages and dependencies messages. 
+ * application-specific notifications, such as Helmfile messages and dependencies messages. 
  * 
  * The overall goal of this class is to automate the process of generating and configuring
  * Kubernetes resources within the given context of an application.
@@ -63,9 +63,6 @@ public abstract class AbstractKubernetesGenerator extends AbstractResourcesGener
         generationContext.setOutputFile(updatedOutputFile2);
 
         final String deployArtifactId = generationContext.getArtifactId();
-        if (!"configuration-store".equals(appName)) {
-            addTiltNotification(generationContext, appName, deployArtifactId);
-        }
 
         // Create manual actions to add deployments to the helmfile releases
         addHelmfileNotification(generationContext, appName, deployArtifactId, projectName);
@@ -75,10 +72,6 @@ public abstract class AbstractKubernetesGenerator extends AbstractResourcesGener
 
     protected ManualActionNotificationService getNotificationService() {
         return new ManualActionNotificationService();
-    }
-
-    protected void addTiltNotification(GenerationContext generationContext, String appName, String deployArtifactId) {
-        getNotificationService().addHelmTiltFileMessage(generationContext, appName, deployArtifactId);
     }
 
     protected void addHelmfileNotification(GenerationContext generationContext, String appName,
