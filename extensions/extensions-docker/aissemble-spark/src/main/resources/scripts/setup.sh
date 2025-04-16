@@ -72,14 +72,10 @@ update_jars() {
       done < <(find "$target" -type f -regex ".*/$artifact-[^-]*-jre.jar")
     fi
     if [ $REPLACED -ne 0 ]; then
-      #derbyshared and derbytools provide classes that were extraced from derby in the newer version
-      if [ $artifact = "derbyshared" ] || [ $artifact = "derbytools" ]; then
-          echo "  no existing jars -- adding '$jar'"
-          cp "$jarpath" "$target" || exit $?
-      else
-        echo "No replacement candidates found for $jar"
-        exit 1
-      fi
+      # If the jar has no replacements then just add it. Examples are derbyshared and derbytools provide classes that
+      # were extraced from derby in the newer version and guava failureaccess
+      echo "  no existing jars -- adding '$jar'"
+      cp "$jarpath" "$target" || exit $?
     fi
     echo
   done < <(find "$updated" -type f -name '*.jar')

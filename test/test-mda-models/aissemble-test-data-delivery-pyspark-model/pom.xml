@@ -190,30 +190,6 @@
             <build>
                 <plugins>
                     <plugin>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-docker-compose</id>
-                                <phase>generate-test-resources</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.basedir}/target/generated-sources/docker-compose-files</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>${project.basedir}/tests/resources/integration-test-resources</directory>
-                                            <filtering>true</filtering>
-                                            <includes>
-                                                <include>docker-compose*.yml</include>
-                                            </includes>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
                         <groupId>org.technologybrewery.habushu</groupId>
                         <artifactId>habushu-maven-plugin</artifactId>
                         <configuration>
