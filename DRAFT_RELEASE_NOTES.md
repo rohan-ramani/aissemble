@@ -62,6 +62,7 @@ To reduce burden of upgrading aiSSEMBLE, the Baton project is used to automate t
 | helmfile-generation-migration                      | Generates an initial helmfile.yaml for manual actions to be added to. After its ran once, it will automatically be added to the deactivated list                             |
 | helmfile-aissemble-version-migration               | Updates the aiSSEMBLE version in the deployment values file. This version is used by the helmfile.yaml                                                                       |
 | spark-provided-dependency-migration                | Remove the Hadoop, Hive, and Spark dependencies from the pipeline shaded jar                                                                                                 |
+| maven-build-cache-migration                        | Updates build cache configuration to avoid stale Docker images                                                                                                               |
 
 To deactivate any of these migrations, add the following configuration to the `baton-maven-plugin` within your root `pom.xml`:
 

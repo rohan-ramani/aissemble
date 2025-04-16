@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  #%L
+  aiSSEMBLE::Foundation::Upgrade
+  %%
+  Copyright (C) 2021 Booz Allen
+  %%
+  This software package is licensed under the Booz Allen Public License. All Rights Reserved.
+  #L%
+  -->
+
 <!---
  Licensed to the Apache Software Foundation (ASF) under one or more
  contributor license agreements.  See the NOTICE file distributed with
@@ -37,8 +47,12 @@
         <attachedOutputs>
             <dirNames>
                 <dirName>../dist</dirName>
+                <dirName>quarkus-app</dirName>
+                <dirName>helm</dirName>
+                <dirName>docker</dirName>
+                <dirName>dockerbuild</dirName>
+                <dirName>krausening</dirName>
                 <!-- Reports needed on CI to ensure consistent reporting of QA metrics: -->
-                <!-- Explicitly navigate to target since Habushu modules use dist as the project build directory -->
                 <dirName>../target/cucumber-reports</dirName>
                 <dirName>../target/surefire-reports</dirName>
                 <dirName>../target/failsafe-reports</dirName>
@@ -54,7 +68,7 @@
     <input>
         <global>
             <glob>
-                {*.java,*.json,*.groovy,*.yaml,*.svcd,*.proto,*.xml,*.vm,*.ini,*.jks,*.properties,*.sh,*.bat,*.py,Dockerfile,*.feature,*.lock}
+                {*.java,*.json,*.groovy,*.yaml,*.svcd,*.proto,*.xml,*.vm,*.ini,*.jks,*.properties,*.sh,*.bat,*.py,Dockerfile,*.feature}
             </glob>
             <includes>
                 <include>src/</include>
@@ -63,6 +77,10 @@
                 <include>pom.xml</include>
                 <include>pyproject.toml</include>
             </includes>
+            <excludes>
+                <exclude>poetry.lock</exclude>
+                <exclude>Chart.lock</exclude>
+            </excludes>
         </global>
     </input>
     <executionControl>
