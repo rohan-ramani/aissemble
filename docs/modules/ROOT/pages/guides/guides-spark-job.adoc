@@ -79,14 +79,15 @@ it and begin execution.  This is normal and expected.
 
 When the pipeline terminates, Spark Operator will tear down the pods and release any reserved resources.
 
-=== For Local Cluster Testing via Tilt
+=== For Local Cluster Testing via Helmfile
 
-After deploying with Tilt, a resource is visible for each data delivery pipeline.  Once all other resources are ready,
-use the trigger button
-image:https://raw.githubusercontent.com/tilt-dev/tilt/542020055dd9629ce1122957d162be619184ccfd/web/src/assets/svg/start-build-button-manual.svg[width=25, alt=""]
-on the pipeline resource to submit the associated `SparkApplication` to the cluster.
+After deploying with Helmfile, all applications except the pipeline will be deployed. Once all other resources are ready, you can 
+deploy the pipeline(s) with `helmfile apply --state-values-set pipeline=<pipeline-name>` to submit the associated `SparkApplication` to the cluster.
 
-Select the triggered resource to view the associated logging.
+To view logging for the pipeline, you can run `kubectl logs <pipeline-name>-driver -n <project-name>` to view the driver logs.
+
+To tear down everything, 
+run `helmfile destroy`.
 
 === Triggering a Job via Airflow
 

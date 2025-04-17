@@ -67,7 +67,7 @@ perform the following steps:
 3. Add label to node: `kubectl label nodes <node-name> node-label-key=node-label-value`
 * Example: `kubectl label nodes k3d-three-node-cluster-agent-0 label-key=label-value`
 
-Now that you've configured your Node Affinity rules and labeled your node(s), you can run `tilt up` from the root
+Now that you've configured your Node Affinity rules and labeled your node(s), you can run `helmfile apply` from the root
 directory of your aiSSEMBLE project to deploy your project to your multi-node cluster. Finally, to verify that your
 rules are being followed, you can run the following command to see which pods are running on which nodes:
 
@@ -107,7 +107,7 @@ spec:
   maxReplicas: 5
 ----
 
-If you haven't already, run `tilt up` from the root directory of your project. After a few seconds, 5 pods should be
+If you haven't already, run `helmfile apply` from the root directory of your project. After a few seconds, 5 pods should be
 spun up for your chosen component distributed across the nodes of your cluster. Please note that if you configured
 any Node Affinity logic for this component, you may need to remove that logic in order to ensure that your pods can
 be scheduled on all of the nodes within your cluster. To verify that 5 pods have been spun up and scheduled across

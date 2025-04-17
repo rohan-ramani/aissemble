@@ -15,10 +15,6 @@ aissemble-airflow-chart:
     
     config:
       kubernetes_executor:
-        # Allows the kubernetes executor worker pods to make use of the same image
-        # built by tilt. This configuration allows it to use the extra tag assigned
-        # to that image
-        #
         # In a production environment where your image will have a predictable tag
         # (such as the current project version) this attribute can be removed:
         worker_container_tag: latest

@@ -13,7 +13,13 @@ The tools and configurations below are required to run aiSSEMBLE.
 * Docker and Kubernetes:
 ** https://rancherdesktop.io/[Rancher Desktop,role=external,window=_blank] supports both Docker and Kubernetes
 ** It conveniently allows a Docker repository to be used for both, which saves time and disk space locally
-* Continuous Deployment: https://docs.tilt.dev/install.html[Tilt,role=external,window=_blank] for local development
+* Continuous Deployment: https://helmfile.readthedocs.io/en/latest/#installation[Helmfile,role=external,window=_blank] for local development
+** For the `helmfile apply` command to work users will also need to install the `helm-diff` plugin with the following command:
++
+[source, bash]
+----
+helm plugin install https://github.com/databus23/helm-diff
+----
 * Source Code Management: https://git-scm.com/[git,role=external,window=_blank]
 
 ==== Maven Build Cache

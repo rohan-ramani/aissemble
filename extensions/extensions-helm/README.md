@@ -40,6 +40,6 @@ section of the _Path to Production > Container Support_ documentation page to up
     as the local `aissemble` baseline code.
 * Additionally, for local development only, the application's `Chart.yaml` in its corresponding `aissemble-<app-name>-chart` 
   should set the `version` and `appVersion` field to whatever the current aiSSEMBLE version is; this will allow for 
-  testing of the local deployment when leveraging tilt
+  testing of the local deployment when leveraging helmfile
   * If making use of additional aiSSEMBLE charts within your application's dependencies, the dependent subcharts should 
   have their `version` and `appVersion` updated to the current aiSSEMBLE version as well

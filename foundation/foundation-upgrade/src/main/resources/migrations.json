@@ -63,15 +63,6 @@
     "type": "ordered",
     "migrations": [
       {
-        "name": "upgrade-tiltfile-aissemble-version-migration",
-        "implementation": "com.boozallen.aissemble.upgrade.migration.TiltfileMigration",
-        "fileSets": [
-          {
-            "includes": ["Tiltfile"]
-          }
-        ]
-      },
-      {
         "name": "upgrade-v2-chart-files-aissemble-version-migration",
         "implementation": "com.boozallen.aissemble.upgrade.migration.HelmChartsV2Migration",
         "fileSets": [

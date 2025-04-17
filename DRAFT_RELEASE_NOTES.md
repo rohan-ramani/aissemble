@@ -55,7 +55,6 @@ To reduce burden of upgrading aiSSEMBLE, the Baton project is used to automate t
 | Migration Name                                     | Description                                                                                                                                                                  |
 |----------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | argocd-removal-migration                           | Remove the ArgoCD related application templates and values, Chart yaml files and etc.                                                                                        |
-| upgrade-tiltfile-aissemble-version-migration       | Updates the aiSSEMBLE version within your project's Tiltfile                                                                                                                 |
 | upgrade-v2-chart-files-aissemble-version-migration | Updates the Helm chart dependencies within your project's deployment resources (`<YOUR_PROJECT>-deploy/src/main/resources/apps/`) to use the latest version of the aiSSEMBLE |
 | upgrade-v1-chart-files-aissemble-version-migration | Updates the docker image tags within your project's deployment resources (`<YOUR_PROJECT>-deploy/src/main/resources/apps/`) to use the latest version of the aiSSEMBLE       |
 | data-encryption-removal-pom-migration              | Remove the data encryption dependencies from the pom file                                                                                                                    |
@@ -136,7 +135,17 @@ values.yaml file to enable configuration store access vault:
 +         secrets.unseal.keys==key1,key2,key3
 ```
 
-## For projects leveraging the ArgoCD chart
+## For projects moving to Helmfile
+Much of the migration to Helmfile can be automated with Baton migrations by including the command line flag `-Daissemble.enable.helmfile.migration` during the `baton-migrate` step of _Finalizing the Upgrade_.  To prepare local environments for using Helmfile, users will need to install the `helm-diff` plugin (alongside the [Helmfile](https://helmfile.readthedocs.io/en/latest/#installation)) with the following command:
+```bash
+helm plugin install https://github.com/databus23/helm-diff
+```
+**Note:** To enable Helmfile migrations, include `-Daissemble.enable.helmfile.migration` i.e.:
+   `./mvnw org.technologybrewery.baton:baton-maven-plugin:baton-migrate -Daissemble.enable.helmfile.migration`
+
+## For projects wishing to retain Tilt/ArgoCD
+Helmfile will be the default CI/CD tool going forward. aiSSEMBLE support for Tilt and ArgoCD has been deprecated. Teams choosing to retain Tilt or ArgoCD must now independently manage and maintain their respective configurations. 
+
 With disabling the ArgoCD chart deployment configuration in the `aissemble-infrastructure-chart` by default, if you are using argocd locally, you will need to add the `argo-cd.enabled` configuration to your local values.yaml file as following:
 ```yaml
 aissemble-infrastructure-chart:

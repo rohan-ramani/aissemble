@@ -63,8 +63,6 @@
 		<fileSet filtered="true" encoding="UTF-8">
 			<directory/>
 			<includes>
-				<include>Tiltfile</include>
-				<include>.tiltignore</include>
 				<include>devops/**</include>
 				<include>jenkinsPipelineSteps.groovy</include>
 				<include>helmfile.yaml</include>
