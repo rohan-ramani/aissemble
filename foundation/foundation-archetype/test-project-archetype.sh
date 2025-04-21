@@ -279,15 +279,15 @@ echo "{
         ]
       }" > test-generator-pipeline-models/src/main/resources/pipelines/ExampleMachineLearningPipeline.json
 
-echo -e "\nINFO: updating the test-generator-deploy/pom.xml based on static code as it's hard to predict\n"
-plugins=$(esc < ../../../plugins-to-add-to-archetype_test-generator-deploy_pom.xml)
-sub "s/ *<\/plugins>/$plugins        <\/plugins>/" test-generator-deploy/pom.xml
-
 echo -e "\nINFO: Running full build to generate project structure\n"
 updates=false
 if runBuildAndApplyManualActions; then
   updates=true
 fi
+
+echo -e "\nINFO: updating the test-generator-deploy/pom.xml based on static code as it's hard to predict\n"
+plugins=$(esc < ../../../plugins-to-add-to-archetype_test-generator-deploy_pom.xml)
+sub "s/ *<\/plugins>/$plugins        <\/plugins>/" test-generator-deploy/pom.xml
 
 cd test-generator-shared/ || exit
 if updatePomBasedOnChildDirs "<!-- TODO: replace with your project-specific modules here -->"; then

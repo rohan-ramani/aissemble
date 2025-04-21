@@ -11,7 +11,7 @@ sparkApp:
     mainApplicationFile: "local:///opt/spark/jobs/pipelines/${mainApplicationFile}"
     deps:
       packages:
-        - mysql:mysql-connector-java:${versionMysqlConnector}
+        - com.mysql:mysql-connector-j:${versionMysqlConnector}
         #if (${useS3Local})
         - org.apache.hadoop:hadoop-aws:${versionHadoop}
         - software.amazon.awssdk:bundle:${versionAwsSdkBundle}
