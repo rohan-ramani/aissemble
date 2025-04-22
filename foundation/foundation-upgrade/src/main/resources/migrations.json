@@ -55,6 +55,15 @@
             ]
           }
         ]
+      },
+      {
+        "name": "maven-build-cache-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.MavenBuildCacheMigration",
+        "fileSets": [
+          {
+            "includes": [".mvn/maven-build-cache-config.xml"]
+          }
+        ]
       }
     ]
   },
