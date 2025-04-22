@@ -60,20 +60,21 @@ The following steps will upgrade your project to `1.13`. These instructions cons
 ## Automatic Upgrades
 To reduce burden of upgrading aiSSEMBLE, the Baton project is used to automate the migration of some files to the new version.  These migrations run automatically when you build your project, and are included by default when you update the `build-parent` version in your root POM.  Below is a description of all of the Baton migrations that are included with this version of aiSSEMBLE.
 
-| Migration Name                                     | Description                                                                                                                                                                  |
-|----------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| argocd-removal-migration                           | Remove the ArgoCD related application templates and values, Chart yaml files and etc.                                                                                        |
-| upgrade-v2-chart-files-aissemble-version-migration | Updates the Helm chart dependencies within your project's deployment resources (`<YOUR_PROJECT>-deploy/src/main/resources/apps/`) to use the latest version of the aiSSEMBLE |
-| upgrade-v1-chart-files-aissemble-version-migration | Updates the docker image tags within your project's deployment resources (`<YOUR_PROJECT>-deploy/src/main/resources/apps/`) to use the latest version of the aiSSEMBLE       |
-| data-encryption-removal-pom-migration              | Remove the data encryption dependencies from the pom file                                                                                                                    |
-| data-encryption-removal-pyproject-migration        | Remove the data encryption dependencies from the pyproject.toml file                                                                                                         |
-| helmfile-generation-migration                      | Generates an initial helmfile.yaml for manual actions to be added to. After its ran once, it will automatically be added to the deactivated list                             |
-| helmfile-aissemble-version-migration               | Updates the aiSSEMBLE version in the deployment values file. This version is used by the helmfile.yaml                                                                       |
-| spark-provided-dependency-migration                | Remove the Hadoop, Hive, and Spark dependencies from the pipeline shaded jar                                                                                                 |
-| maven-build-cache-migration                        | Updates build cache configuration to avoid stale Docker images                                                                                                               |
-| my-sql-connector-yaml-migration                    | Update the my-sql-connector package to use the version with no CVE issue                                                                                                     |
+| Migration Name                                     | Description                                                                                                                                                                  | Argument                            |
+|----------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------|
+| upgrade-v2-chart-files-aissemble-version-migration | Updates the Helm chart dependencies within your project's deployment resources (`<YOUR_PROJECT>-deploy/src/main/resources/apps/`) to use the latest version of the aiSSEMBLE |                                     |
+| upgrade-v1-chart-files-aissemble-version-migration | Updates the docker image tags within your project's deployment resources (`<YOUR_PROJECT>-deploy/src/main/resources/apps/`) to use the latest version of the aiSSEMBLE       |                                     |
+| data-encryption-removal-pom-migration              | Remove the data encryption dependencies from the pom file                                                                                                                    |                                     |
+| data-encryption-removal-pyproject-migration        | Remove the data encryption dependencies from the pyproject.toml file                                                                                                         |                                     |
+| argocd-removal-migration                           | Remove the ArgoCD related application templates and values, Chart yaml files and etc.                                                                                        | aissemble.enable.helmfile.migration |
+| helmfile-generation-migration                      | Generates an initial helmfile.yaml for manual actions to be added to                                                                                                         | aissemble.enable.helmfile.migration |
+| helmfile-deployment-script-migration               | Updated JenkinsfileDeploy.groovy to use helmfile. Also removes the jenkinsPipelineSteps.groovy file                                                                          | aissemble.enable.helmfile.migration |
+| helmfile-aissemble-version-migration               | Updates the aiSSEMBLE version in the deployment values file. This version is used by the helmfile.yaml                                                                       |                                     |
+| spark-provided-dependency-migration                | Remove the Hadoop, Hive, and Spark dependencies from the pipeline shaded jar                                                                                                 |                                     |
+| maven-build-cache-migration                        | Updates build cache configuration to avoid stale Docker images                                                                                                               |                                     |
+| my-sql-connector-yaml-migration                    | Update the my-sql-connector package to use the version with no CVE issue                                                                                                     |                                     |
 
-To deactivate any of these migrations, add the following configuration to the `baton-maven-plugin` within your root `pom.xml`:
+Migrations with arguments will not be executed unless that argument is provided (e.g. `./mvnw org.technologybrewery.baton:baton-maven-plugin:baton-migrate -D<argumentName>`). To deactivate any of these migrations, add the following configuration to the `baton-maven-plugin` within your root `pom.xml`:
 
 ```diff
     <plugin>
@@ -109,7 +110,7 @@ To start your aiSSEMBLE upgrade, update your project's pom.xml to use the 1.13.0
 
 ## Conditional Steps
 
-## For projects leveraging Data Encryption
+### For projects leveraging Data Encryption
 With data encryption removal, we are no longer supporting below functions/policy in the project. If you are using any of these functions/policy, please make changes accordingly:
 
 - Spark/Pyspark Pipeline
@@ -128,7 +129,7 @@ With data encryption removal, we are no longer supporting below functions/policy
 - Spark/Pyspark Pipeline Dictionary Model
   - protectionPolicy
 
-## For projects leveraging the Configuration Store
+### For projects leveraging the Configuration Store
 With data encryption removal, the encrypt.properties have been migrated to configuration store. If you
 are using the configuration store with vault, please ensure to rename the `encrypt.properties` to be 
 `config-store-vault.properties`. For the vault deployment, you can add below content to the vault 
@@ -145,15 +146,17 @@ values.yaml file to enable configuration store access vault:
 +         secrets.unseal.keys==key1,key2,key3
 ```
 
-## For projects moving to Helmfile
+### For projects moving to Helmfile
 Much of the migration to Helmfile can be automated with Baton migrations by including the command line flag `-Daissemble.enable.helmfile.migration` during the `baton-migrate` step of _Finalizing the Upgrade_.  To prepare local environments for using Helmfile, users will need to install the `helm-diff` plugin (alongside the [Helmfile](https://helmfile.readthedocs.io/en/latest/#installation)) with the following command:
 ```bash
 helm plugin install https://github.com/databus23/helm-diff
 ```
+As part of this update, the `helmfile-deployment-script-migration` will totally replace the `devope/JenkinsDeploy.groovy` content. Use git diff to restore any necessary customizations.
+
 **Note:** To enable Helmfile migrations, include `-Daissemble.enable.helmfile.migration` i.e.:
    `./mvnw org.technologybrewery.baton:baton-maven-plugin:baton-migrate -Daissemble.enable.helmfile.migration`
 
-## For projects wishing to retain Tilt/ArgoCD
+### For projects wishing to retain Tilt/ArgoCD
 Helmfile will be the default CI/CD tool going forward. aiSSEMBLE support for Tilt and ArgoCD has been deprecated. Teams choosing to retain Tilt or ArgoCD must now independently manage and maintain their respective configurations. 
 
 With disabling the ArgoCD chart deployment configuration in the `aissemble-infrastructure-chart` by default, if you are using argocd locally, you will need to add the `argo-cd.enabled` configuration to your local values.yaml file as following:

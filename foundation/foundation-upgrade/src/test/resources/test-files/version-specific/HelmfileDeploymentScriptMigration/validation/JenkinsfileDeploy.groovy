@@ -1,8 +1,8 @@
 def gitId = 'github'
-def gitRepo = '${projectGitUrl}'
+def gitRepo = 'test.com/test-project'
 // Set branch in the Jenkins Job or set here if not variable
 def gitBranch = 'refs/heads/${branch}'
-def projectDirectory = '${rootArtifactId}'
+def projectDirectory = 'test-project'
 
 node('master') {
     dir(projectDirectory) {
@@ -15,14 +15,14 @@ stage("Deploy") {
         try {
             dir(projectDirectory) {
                 slackSend color: "warning",
-                        message: "${projectName} deploying"
+                        message: "test-project deploying"
                 sh 'helmfile apply --environment=ci'
                 slackSend color: "good",
-                        message: "${projectName} deployed successfully"
+                        message: "test-project deployed successfully"
             }
         } catch (err) {
             slackSend color: "danger",
-                    message: "${projectName} failed to deploy properly"
+                    message: "test-project failed to deploy properly"
             throw err
         }
     }
@@ -43,12 +43,12 @@ stage("Teardown") {
         try {
             dir(projectDirectory) {
                 slackSend color: "warning",
-                        message: "${projectName} shutting down"
+                        message: "test-project shutting down"
                 sh 'helmfile destroy --environment=ci'
             }
         } catch (err) {
             slackSend color: "danger",
-                    message: "${projectName} failed to shut down properly"
+                    message: "test-project failed to shut down properly"
             throw err
         }
     }

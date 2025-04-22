@@ -25,20 +25,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.technologybrewery.baton.BatonException;
 
-import com.boozallen.aissemble.upgrade.migration.AbstractAissembleMigration;
-
 /**
  * Migration to create the initial helmfile the archetype creates. If projects are upgrading to this version then
  * they will not be running the archetype generation and will not have the default helmfile to add manual actions too
  * . Because projects may choose not to use helmfile, the migration will only run if the helmfile migration enable
  * key is set to true.
  */
-public class HelmfileGenerationMigration extends AbstractAissembleMigration {
+public class HelmfileGenerationMigration extends AbstractHelmfileMigration {
 
     private static final Logger logger = LoggerFactory.getLogger(HelmfileGenerationMigration.class);
     private static final String VERSION_TAG_REGEX = "(.*)(\\$\\{archetypeVersion})";
     private static final String HELMFILE_TEMPLATE_PATH = "version_specific/helmfile.yaml";
-    private static final String HELMFILE_MIGRATION_ENABLE_KEY = "aissemble.enable.helmfile.migration";
 
     /**
      * Determines whether the migration should execute.
@@ -49,9 +46,7 @@ public class HelmfileGenerationMigration extends AbstractAissembleMigration {
      */
     @Override
     protected boolean shouldExecuteOnFile(File file) {
-
-        String activated = System.getProperty(HELMFILE_MIGRATION_ENABLE_KEY);
-        return "true".equalsIgnoreCase(activated);
+        return isHelmfileMigrationActive();
     }
 
     /**
@@ -79,7 +74,7 @@ public class HelmfileGenerationMigration extends AbstractAissembleMigration {
                 }
                 File helmfile = new File(helmfileLocation);
                 FileUtils.copyInputStreamToFile(initialHelmfile, helmfile);
-                updateArtifactId(helmfile);
+                updateVersion(helmfile);
             } catch (IOException e) {
                 throw new BatonException("Failed to instantiate the helmfile.yaml", e);
             }
@@ -88,7 +83,7 @@ public class HelmfileGenerationMigration extends AbstractAissembleMigration {
 
     }
 
-    private void updateArtifactId(File file) {
+    private void updateVersion(File file) {
         try (BufferedReader valuesFile = new BufferedReader((new FileReader(file)))) {
             String line;
             Pattern pattern = Pattern.compile(VERSION_TAG_REGEX, Pattern.MULTILINE);
