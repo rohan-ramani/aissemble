@@ -90,7 +90,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>${version.exec.maven.plugin}</version>
                 <executions>
                     <execution>
                         <id>test-chart</id>

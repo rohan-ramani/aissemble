@@ -16,6 +16,18 @@
     <name>${parentDescriptiveName}::${descriptiveName}</name>
     <description>${pipeline.description}</description>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.boozallen.aissemble</groupId>
+                <artifactId>aissemble-spark-bom</artifactId>
+                <version>${version.aissemble}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <build>
         <plugins>
             <plugin>
@@ -277,32 +289,22 @@
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_2.12</artifactId>
-            <version>${version.spark}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-hive_2.12</artifactId>
-            <version>${version.spark}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-streaming_2.12</artifactId>
-            <version>${version.spark}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_2.12</artifactId>
-            <version>${version.spark}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-catalyst_2.12</artifactId>
-            <version>${version.spark}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 

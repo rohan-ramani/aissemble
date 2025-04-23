@@ -16,6 +16,7 @@
     <modules>
         <module>bom-instantiation</module>
         <module>aissemble-quarkus-bom</module>
+        <module>aissemble-spark-bom</module>
     </modules>
 
 </project>

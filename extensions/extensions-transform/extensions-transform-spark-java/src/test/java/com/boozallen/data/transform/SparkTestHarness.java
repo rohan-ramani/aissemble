@@ -48,7 +48,9 @@ public class SparkTestHarness implements EventListener {
             logger.debug("Stopping Spark test session...");
             long start = System.currentTimeMillis();
 
-            spark.close();
+            if (spark != null) {
+                spark.close();
+            }
 
             long stop = System.currentTimeMillis();
             logger.debug("Stopped Spark test session in {}ms", stop - start);

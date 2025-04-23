@@ -62,6 +62,7 @@
         <ghcr.io.repo.url>https://maven.pkg.github.com/boozallen/aissemble</ghcr.io.repo.url>
         <version.camel>2.7.0</version.camel>
         <version.cucumber>7.4.1</version.cucumber>
+        <version.exec.maven.plugin>3.4.1</version.exec.maven.plugin>
         <version.feature.discovery>1.2.0</version.feature.discovery>
         <version.jersey>2.30</version.jersey>
         <version.junit>4.13.2</version.junit>
@@ -292,6 +293,11 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>${version.exec.maven.plugin}</version>
+                </plugin>
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
