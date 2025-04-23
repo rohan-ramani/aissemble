@@ -100,7 +100,7 @@
         "implementation": "com.boozallen.aissemble.upgrade.migration.HelmFileVersionMigration",
         "fileSets": [
           {
-            "includes": ["*-deploy/src/main/resources/values-*-helmfile.yaml"]
+            "includes": ["helmfile.yaml"]
           }
         ]
       }
