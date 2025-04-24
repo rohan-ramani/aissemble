@@ -78,6 +78,8 @@
             <groupId>com.boozallen.aissemble</groupId>
             <artifactId>foundation-drift-detection-service</artifactId>
             <version>${project.version}</version>
+            <classifier>app</classifier>
+            <type>zip</type>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -123,6 +125,24 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack-service-app</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>unpack-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                    <failOnMissingClassifierArtifact>true</failOnMissingClassifierArtifact>
+                                    <includeClassifiers>app</includeClassifiers>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
                         <groupId>com.bazaarvoice.maven.plugins</groupId>
                         <artifactId>process-exec-maven-plugin</artifactId>
                         <version>0.7</version>
@@ -135,7 +155,6 @@
                                 </goals>
                                 <configuration>
                                     <name>DriftDetectionService</name>
-                                    <workingDir>target</workingDir>
                                     <waitForInterrupt>false</waitForInterrupt>
                                     <healthcheckUrl>http://localhost:8080/invoke-drift/healthcheck</healthcheckUrl>
                                     <arguments>
@@ -143,7 +162,7 @@
                                         <argument>-DKRAUSENING_BASE=${basedir}/src/test/resources/krausening/base</argument>
                                         <argument>-DDRIFT_DETECTION_POLICIES=${basedir}/src/test/resources/drift-policies</argument>
                                         <argument>-jar</argument>
-                                        <argument>${basedir}/../foundation-drift-detection-service/target/quarkus-app/quarkus-run.jar</argument>
+                                        <argument>${project.build.directory}/quarkus-app/quarkus-run.jar</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
