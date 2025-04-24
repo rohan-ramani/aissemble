@@ -31,6 +31,11 @@
             <version>26.0.2</version>
         </dependency>
         <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-core</artifactId>
+            <version>${version.keycloak}</version>
+        </dependency>
+        <dependency>
             <groupId>org.technologybrewery.krausening</groupId>
             <artifactId>krausening</artifactId>
         </dependency>

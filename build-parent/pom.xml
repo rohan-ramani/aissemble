@@ -41,7 +41,7 @@
         <version.krausening>20</version.krausening>
         <version.plexus.archiver>3.6.0</version.plexus.archiver>
         <version.plugin.plugin>3.9.0</version.plugin.plugin>
-        <version.quarkus>3.8.6</version.quarkus>
+        <version.quarkus>3.8.6.1</version.quarkus>
         <version.quarkus.plugin>${version.quarkus}</version.quarkus.plugin>
         <version.shade.plugin>3.6.0</version.shade.plugin>
         <version.smallrye.config>3.9.1</version.smallrye.config>
@@ -53,7 +53,7 @@
         <version.maven.core>3.8.6</version.maven.core>
         <version.mutiny>2.6.2</version.mutiny>
         <version.plexus.component>2.1.1</version.plexus.component>
-        <version.postgresql>42.5.1</version.postgresql>
+        <version.postgresql>42.5.5</version.postgresql>
         <version.resteasy>6.2.8.Final</version.resteasy>
         <version.vertx>4.5.9</version.vertx>
         <version.urllib3>^1.26.18</version.urllib3>
@@ -70,6 +70,9 @@
         <version.exec.maven.plugin>3.4.1</version.exec.maven.plugin>
         <version.jjwt>0.11.2</version.jjwt>
         <version.kafka.client>3.8.0</version.kafka.client>
+        <version.netty.handler>4.1.118.Final</version.netty.handler>
+        <version.xstream>1.4.21</version.xstream>
+        <version.keycloak>26.0.6</version.keycloak>
 
         <!-- Java EE Dependencies -->
         <version.jakarta.cdi>4.0.1</version.jakarta.cdi>
@@ -87,7 +90,7 @@
         <version.elasticsearch>8.9.0</version.elasticsearch>
         <version.sedona>1.7.1</version.sedona>
         <version.geotools.wrapper>1.7.1-28.5</version.geotools.wrapper>
-        <version.mysql-connector>8.0.30</version.mysql-connector>
+        <version.mysql-connector>9.2.0</version.mysql-connector>
         <version.hadoop>3.4.1</version.hadoop>
         <version.neo4j>4.1.5_for_spark_3</version.neo4j>
         <version.aws.sdk.bundle>2.31.8</version.aws.sdk.bundle>

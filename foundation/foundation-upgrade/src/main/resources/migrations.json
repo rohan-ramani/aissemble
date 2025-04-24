@@ -64,6 +64,15 @@
             "includes": [".mvn/maven-build-cache-config.xml"]
           }
         ]
+      },
+      {
+        "name": "my-sql-connector-yaml-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.MySqlConnectorYamlMigration",
+        "fileSets": [
+          {
+            "includes": ["src/*/resources/apps/*.yaml"]
+          }
+        ]
       }
     ]
   },

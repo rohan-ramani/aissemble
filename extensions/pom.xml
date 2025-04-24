@@ -16,7 +16,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <version.mysql-connector>8.0.30</version.mysql-connector>
+        <version.mysql-connector>9.2.0</version.mysql-connector>
     </properties>
 
     <modules>

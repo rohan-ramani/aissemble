@@ -2,7 +2,7 @@ sparkApp:
   spec:
     deps:
       packages:
-        - mysql:mysql-connector-java:${versionMysqlConnector}
+        - com.mysql:mysql-connector-j:${versionMysqlConnector}
         #if (${enableDeltaSupport})
         - io.delta:delta-spark_2.12:${versionDelta}
         - io.delta:delta-storage:${versionDelta}

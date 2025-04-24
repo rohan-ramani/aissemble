@@ -9,7 +9,7 @@ spec:
   mainApplicationFile: "local:///opt/spark/jobs/pipelines/python-pipeline/python_pipeline_driver.py"
   deps:
     packages:
-      - mysql:mysql-connector-java:8.0.30
+      - com.mysql:mysql-connector-j:9.2.0
       - org.apache.hadoop:hadoop-aws:3.3.4
       - com.amazonaws:aws-java-sdk-bundle:1.12.262
       - io.delta:delta-spark_2.12:3.2.1

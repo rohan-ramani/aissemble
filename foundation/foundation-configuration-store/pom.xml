@@ -206,5 +206,11 @@
             <version>${version.quarkus.cucumber}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>${version.xstream}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
