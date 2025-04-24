@@ -1,6 +1,7 @@
 ########################################
 ## CONFIG | Spark Configs
 ########################################
+metadata: {}
 sparkApp:
   spec:
     type: "placeholder" #required for a dry run test to pass, this should always be overridden
