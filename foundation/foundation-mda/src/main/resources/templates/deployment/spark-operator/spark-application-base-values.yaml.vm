@@ -1,6 +1,5 @@
 metadata:
     name: ${sparkApplicationName}
-    namespace: ${projectName}
 sparkApp:
   spec:
     type: ${sparkApplicationType}

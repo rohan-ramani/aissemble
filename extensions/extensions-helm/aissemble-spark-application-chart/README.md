@@ -17,7 +17,8 @@ For more information on what properties can be configured for SparkApplication, 
 
 | Property                                        | Description                                                                        | Required Override | Default                                         |
 |-------------------------------------------------|------------------------------------------------------------------------------------|-------------------|-------------------------------------------------|
-| metadata.namespace                              | The kubernetes namespace for the pipeline                                          | No                | default                                         |
+| metadata.name                                   | The name for the pipeline                                                          | No                | Chart.Name                                      |
+| metadata.namespace                              | The kubernetes namespace for the pipeline                                          | No                | Release.Namespace                               |
 | sparkApp.spec.dynamicAllocation.enabled         | Enables dynamic scaling of Spark executors                                         | No                | true                                            |
 | sparkApp.spec.dynamicAllocation.initialExecutor | Initial number of executors to run if dynamic allocation is enabled.               | No                | 0                                               |
 | sparkApp.spec.dynamicAllocation.maxExecutors    | Upper bound for the number of executors if dynamic allocation is enabled.          | No                | 4                                               |

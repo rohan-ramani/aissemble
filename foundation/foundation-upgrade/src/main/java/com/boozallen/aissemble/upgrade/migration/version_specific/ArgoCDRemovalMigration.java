@@ -35,9 +35,9 @@ public class ArgoCDRemovalMigration extends AbstractHelmfileMigration {
      * @return true if the migration should run
      */
     @Override
-    protected boolean shouldExecuteOnFile(File file) {
+    protected boolean shouldExecuteOnFileImpl(File file) {
         try {
-            return isHelmfileMigrationActive() && isArgoCDApplicationTemplate(file);
+            return isArgoCDApplicationTemplate(file);
         } catch (Exception e) {
             throw new BatonException("Could not check yaml file for ArgoCD removal: " + file.getPath(), e);
         }
