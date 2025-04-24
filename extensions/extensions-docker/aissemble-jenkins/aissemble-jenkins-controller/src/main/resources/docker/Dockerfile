@@ -1,6 +1,8 @@
 FROM docker.io/jenkins/jenkins:lts-jdk17
 
 LABEL org.opencontainers.image.source="https://github.com/boozallen/aissemble"
+ARG TARGETARCH
+ARG TARGETOS
 
 USER root
 
@@ -11,7 +13,7 @@ RUN ./get_helm.sh
 
 # install helmfile
 RUN mkdir "/tmp/helmfile"
-RUN curl -L https://github.com/helmfile/helmfile/releases/download/v0.171.0/helmfile_0.171.0_linux_amd64.tar.gz | tar \
+RUN curl -L https://github.com/helmfile/helmfile/releases/download/v0.171.0/helmfile_0.171.0_${TARGETOS}_${TARGETARCH}.tar.gz | tar \
     -xzv -C /tmp/helmfile
 RUN chmod +x /tmp/helmfile/helmfile
 RUN mv /tmp/helmfile/helmfile /usr/local/bin/
