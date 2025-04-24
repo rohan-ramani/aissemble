@@ -1,17 +1,6 @@
-/*-
- * #%L
- * AIOps Foundation::Archetype::Project
- * %%
- * Copyright (C) 2021 Booz Allen
- * %%
- * This software package is licensed under the Booz Allen Public License. All Rights Reserved.
- * #L%
- */
 /**
  * Common steps for pipelines
  */
-
-// TODO: the script should be replaced with helmfile syntax or deleted if it's not needed
 def argocdAuthenticate(argocdUrl, argocdPassword) {
     sh '''
         # Check if Argocd is installed

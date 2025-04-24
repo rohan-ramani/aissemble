@@ -29,5 +29,7 @@ environments:
 helmDefaults:
   skipDeps: {{ eq .Environment.Name "default" }}
 
+---
+
 releases:
   # Add deployment releases here

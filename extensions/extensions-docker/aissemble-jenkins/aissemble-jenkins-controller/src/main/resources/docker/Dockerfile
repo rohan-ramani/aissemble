@@ -2,6 +2,27 @@ FROM docker.io/jenkins/jenkins:lts-jdk17
 
 LABEL org.opencontainers.image.source="https://github.com/boozallen/aissemble"
 
+USER root
+
+# install helm
+RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+RUN chmod 700 get_helm.sh
+RUN ./get_helm.sh
+
+# install helmfile
+RUN mkdir "/tmp/helmfile"
+RUN curl -L https://github.com/helmfile/helmfile/releases/download/v0.171.0/helmfile_0.171.0_linux_amd64.tar.gz | tar \
+    -xzv -C /tmp/helmfile
+RUN chmod +x /tmp/helmfile/helmfile
+RUN mv /tmp/helmfile/helmfile /usr/local/bin/
+RUN helmfile --version
+RUN rm -rf /tmp/helmfile
+
+USER jenkins
+
+# install helm-diff plugin
+RUN helm plugin install https://github.com/databus23/helm-diff
+
 RUN jenkins-plugin-cli --plugins git:5.7.0
 RUN jenkins-plugin-cli --plugins github:1.42.0
 RUN jenkins-plugin-cli --plugins templating-engine:2.5.3

@@ -10,8 +10,7 @@ package com.boozallen.aissemble.upgrade.migration.version_specific;
  * #L%
  */
 
-import com.boozallen.aissemble.upgrade.migration.AbstractAissembleMigration;
-import org.technologybrewery.baton.BatonException;
+import static org.technologybrewery.baton.util.FileUtils.readAllFileLines;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,15 +18,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static org.technologybrewery.baton.util.FileUtils.readAllFileLines;
+import org.technologybrewery.baton.BatonException;
 
 /**
  * This migration removes the ArgoCD application templates and the associated Chart.yaml, Chart.lock, and values*.yaml
  * files if the helmfile migration enable key is set to true.
  */
-public class ArgoCDRemovalMigration extends AbstractAissembleMigration {
+public class ArgoCDRemovalMigration extends AbstractHelmfileMigration {
 
-    private static final String HELMFILE_MIGRATION_ENABLE_KEY = "aissemble.enable.helmfile.migration";
 
     /**
      * Determines whether the migration should execute.
@@ -39,7 +37,7 @@ public class ArgoCDRemovalMigration extends AbstractAissembleMigration {
     @Override
     protected boolean shouldExecuteOnFile(File file) {
         try {
-            return isMigrationActivated() && isArgoCDApplicationTemplate(file);
+            return isHelmfileMigrationActive() && isArgoCDApplicationTemplate(file);
         } catch (Exception e) {
             throw new BatonException("Could not check yaml file for ArgoCD removal: " + file.getPath(), e);
         }
@@ -70,11 +68,6 @@ public class ArgoCDRemovalMigration extends AbstractAissembleMigration {
         } catch (Exception e) {
             throw new BatonException("Could not remove ArgoCD yaml files", e);
         }
-    }
-
-    private boolean isMigrationActivated() {
-        String activated = System.getProperty(HELMFILE_MIGRATION_ENABLE_KEY);
-        return "true".equalsIgnoreCase(activated);
     }
 
     private boolean isArgoCDApplicationTemplate(File file) throws IOException {

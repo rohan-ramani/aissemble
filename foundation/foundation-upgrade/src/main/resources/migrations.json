@@ -57,6 +57,19 @@
         ]
       },
       {
+        "name": "helmfile-deployment-script-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.HelmfileDeploymentScriptMigration",
+        "fileSets": [
+          {
+            "includes": [
+              "devops/JenkinsfileDeploy.groovy",
+              "devops/jenkinsPipelineSteps.groovy",
+              "devops/JenkinsPipelineSteps.groovy"
+            ]
+          }
+        ]
+      },
+      {
         "name": "maven-build-cache-migration",
         "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.MavenBuildCacheMigration",
         "fileSets": [
