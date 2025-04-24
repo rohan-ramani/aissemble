@@ -22,6 +22,17 @@
 <!--        </dependency>-->
 <!--    </dependencies>-->
 
+    <dependencies>
+        <dependency>
+            <groupId>com.boozallen.aissemble</groupId>
+            <artifactId>foundation-drift-detection-service</artifactId>
+            <version>${project.version}</version>
+            <classifier>app</classifier>
+            <type>zip</type>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
     <build>
         <directory>dist</directory>
         <plugins>
@@ -55,9 +66,70 @@
                     <plugin>
                         <groupId>org.technologybrewery.habushu</groupId>
                         <artifactId>habushu-maven-plugin</artifactId>
-                        <configuration>
-                            <behaveOptions>--tags ~manual</behaveOptions>
-                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>integration-tests</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>behave-bdd-test</goal>
+                                </goals>
+                                <configuration>
+                                    <behaveOptions>--tags integration</behaveOptions>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack-service-app</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>unpack-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                    <failOnMissingClassifierArtifact>true</failOnMissingClassifierArtifact>
+                                    <includeClassifiers>app</includeClassifiers>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.bazaarvoice.maven.plugins</groupId>
+                        <artifactId>process-exec-maven-plugin</artifactId>
+                        <version>0.7</version>
+                        <executions>
+                            <execution>
+                                <id>foundation-drift-detection-service</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                                <configuration>
+                                    <name>DriftDetectionService</name>
+                                    <waitForInterrupt>false</waitForInterrupt>
+                                    <healthcheckUrl>http://localhost:8084/invoke-drift/healthcheck</healthcheckUrl>
+                                    <arguments>
+                                        <argument>java</argument>
+                                        <argument>-DKRAUSENING_BASE=${basedir}/tests/resources/config/</argument>
+                                        <argument>-DDRIFT_DETECTION_POLICIES=${basedir}/tests/resources/drift-policies</argument>
+                                        <argument>-Dquarkus.http.port=8084</argument>
+                                        <argument>-jar</argument>
+                                        <argument>${project.build.directory}/quarkus-app/quarkus-run.jar</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>stop-all</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop-all</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>

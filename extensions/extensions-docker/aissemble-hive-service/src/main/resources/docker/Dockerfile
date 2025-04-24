@@ -43,6 +43,8 @@ RUN sed -i \
     's/org.apache.hadoop.hive.metastore.tools.MetastoreSchemaTool/org.apache.hadoop.hive.metastore.tools.schematool.MetastoreSchemaTool/' \
     "$HIVE_HOME/bin/ext/schemaTool.sh"
 
+RUN find / -type f -name '*derby*.jar' -delete
+
 FROM registry.access.redhat.com/ubi9/openjdk-17-runtime:1.21 as final
 
 LABEL org.opencontainers.image.source="https://github.com/boozallen/aissemble"

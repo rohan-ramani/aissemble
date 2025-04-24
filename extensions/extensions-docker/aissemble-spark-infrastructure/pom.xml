@@ -97,6 +97,32 @@
             <id>integration-test</id>
             <build>
                 <plugins>
+                    <!-- download Apache Derby jars -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-derby-jars</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <stripVersion>true</stripVersion>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.apache.derby</groupId>
+                                            <artifactId>derby</artifactId>
+                                            <version>10.14.2.0</version>
+                                            <destFileName>derby.jar</destFileName>
+                                            <outputDirectory>${project.build.directory}</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>${group.fabric8.plugin}</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
@@ -123,6 +149,7 @@
                                                 <volumes>
                                                     <bind>
                                                         <volume>${project.basedir}/src/test/resources:/tmp/test</volume>
+                                                        <volume>${project.build.directory}/derby.jar:/opt/spark/jars/derby.jar</volume>
                                                     </bind>
                                                 </volumes>
                                             </run>
