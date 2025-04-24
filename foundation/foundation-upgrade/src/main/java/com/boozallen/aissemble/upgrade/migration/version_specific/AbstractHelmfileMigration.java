@@ -14,9 +14,18 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.boozallen.aissemble.upgrade.migration.AbstractAissembleMigration;
 
+import java.io.File;
+
 public abstract class AbstractHelmfileMigration extends AbstractAissembleMigration {
 
     public static final String HELMFILE_MIGRATION_ENABLE_KEY = "aissemble.enable.helmfile.migration";
+
+    @Override
+    protected boolean shouldExecuteOnFile(File file) {
+        return isHelmfileMigrationActive() && shouldExecuteOnFileImpl(file);
+    }
+
+    protected abstract boolean shouldExecuteOnFileImpl(File file);
 
     public boolean isHelmfileMigrationActive() {
         return StringUtils.equalsIgnoreCase("true", System.getProperty(HELMFILE_MIGRATION_ENABLE_KEY));

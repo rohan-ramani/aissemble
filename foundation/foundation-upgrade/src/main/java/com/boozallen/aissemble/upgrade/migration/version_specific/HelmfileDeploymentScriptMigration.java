@@ -37,11 +37,8 @@ public class HelmfileDeploymentScriptMigration extends AbstractHelmfileMigration
      * @return true if migration should execute
      */
     @Override
-    protected boolean shouldExecuteOnFile(File file) {
-        if(!isHelmfileMigrationActive()){
-            return false;
-        }
-        else if (file.getName().equalsIgnoreCase(JENKINS_PIPELINE_STEPS)) {
+    protected boolean shouldExecuteOnFileImpl(File file) {
+        if (file.getName().equalsIgnoreCase(JENKINS_PIPELINE_STEPS)) {
             return true;
         }
         try {

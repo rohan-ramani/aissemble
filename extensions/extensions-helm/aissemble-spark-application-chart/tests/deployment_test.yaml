@@ -45,7 +45,6 @@ tests:
       - equal:
           path: spec.executor.labels.version
           value: 3.5.5
-
   - it: Should set nodeSelector and gpu appropriately
     set:
       sparkApp:
@@ -89,3 +88,20 @@ tests:
       - equal:
           path: spec.executor.gpu.quantity
           value: 2
+  - it: Namespace should default to the release namespace
+    release:
+      namespace: "release-namespace"
+    asserts:
+      - equal:
+          path: metadata.namespace
+          value: "release-namespace"
+  - it: Namespace can be overridden
+    set:
+      metadata:
+        namespace: "override-namespace"
+    release:
+      namespace: "release-namespace"
+    asserts:
+      - equal:
+          path: metadata.namespace
+          value: "override-namespace"

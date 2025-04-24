@@ -45,8 +45,8 @@ public class HelmfileGenerationMigration extends AbstractHelmfileMigration {
      * @return true if the migration should run
      */
     @Override
-    protected boolean shouldExecuteOnFile(File file) {
-        return isHelmfileMigrationActive();
+    protected boolean shouldExecuteOnFileImpl(File file) {
+        return true;
     }
 
     /**

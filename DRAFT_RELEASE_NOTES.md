@@ -167,6 +167,9 @@ aissemble-infrastructure-chart:
 
 ```
 
+### For projects that deploy to a custom namespace
+The `aissemble-spark-application` chart has been updated to default the namespace to the release namespace (e.g. provided by `helm install --namespace X`). Unless your project needs the namespace hard-coded, it is recommended to remove `metadata.namespace` from your pipeline's _*-base-values.yaml_ file.  For projects using a GitOps approach that _relies_ on a hard-coded namespace the `metadata.namespace` property will still take precedences over the release namespace.
+
 ## Final Steps - Required for All Projects
 ### Finalizing the Upgrade
 1. Run `./mvnw org.technologybrewery.baton:baton-maven-plugin:baton-migrate` to apply the automatic migrations
