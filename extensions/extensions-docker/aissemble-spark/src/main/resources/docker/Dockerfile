@@ -57,6 +57,8 @@ COPY --chmod=755 ./src/main/resources/scripts/setup.sh $SPARK_HOME/setup.sh
 RUN --mount=target=/tmp/patch-jars,type=bind,source=${PATCH_DIR} \
     $SPARK_HOME/setup.sh /tmp/patch-jars $SPARK_HOME $SPARK_VERSION $HADOOP_VERSION
 
+RUN find / -type f -name '*derby*.jar' -delete
+
 ## Add spark configurations
 COPY ./src/main/resources/conf/ $SPARK_HOME/conf/
 RUN chown -R spark:spark $SPARK_HOME
