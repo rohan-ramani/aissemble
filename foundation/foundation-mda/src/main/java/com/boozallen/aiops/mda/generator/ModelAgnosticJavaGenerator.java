@@ -26,8 +26,6 @@ public class ModelAgnosticJavaGenerator extends AbstractModelAgnosticGenerator {
      * | cucumberCdiContext             | cucumber.test.cdi.context.java.vm                         | ${basePackage}/TestCdiContext.java             |
      * | abstractDataActionImpl         | data-delivery-spark/abstract.data.action.impl.java.vm     | ${basePackage}/AbstractDataActionImpl.java     |
      * | dataLineageCustomConsumerImpl  | data-lineage-consumer/data-lineage-consumer-impl.java.vm  | ${basePackage}/DataLineageMessageHandler.java  |
-     * | itPipelineSteps                | integration-test/it.pipeline.steps.vm                     | ${basePackage}/tests/PipelineSteps.java        |
-     * | itTestRunner                   | integration-test/it.test.runner.vm                        | ${basePackage}/tests/TestRunner.java           |
      */
 
 
