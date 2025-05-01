@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,7 +38,7 @@ public class HelmfileGenerationMigration extends AbstractHelmfileMigration {
     private static final Logger logger = LoggerFactory.getLogger(HelmfileGenerationMigration.class);
     private static final String VERSION_TAG_REGEX = "(.*)(\\$\\{archetypeVersion})";
     private static final String ARTIFACT_ID_TAG_REGEX = "(.*)(\\$\\{artifactId})(.*)";
-    private static final String HELMFILE_TEMPLATE_PATH = "version_specific/helmfile.yaml";
+    public static final List<String> HELMFILE_TEMPLATES = List.of("helmfile.yaml", "helmfile-apps.yaml", "environments.yaml");
 
     /**
      * Determines whether the migration should execute.
@@ -52,7 +53,7 @@ public class HelmfileGenerationMigration extends AbstractHelmfileMigration {
     }
 
     /**
-     * First checks if helmfile exists. If not, initialize it.
+     * First checks if the helmfiles exist. If not, initialize them.
      *
      * @param file pom file to migrate
      * @return true if migration was successful
@@ -64,26 +65,30 @@ public class HelmfileGenerationMigration extends AbstractHelmfileMigration {
     }
 
     private void createHelmfileIfNotExist() throws BatonException {
-        String helmfileLocation = getRootProject().getBasedir().getPath() + "/helmfile.yaml";
-        File file = new File(helmfileLocation);
-        if (file.exists()) {
-            logger.info("Helmfile already found. Skipping creation and ignoring migration");
-        } else {
-            try {
-                InputStream initialHelmfile = getClass().getClassLoader().getResourceAsStream(HELMFILE_TEMPLATE_PATH);
-                if (initialHelmfile == null) {
-                    throw new BatonException("Could not find the helmfile template");
-                }
-                File helmfile = new File(helmfileLocation);
-                FileUtils.copyInputStreamToFile(initialHelmfile, helmfile);
-                updateVersion(helmfile);
+        for (String filename :HELMFILE_TEMPLATES) {
+            String helmfileLocation = getRootProject().getBasedir().getPath() + "/" + filename;
+            File file = new File(helmfileLocation);
+            if (file.exists()) {
+                logger.info(String.format("Helmfile: %s already found. Skipping creation and ignoring migration", filename));
+            } else {
+                try {
+                    InputStream initialHelmfile = getClass().getClassLoader().getResourceAsStream("version_specific/" + filename);
+                    if (initialHelmfile == null) {
+                        throw new BatonException(String.format("Could not find the helmfile template: %s", filename));
+                    }
+                    File helmfile = new File(helmfileLocation);
+                    FileUtils.copyInputStreamToFile(initialHelmfile, helmfile);
+                    if (filename.startsWith("environments")) {
+                        updateVersion(helmfile);
+                    }
 
-                MavenProject project = getRootProject();
-                updateParams(helmfile, ARTIFACT_ID_TAG_REGEX, project.getArtifactId());
-            } catch (IOException e) {
-                throw new BatonException("Failed to instantiate the helmfile.yaml", e);
+                    MavenProject project = getRootProject();
+                    updateParams(helmfile, ARTIFACT_ID_TAG_REGEX, project.getArtifactId());
+                } catch (IOException e) {
+                    throw new BatonException(String.format("Failed to instantiate the %s", filename), e);
+                }
+                logger.info(String.format("Initialized root %s", filename));
             }
-            logger.info("Initialized root helmfile.yaml");
         }
     }
 
@@ -100,7 +105,7 @@ public class HelmfileGenerationMigration extends AbstractHelmfileMigration {
                 }
             }
         } catch (IOException e) {
-            throw new BatonException("Unable to modify the helmfile's artifact ID.", e);
+            throw new BatonException("Unable to modify the helmfile's version tag.", e);
         }
     }
 

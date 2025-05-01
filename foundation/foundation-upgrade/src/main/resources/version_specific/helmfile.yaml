@@ -1,44 +1,26 @@
 # Helmfile is a declarative spec for deploying helm charts.
 # Full list of configs can be found here - https://helmfile.readthedocs.io/en/stable/#configuration
-
-environments:
-  default:
-    values:
-      - aissembleVersion: ${archetypeVersion}
-        # Used for disabling auto-deployment of pipelines
-      - pipeline: null
-      - helm:
-          valueFiles:
-            - values.yaml
-            - values-dev.yaml
-          s3local:
-            enabled: true
-  ci:
-    values:
-      - aissembleVersion: ${archetypeVersion}
-        # Used for disabling auto-deployment of pipelines
-      - pipeline: null
-      - helm:
-          valueFiles:
-            - values.yaml
-            - values-ci.yaml
-          s3local:
-            enabled: false
-    kubeContext: PLACEHOLDER-kubernetes-ci-context
-
-helmDefaults:
-  skipDeps: {{ eq .Environment.Name "default" }}
+bases:
+  - environments.yaml
 
 ---
 
+helmfiles:
+  - path: ./helmfile-apps.yaml
+missingFileHandler: Error
+
+templates:
+  default: &teardownPipelines
+    hooks:
+      - events: [ "presync" ]
+        showlogs: true
+        command: "kubectl"
+        args:
+          - "delete"
+          - "sparkapplication"
+          - "--all"
+          - "-n"
+          - "${artifactId}"
+
 releases:
-  - name: common-infrastructure
-    namespace: ${artifactId}
-    chart: ${artifactId}-deploy/src/main/resources/apps/common-infrastructure
-    needs:
-      - ${artifactId}-config/configuration-store
-    values:
-      {{- range .Values.helm.valueFiles }}
-      - ${artifactId}-deploy/src/main/resources/apps/common-infrastructure/{{ . }}
-      {{- end }}
   # Add deployment releases here

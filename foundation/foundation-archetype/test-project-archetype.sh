@@ -97,18 +97,22 @@ function runBuildAndApplyManualActions {
   helmfileInsert="# Add deployment releases here"
   deployOutputStart='executions to test-generator-deploy'
   helmfileOutputStart='add the following to helmfile.yaml'
+  helmfileAppsOutputStart='add the following to helmfile-apps.yaml'
   outputEnd='\[WARNING\]'
 
   # $deployOutputStart match at end ensures the match line isn't captured. NF ensures blank lines aren't captured.
   ./mvnw clean install | \
       tee >(awk "BEGIN {output=0} /$outputEnd/ {output=0} NF && output {print} /$deployOutputStart/ {output=1}">deploy.out ) | \
-      tee >(awk "BEGIN {output=0} /$outputEnd/ {output=0} NF && output {print} /$helmfileOutputStart/ {output=1}">helmfile.out ) \
+      tee >(awk "BEGIN {output=0} /$outputEnd/ {output=0} NF && output {print} /$helmfileOutputStart/ {output=1}">helmfile.out ) | \
+      tee >(awk "BEGIN {output=0} /$outputEnd/ {output=0} NF && output {print} /$helmfileAppsOutputStart/ {output=1}">helmfile-apps.out ) \
       || { echo -e '\n\n\t**** MAVEN BUILD FAILED ****\n\n' ; exit 1; }
 
     execs=$(cat deploy.out)
     releases=$(cat helmfile.out)
+    apps=$(cat helmfile-apps.out)
   rm -f deploy.out
   rm -f helmfile.out
+  rm -f helmfile-apps.out
   updates=0
   if [ -n "$execs" ]; then
     #re-adding insert comment allows for subsequent insertions
@@ -124,6 +128,12 @@ function runBuildAndApplyManualActions {
     releases=$(esc <<< "$releases")
     echo -e "\n INFO: Adding releases to helmfile: \n$releases"
     sub "s/$helmfileInsert/$releases/" helmfile.yaml
+  fi
+  if [ -n "$apps" ]; then
+    apps=$helmfileInsert$'\n'$apps
+    apps=$(esc <<< "$apps")
+    echo -e "\n INFO: Adding releases to helmfile-apps: \n$apps"
+    sub "s/$helmfileInsert/$apps/" helmfile-apps.yaml
   fi
   return $updates
 }
