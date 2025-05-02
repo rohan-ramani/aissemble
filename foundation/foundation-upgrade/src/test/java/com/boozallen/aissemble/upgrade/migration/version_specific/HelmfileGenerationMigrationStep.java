@@ -16,6 +16,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 import com.boozallen.aissemble.upgrade.migration.AbstractMigrationTest;
 import com.boozallen.aissemble.upgrade.migration.extensions.HelmfileGenerationMigrationTest;
@@ -27,16 +28,19 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 public class HelmfileGenerationMigrationStep extends AbstractMigrationTest {
+    private final List<String> helmfiles = HelmfileGenerationMigration.HELMFILE_TEMPLATES;
 
     @After("@helmfile-generate")
     public void setup() {
-        // Clean up created helmfile
-        File helmfile = getTestFile(Path.of("version-specific", "HelmfileGenerationMigration", "migration",
-                "helmfile.yaml").toString());
-        helmfile.delete();
+        // Clean up created helmfiles
+        for (String filename: helmfiles) {
+            File helmfile = getTestFile(Path.of("version-specific", "HelmfileGenerationMigration", "migration",
+                    filename).toString());
+            helmfile.delete();
+        }
     }
 
-    @Given("a projects does not have a helm file")
+    @Given("a projects does not have helm files")
     public void aProjectsDoesNotHaveAHelmFile() {
         setTestFileToVersionMigration("HelmfileGenerationMigration", "pom.xml");
     }
@@ -46,12 +50,14 @@ public class HelmfileGenerationMigrationStep extends AbstractMigrationTest {
         System.setProperty("aissemble.enable.helmfile.migration", "true");
     }
 
-    @Given("a projects has a helm file")
+    @Given("a projects has helm files")
     public void aProjectsHasAHelmFile() throws IOException {
         setTestFileToVersionMigration("HelmfileGenerationMigration", "pom.xml");
-        File helmfile = getTestFile(Path.of("version-specific", "HelmfileGenerationMigration", "migration",
-                "helmfile.yaml").toString());
-        helmfile.createNewFile();
+        for (String filename: helmfiles) {
+            File helmfile = getTestFile(Path.of("version-specific", "HelmfileGenerationMigration", "migration",
+                    filename).toString());
+            helmfile.createNewFile();
+        }
     }
 
     @Given("the system property `aissemble.enable.helmfile.migration` is not set")
@@ -66,19 +72,23 @@ public class HelmfileGenerationMigrationStep extends AbstractMigrationTest {
     }
 
 
-    @And("the helmfile is generated")
+    @And("the helmfiles are generated")
     public void theHelmfileIsGenerated() {
-        File helmfile = getTestFile(Path.of("version-specific", "HelmfileGenerationMigration", "migration",
-                "helmfile.yaml").toString());
-        assertTrue("Helmfile was not generated.", helmfile.exists());
+        for (String filename: helmfiles) {
+            File helmfile = getTestFile(Path.of("version-specific", "HelmfileGenerationMigration", "migration",
+                    filename).toString());
+            assertTrue(String.format("Helmfile: %s was not generated.", filename), helmfile.exists());
+        }
     }
 
-    @Then("the helmfile was not changed")
+    @Then("the helmfiles were not changed")
     public void theHelmfileWasNotChanged() {
-        File helmfile = getTestFile(Path.of("version-specific", "HelmfileGenerationMigration", "migration",
-                "helmfile.yaml").toString());
-        assertTrue("Helmfile was not found. It should not have been deleted.", helmfile.exists());
-        assertEquals("Helmfile was modified when it should not have been", 0L, helmfile.length());
+        for (String filename: helmfiles) {
+            File helmfile = getTestFile(Path.of("version-specific", "HelmfileGenerationMigration", "migration",
+                    filename).toString());
+            assertTrue(String.format("Helmfile: %s was not found. It should not have been deleted.", filename), helmfile.exists());
+            assertEquals("Helmfile was modified when it should not have been", 0L, helmfile.length());
+        }
     }
 
     @Then("the helmfile generation is skipped")

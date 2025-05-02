@@ -1,0 +1,20 @@
+environments:
+  default:
+    values:
+      - aissembleVersion: ${archetypeVersion}
+      - helm:
+          valueFiles:
+            - values.yaml
+            - values-dev.yaml
+          s3local:
+            enabled: true
+  ci:
+    values:
+      - aissembleVersion: ${archetypeVersion}
+      - helm:
+          valueFiles:
+            - values.yaml
+            - values-ci.yaml
+          s3local:
+            enabled: false
+    kubeContext: PLACEHOLDER-kubernetes-ci-context

@@ -60,6 +60,7 @@ public class ManualActionNotificationService {
     private static final Logger logger = LoggerFactory.getLogger(ManualActionNotificationService.class);
     private static final String EMPTY_LINE = "\n";
     private static final String SUPPRESS_WARNINGS = "maven-suppress-warnings";
+    private static final String GROUP_HELMFILE_APPS = "helmfile-apps";
     private static final String GROUP_HELMFILE = "helmfile";
     private static final String APP_NAME = "appName";
     private static final String CONFIGURATION_STORE = "configuration-store";
@@ -222,17 +223,17 @@ public class ManualActionNotificationService {
                                        final String deployArtifactId, String projectName) {
 
         final File rootDir = context.getExecutionRootDirectory();
-        if (!rootDir.exists() || !helmfileFound(rootDir)) {
+        if (!rootDir.exists() || !helmfileFound(rootDir, true)) {
             logger.warn("Unable to find helmfile.yaml. Will not be able to direct manual release updates for " +
                     "helmfile.");
         } else {
-            final String helmfilePath = rootDir.toPath().resolve("helmfile.yaml").toString();
+            final String helmfilePath = rootDir.toPath().resolve("helmfile-apps.yaml").toString();
             final String text = "apps/" + appName;
 
             boolean helmfileContainsArtifact = existsInFile(helmfilePath, text);
             if (!helmfileContainsArtifact && showWarnings(helmfilePath)) {
-                final String key = getMessageKey("helmfile", "release", appName);
-                VelocityNotification notification = new VelocityNotification(key, GROUP_HELMFILE, new HashSet<>(),
+                final String key = getMessageKey("helmfile-apps", "release", appName);
+                VelocityNotification notification = new VelocityNotification(key, GROUP_HELMFILE_APPS, new HashSet<>(),
                         "templates/notifications/notification.helm.helmfile.vm");
 
                 Map<String, String> helmfileNeeds = getHelmfileNeeds(projectName);
@@ -279,7 +280,7 @@ public class ManualActionNotificationService {
                                               String projectName) {
 
         final File rootDir = context.getExecutionRootDirectory();
-        if (!rootDir.exists() || !helmfileFound(rootDir)) {
+        if (!rootDir.exists() || !helmfileFound(rootDir, false)) {
             logger.warn("Unable to find helmfile.yaml. Will not be able to direct Spark Worker manual release updates" +
                     " to for helmfile.");
         } else {
@@ -617,8 +618,9 @@ public class ManualActionNotificationService {
         return moduleFoundPom(rootProjectDirectory, MavenUtil.getDockerModuleName(rootProjectDirectory));
     }
 
-    private boolean helmfileFound(final File rootProjectDirectory) {
-        return MavenUtil.fileExists(rootProjectDirectory, "helmfile.yaml");
+    private boolean helmfileFound(final File rootProjectDirectory, final boolean isApps) {
+        String filename = isApps? "helmfile-apps.yaml": "helmfile.yaml";
+        return MavenUtil.fileExists(rootProjectDirectory, filename);
     }
 
     private void addManualAction(String file, Notification notification) {

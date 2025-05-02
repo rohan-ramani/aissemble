@@ -66,6 +66,8 @@
 				<include>devops/**</include>
 				<include>jenkinsPipelineSteps.groovy</include>
 				<include>helmfile.yaml</include>
+				<include>helmfile-apps.yaml</include>
+				<include>environments.yaml</include>
 				<include>README.md</include>
 			</includes>
 		</fileSet>

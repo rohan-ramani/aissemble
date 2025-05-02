@@ -55,7 +55,8 @@ public class HelmfileManualActionsSteps extends AbstractModelInstanceSteps {
         this.projectName = projectName;
         createProject(projectName, "shared");
         // Create an initial helmfile
-        createHelmfile();
+        createHelmfile(true);
+        createHelmfile(false);
         // Create pipeline mda
         createAndSavePipeline("ExampleSparkPipeline", "data-flow", "data-delivery-spark");
     }
@@ -73,11 +74,11 @@ public class HelmfileManualActionsSteps extends AbstractModelInstanceSteps {
     public void theManualActionToAddTheHelmfileChartReleaseIsDisplayed() {
         Map<String, Map<String, Notification>> notifications = NotificationCollector.getNotifications();
 
-        String file = this.projectDir.resolve("helmfile.yaml").toString();
+        String file = this.projectDir.resolve("helmfile-apps.yaml").toString();
         assertTrue("No notifications for helmfile.", notifications.containsKey(file));
         Map<String, Notification> fileNotifications = notifications.get(file);
         assertTrue("Failed to generate the helmfile release notification.", fileNotifications.containsKey(
-                "helmfile_release_" + this.projectName));
+                "helmfile-apps_release_" + this.projectName));
     }
 
     @Then("the manual action to add the helmfile release for the pipeline is displayed")

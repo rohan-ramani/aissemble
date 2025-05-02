@@ -310,7 +310,8 @@ public abstract class AbstractModelInstanceSteps {
         return pipeline;
     }
 
-    protected void createHelmfile() throws IOException {
+    protected void createHelmfile(boolean isApps) throws IOException {
+        String filename = isApps? "helmfile-apps.yaml": "helmfile.yaml";
         if (this.projectDir == null) {
             if(scenario != null) {
                 this.projectDir = Paths.get("target", unique(scenario), this.projectName);
@@ -318,7 +319,7 @@ public abstract class AbstractModelInstanceSteps {
                 this.projectDir = Paths.get("target", this.projectName);
             }
         }
-        Path helmfile = Paths.get(this.projectDir.toString(), "helmfile.yaml");
+        Path helmfile = Paths.get(this.projectDir.toString(), filename);
         if (!Files.exists(helmfile)) {
             Files.createFile(helmfile);
         }
