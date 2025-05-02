@@ -3,6 +3,14 @@
 ## Helmfile Integration
 Given that the local and higher environment deployment methods not aligned can cause hard-to-diagnose bugs and slow development, in an effort to have one tool to deploy to all environments, going forward aiSSEMBLE will support [Helmfile](https://helmfile.readthedocs.io/en/latest/) instead of Tilt and ArgoCD. New project will be generated with Helmfile and existing projects are encouraged to use it but are not required to. Follow **Finalizing the Upgrade** section for migration instructions.
 
+## Removal of Integration Tests
+New projects generated on version 1.13.0 of aiSSEMBLE will no longer include an automatically generated `<project-name>-tests` module. If you upgrade an existing project to 1.13.0, your `<project-name>-tests` module will remain intact — but be aware that there will not be any further updates or enhancements to these integration tests going forward.
+
+In addition, the following Fermenter profiles related to the integration tests module have been deprecated and will be removed in version 1.14.0 of aiSSEMBLE:
+- `integration-test-docker`
+- `integration-test-chart`
+- `integration-test-data-pipeline`
+
 ## Reduced Spark Pipeline Size
 We have pulled the Spark, Hadoop and Hive dependencies out of the shaded pipeline jar since they are already provided by Spark. This change can reduce the spark worker Docker image size and help resolve future CVEs faster.
 
