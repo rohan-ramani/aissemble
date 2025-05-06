@@ -9,7 +9,7 @@ deployment:
   image:
     repo: ghcr.io/
     # Override with specific image
-    name: boozallen/aissemble-fastapi
+    name: boozallen/aissemble-nvidia
     # Default IfNotPresent
     imagePullPolicy: ''
   volumes: []

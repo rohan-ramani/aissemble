@@ -62,7 +62,7 @@ public class VersioningDockerModuleGenerator extends AbstractMavenModuleGenerato
             final String appName = "versioning";
 
             manualActionNotificationService.addNoticeToAddModuleToParentBuild(context, artifactId, "docker");
-            manualActionNotificationService.addDeployPomMessage(context,"versioning-deploy", appName);
+            manualActionNotificationService.addDeployPomMessage(context,"versioning-deploy-v2", appName);
             manualActionNotificationService.addDeployPomMessage(context, "aissemble-shared-infrastructure-deploy", "shared-infrastructure");
         }
     }

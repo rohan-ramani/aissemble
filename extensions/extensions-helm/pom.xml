@@ -16,7 +16,6 @@
     <modules>
         <module>aissemble-quarkus-chart</module>
         <module>aissemble-airflow-chart</module>
-        <module>aissemble-fastapi-chart</module>
         <module>aissemble-inference-chart</module>
         <module>aissemble-versioning-chart</module>
         <module>aissemble-kafka-chart</module>

@@ -29,4 +29,3 @@ dependencies:
   - name: aissemble-versioning-chart
     version: ${versionTag}
     repository: oci://ghcr.io/boozallen
-

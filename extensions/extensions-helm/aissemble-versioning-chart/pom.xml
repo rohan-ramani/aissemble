@@ -13,15 +13,6 @@
     <name>aiSSEMBLE::Extensions::Helm::Versioning</name>
     <description>Contains Helm Versioning Chart</description>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.boozallen.aissemble</groupId>
-            <artifactId>aissemble-fastapi-chart</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
             <plugin>
