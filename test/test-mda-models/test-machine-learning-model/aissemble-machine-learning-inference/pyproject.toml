@@ -1,8 +1,10 @@
-[tool.poetry]
+[project]
 name = "aissemble-machine-learning-inference"
 version = "1.13.0.dev"
 description = "Machine Learning Inference Test Module"
-authors = ["aiSSEMBLE Baseline Community <aissemble@bah.com>"]
+authors = [{name = "aiSSEMBLE Baseline Community", email = "aissemble@bah.com"}]
+requires-python = ">=3.8"
+dynamic = ["version", "dependencies"]
 
 # Ensure that generated code is included in package archives
 include = ["src/aissemble_machine_learning_inference/generated/**/*"]
@@ -10,7 +12,6 @@ include = ["src/aissemble_machine_learning_inference/generated/**/*"]
 [tool.poetry.dependencies]
 aissemble-foundation-pdp-client-python = {path = "../../../../foundation/foundation-security/aissemble-foundation-pdp-client-python", develop = true}
 aissemble-foundation-core-python = {path = "../../../../foundation/aissemble-foundation-core-python", develop = true}
-python = ">=3.8"
 mlflow = "^2.3.1"
 fastapi = ">=0.95.0"
 uvicorn = { version = "^0.18.0", extras = ["standard"]}
@@ -22,8 +23,6 @@ pandas = "^1.5.0"
 # scipy to downgrade to a version that is incompatible with the latest version of numpy. Presumably, scipy will release
 # a new version that is compatible with the latest version of numpy, but until then, we need to explicitly avoid the downgrade.
 scipy = "^1.9.3"
-
-
 
 [tool.poetry.group.dev.dependencies]
 black = ">=22.1.0"
