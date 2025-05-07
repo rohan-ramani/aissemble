@@ -1,15 +1,18 @@
 [tool.poetry]
-name = "aissemble-extensions-transform-spark-python"
-version = "1.13.0.dev"
-description = "Contains the core Python implementation of data transform for Spark"
-authors = ["aiSSEMBLE Baseline Community <aissemble@bah.com>"]
-readme = "README.md"
 packages = [
     {include = "data_transform_spark", from="src"}
 ]
 
+[project]
+name = "aissemble-extensions-transform-spark-python"
+version = "1.13.0.dev"
+description = "Contains the core Python implementation of data transform for Spark"
+authors = [{name = "aiSSEMBLE Baseline Community", email = "aissemble@bah.com"}]
+requires-python = ">=3.8"
+dynamic = ["version", "dependencies"]
+readme = "README.md"
+
 [tool.poetry.dependencies]
-python = ">=3.8"
 krausening = ">=20"
 pydantic = ">=2.8.0"
 

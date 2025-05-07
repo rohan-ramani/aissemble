@@ -1,17 +1,17 @@
 # GENERATED STUB - PLEASE ***DO*** MODIFY
 # Generated from: ${templateName}
 
-[tool.poetry]
+[project]
 name = "${packageName}"
 version = "1.0.0.dev"
 description = "${pipeline.description|'Description of package'}"
-authors = ["Your Name <you@example.com>"]
+authors = [{name = "Your Name", email = "<you@example.com>"}]
+requires-python = ">=3.8"
 
-# Ensure that generated code is included in package archives
-include = ["src/${packageFolderName}/generated/**/*"]
+[tool.poetry]
+packages = [{include = "${artifactIdPythonCase}/generated/**/*", from = "src"}]
 
 [tool.poetry.dependencies]
-python = ">=3.8"
 krausening = ">=20"
 pyspark = "${versionSpark}"
 jsonpickle = "^2.1.0"
@@ -51,5 +51,5 @@ priority = "supplemental"
 
 #end
 [build-system]
-requires = ["poetry-core>=1.7.0"]
+requires = ["poetry-core>=2.0.0"]
 build-backend = "poetry.core.masonry.api"

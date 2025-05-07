@@ -1,5 +1,5 @@
 [virtualenvs]
-prefer-active-python = true
+use-poetry-python = false
 in-project = true
 
 [repositories.dev-pypi]

@@ -1,9 +1,4 @@
 [tool.poetry]
-name = "aissemble-foundation-data-lineage-python"
-version = "1.13.0.dev"
-description = "Data lineage API for Python scripts"
-authors = ["aiSSEMBLE Baseline Community <aissemble@bah.com>"]
-readme = "README.md"
 packages = [
     {include = "aissemble_data_lineage", from = "src"}
 ]
@@ -11,13 +6,19 @@ include = [
     { path = "src/aissemble_data_lineage/default_properties/*" }
 ]
 
+[project]
+name = "aissemble-foundation-data-lineage-python"
+version = "1.13.0.dev"
+description = "Data lineage API for Python scripts"
+authors = [{name = "aiSSEMBLE Baseline Community", email = "aissemble@bah.com"}]
+requires-python = ">=3.8"
+dynamic = ["version", "dependencies"]
+readme = "README.md"
+
 [tool.poetry.dependencies]
-python = ">=3.8"
 krausening = ">=20"
 kafka-python = "^2.0.2"
 openlineage-python = {version = "^0.21.1"}
-
-#[tool.poetry.group.monorepo.dependencies]
 aissemble-foundation-messaging-python = { path = "../../../foundation-messaging/foundation-messaging-python/aissemble-foundation-messaging-python-client", develop = true}
 
 [tool.poetry.group.dev.dependencies]

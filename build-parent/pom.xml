@@ -508,9 +508,15 @@
                             </packageDefinition>
                             <!-- Current version of SciPy (used by MLFlow and scikit-learn) caps numpy to 1.26.0, causing it to downgrade to an "incompatible" version with the new 1.26.2 release-->
                             <!-- Remove when a version of scipy compatible with numpy 1.26.2 is released -->
+                            <!-- TODO: REVERT THIS WHEN ARCHETYPE TESTS USES HABUSHU'S CONTAINERIZE DEPENDENCIES GOAL-->
                             <packageDefinition>
                                 <packageName>scipy</packageName>
-                                <operatorAndVersion>^1.9.3</operatorAndVersion>
+                                <operatorAndVersion>1.9.3</operatorAndVersion>
+                            </packageDefinition>
+                            <!-- TODO: REMOVE THIS WHEN ARCHETYPE TESTS USES HABUSHU'S CONTAINERIZE DEPENDENCIES GOAL-->
+                            <packageDefinition>
+                                <packageName>mlflow</packageName>
+                                <operatorAndVersion>2.3.1</operatorAndVersion>
                             </packageDefinition>
 
                             <!-- Handles spark version decisions -->
