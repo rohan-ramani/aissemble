@@ -11,8 +11,8 @@ In addition, the following Fermenter profiles related to the integration tests m
 - `integration-test-chart`
 - `integration-test-data-pipeline`
 
-## Reduced Spark Pipeline Size
-We have pulled the Spark, Hadoop and Hive dependencies out of the shaded pipeline jar since they are already provided by Spark. This change can reduce the spark worker Docker image size and help resolve future CVEs faster.
+## Spark BOM and Reduced Spark Pipeline Size
+To help ensure data delivery pipelines are compatible with the `aissemble-spark` image, and to exclude jars provided by the image from shaded pipeline jars, we have created the `aissemble-spark-bom`. This BOM ensures Spark, Hadoop and Hive dependencies are not included in the shaded pipeline jar significantly reducing the spark worker Docker image size and ensures pipelines are unit tested against the same versions of libraries as are on the `aissemble-spark` image, including patches for CVE resolution.
 
 Spark upgraded from 3.5.4 to 3.5.5. For upgrade information, see the Spark [release notes](https://spark.apache.org/news/spark-3-5-5-released.html).
 

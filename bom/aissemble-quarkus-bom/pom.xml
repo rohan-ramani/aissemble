@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
 
     <name>aiSSEMBLE::BOM::Quarkus</name>
-    <description>An aiSSEMBLE compabible version of the quarkus-universe-bom</description>
+    <description>An aiSSEMBLE compatible version of the quarkus-universe-bom</description>
 
 
     <dependencyManagement>

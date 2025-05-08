@@ -67,7 +67,6 @@
         <version.awaitility>4.0.3</version.awaitility>
         <version.plexus.util>3.5.1</version.plexus.util>
         <version.jackson.mapper.asl>1.9.3</version.jackson.mapper.asl>
-        <version.exec.maven.plugin>3.4.1</version.exec.maven.plugin>
         <version.jjwt>0.11.2</version.jjwt>
         <version.kafka.client>3.8.0</version.kafka.client>
         <version.netty.handler>4.1.118.Final</version.netty.handler>
