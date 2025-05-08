@@ -8,7 +8,7 @@ name = "aissemble-foundation-model-lineage"
 version = "1.13.0.dev"
 authors = [{name = "aiSSEMBLE Baseline Community", email = "aissemble@bah.com"}]
 description = "Model lineage API"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dynamic = ["version", "dependencies"]
 readme = "README.md"
 

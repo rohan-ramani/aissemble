@@ -6,7 +6,7 @@ name = "aissemble-machine-learning-training"
 version = "1.13.0.dev"
 description = "Description of package"
 authors = [{name = "Your Name", email = "you@example.com"}]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dynamic = ["version", "dependencies"]
 
 # Ensure that generated code is included in package archives
@@ -18,7 +18,7 @@ onnxmltools = "^1.11.1"
 aissemble-foundation-core-python = {path = "../../../../foundation/aissemble-foundation-core-python", develop = true}
 aissemble-foundation-model-lineage = {path = "../../../../foundation/foundation-lineage/aissemble-foundation-model-lineage", develop = true}
 krausening = ">=20"
-mlflow = "2.3.1"
+mlflow = "2.10.2"
 kafka-python = "^2.0.2"
 pandas = "^1.5.0"
 

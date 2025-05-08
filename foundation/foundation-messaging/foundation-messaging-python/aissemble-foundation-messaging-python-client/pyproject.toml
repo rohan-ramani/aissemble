@@ -11,7 +11,7 @@ name = "aissemble-foundation-messaging-python"
 version = "1.13.0.dev"
 description = "Defines a root level messaging architecture in python"
 authors = [{name = "aiSSEMBLE Baseline Community", email = "aissemble@bah.com"}]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dynamic = ["version", "dependencies"]
 readme = "README.md"
 

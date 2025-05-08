@@ -8,7 +8,7 @@ name = "aissemble-extensions-data-delivery-spark-py"
 version = "1.13.0.dev"
 description = "Contains the core Python functionality of data delivery for Spark"
 authors = [{name = "aiSSEMBLE Baseline Community", email = "aissemble@bah.com"}]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dynamic = ["version", "dependencies"]
 readme = "README.md"
 
