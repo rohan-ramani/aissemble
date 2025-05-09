@@ -5,13 +5,10 @@
 # Versioning
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
-# Override these values for the docker image built from the aiSSEMBLE FastAPI baseline image
 aissemble-versioning-chart:
-  aissemble-fastapi-chart:
-      app:
-        name: ${projectName}-versioning
-      image:
-        name: ${projectName}-versioning
-        dockerRepo: ${dockerProjectRepositoryUrl}
-        tag: latest
+  app:
+    name: ${projectName}-versioning
+  image:
+    name: ${projectName}-versioning
+    dockerRepo: ${dockerProjectRepositoryUrl}
+    tag: latest

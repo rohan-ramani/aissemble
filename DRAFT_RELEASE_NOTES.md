@@ -41,6 +41,9 @@ _Note: instructions for adapting to these changes are outlined in the upgrade in
   - foundation-encryption-policy-java java encryption policy
   - aissemble-extensions-encryption-vault-python python data encryption
   - aissemble-foundation-encryption-policy-python python encryption policy
+- The following aissemble-fastapi artifacts marked for deletion in 1.13.0 have been removed:
+  - `aissemble-fastapi-chart` helm chart
+  - `aissemble-fastapi` docker image
 - The default behavior on the `aissemble-infrastructure-chart` has been changed. The ArgoCD chart will no longer be deployed by default. To enable the ArgoCD deployment, follow the **How to Upgrade** section for details.
 - Removed local deployment tool Tilt, and the remote deployment tool ArgoCD as we migrated to use Helmfile as the aiSSEMBLE deployment tool.
 
@@ -78,6 +81,7 @@ To reduce burden of upgrading aiSSEMBLE, the Baton project is used to automate t
 | upgrade-v1-chart-files-aissemble-version-migration | Updates the docker image tags within your project's deployment resources (`<YOUR_PROJECT>-deploy/src/main/resources/apps/`) to use the latest version of the aiSSEMBLE       |                                     |
 | data-encryption-removal-pom-migration              | Remove the data encryption dependencies from the pom file                                                                                                                    |                                     |
 | data-encryption-removal-pyproject-migration        | Remove the data encryption dependencies from the pyproject.toml file                                                                                                         |                                     |
+| fastapi-removal-yaml-migration                     | Unwrap aissemble-fastapi-chart values in Helm chart values files files                                                                                                     |                                     |
 | argocd-removal-migration                           | Remove the ArgoCD related application templates and values, Chart yaml files and etc.                                                                                        | aissemble.enable.helmfile.migration |
 | helmfile-generation-migration                      | Generates an initial helmfile.yaml for manual actions to be added to                                                                                                         | aissemble.enable.helmfile.migration |
 | helmfile-deployment-script-migration               | Updated JenkinsfileDeploy.groovy to use helmfile. Also removes the jenkinsPipelineSteps.groovy file                                                                          | aissemble.enable.helmfile.migration |

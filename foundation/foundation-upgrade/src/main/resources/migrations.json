@@ -104,6 +104,15 @@
             "includes": ["src/*/resources/apps/*.yaml"]
           }
         ]
+      },
+      {
+        "name": "fastapi-removal-yaml-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.FastapiDependencyRemovalValuesMigration",
+        "fileSets": [
+          {
+            "includes": ["src/main/resources/apps/*/values*.yaml"]
+          }
+        ]
       }
     ]
   },

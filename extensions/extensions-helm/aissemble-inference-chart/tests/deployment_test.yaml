@@ -14,7 +14,7 @@ tests:
           value: false
       - matchRegex:
           path: spec.template.spec.containers[0].image
-          pattern: ghcr.io/boozallen/aissemble-fastapi:.*
+          pattern: ghcr.io/boozallen/aissemble-nvidia:.*
       - equal:
           path: spec.template.spec.containers[0].imagePullPolicy
           value: IfNotPresent
