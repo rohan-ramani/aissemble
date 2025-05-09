@@ -9,5 +9,5 @@ sources:
   - https://github.com/boozallen/aissemble
 dependencies:
   - name: mlflow
-    version: 1.4.22
+    version: 3.0.7
     repository: https://charts.bitnami.com/bitnami

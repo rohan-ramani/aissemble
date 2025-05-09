@@ -5,7 +5,7 @@ name = "aissemble-test-data-delivery-pyspark-model-basic"
 version = "1.13.0.dev"
 description = "Pyspark test module"
 authors = [{name = "aiSSEMBLE Baseline Community", email = "aissemble@bah.com"}]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dynamic = ["version", "dependencies"]
 
 # Ensure that generated code is included in package archives

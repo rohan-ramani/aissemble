@@ -515,7 +515,7 @@
                             <!-- TODO: REMOVE THIS WHEN ARCHETYPE TESTS USES HABUSHU'S CONTAINERIZE DEPENDENCIES GOAL-->
                             <packageDefinition>
                                 <packageName>mlflow</packageName>
-                                <operatorAndVersion>2.3.1</operatorAndVersion>
+                                <operatorAndVersion>2.10.2</operatorAndVersion>
                             </packageDefinition>
 
                             <!-- Handles spark version decisions -->

@@ -14,7 +14,7 @@ name = "aissemble-foundation-core-python"
 version = "1.13.0.dev"
 description = "Core classes for supporting concepts (alerting, metadata, etc) that are needed across most Python-based components"
 authors = [{name = "aiSSEMBLE Baseline Community", email = "aissemble@bah.com"}]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dynamic = ["version", "dependencies"]
 readme = "README.md"
 
