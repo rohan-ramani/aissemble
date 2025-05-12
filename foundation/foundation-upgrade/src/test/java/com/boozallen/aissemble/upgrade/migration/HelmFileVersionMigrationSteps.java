@@ -20,12 +20,12 @@ public class HelmFileVersionMigrationSteps extends AbstractMigrationTest {
 
     @Given("a projects helmfile values has an out of date aissemble version")
     public void aProjectsHelmfileValuesHasAnOutOfDateAissembleVersion() {
-        setTestFileToBaseMigration("HelmfileVersionMigration", "values-helmfile.yaml");
+        setTestFileToBaseMigration("HelmfileVersionMigration", "values-helmfile.yaml.gotmpl");
     }
 
     @Given("a projects helmfile values has the desired aissemble version")
     public void aProjectsHelmfileValuesHasTheDesiredAissembleVersion() {
-        setTestFileToBaseMigration("HelmfileVersionMigration", "values-skip-helmfile.yaml");
+        setTestFileToBaseMigration("HelmfileVersionMigration", "values-skip-helmfile.yaml.gotmpl");
     }
 
     @When("the helmfile version migration is performed")

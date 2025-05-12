@@ -1,4 +1,4 @@
-You must add the following to helmfile-apps.yaml to configure it for deployment!
+You must add the following to helmfile-apps.yaml.gotmpl to configure it for deployment!
 
 #foreach ($item in $items)
 ${item}

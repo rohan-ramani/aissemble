@@ -15,7 +15,6 @@ import org.technologybrewery.baton.BatonException;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -45,7 +44,7 @@ public class HelmRootChartMigration extends AbstractHelmfileMigration {
 
             // After migrating the Chart.yaml we need to change the name property to common-infrastructure
             if (file.getName().equalsIgnoreCase(CHART_YAML)){
-                Path migratedChartFile = Paths.get(targetPath.toString(), "Chart.yaml");
+                Path migratedChartFile = Paths.get(targetPath.toString(), CHART_YAML);
                 changeChartNameProperty(migratedChartFile.toFile());
             }
         } catch (IOException e) {

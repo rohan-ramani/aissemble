@@ -311,7 +311,7 @@ public abstract class AbstractModelInstanceSteps {
     }
 
     protected void createHelmfile(boolean isApps) throws IOException {
-        String filename = isApps? "helmfile-apps.yaml": "helmfile.yaml";
+        String filename = isApps? "helmfile-apps.yaml.gotmpl": "helmfile.yaml.gotmpl";
         if (this.projectDir == null) {
             if(scenario != null) {
                 this.projectDir = Paths.get("target", unique(scenario), this.projectName);

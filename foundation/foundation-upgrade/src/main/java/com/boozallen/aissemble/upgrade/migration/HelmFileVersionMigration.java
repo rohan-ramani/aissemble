@@ -10,7 +10,6 @@ package com.boozallen.aissemble.upgrade.migration;
  * #L%
  */
 
-import static org.technologybrewery.baton.util.CommonUtils.isLessThanVersion;
 import static org.technologybrewery.baton.util.FileUtils.replaceInFile;
 
 import java.io.BufferedReader;
@@ -59,7 +58,7 @@ public class HelmFileVersionMigration extends AbstractAissembleMigration {
                     Semver semver = new Semver(currentAissembleVersion);
 
                     if (!semver.isEqualTo(getAissembleVersion())) {
-                        logger.info("Found aiSSEMBLE version in the helmfile that is not equal to the project " +
+                        logger.info("Found aiSSEMBLE version in the helmfile environments file that is not equal to the project " +
                                 "aiSSEMBLE version.");
                         shouldExecute = true;
                     }
