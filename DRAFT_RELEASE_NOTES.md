@@ -91,6 +91,7 @@ To reduce burden of upgrading aiSSEMBLE, the Baton project is used to automate t
 | spark-provided-dependency-migration                | Remove the Hadoop, Hive, and Spark dependencies from the pipeline shaded jar                                                                                                 |                                     |
 | maven-build-cache-migration                        | Updates build cache configuration to avoid stale Docker images                                                                                                               |                                     |
 | my-sql-connector-yaml-migration                    | Update the my-sql-connector package to use the version with no CVE issue                                                                                                     |                                     |
+| trino-delta-lake-connector-yaml-migration          | Add the Delta Lake connector configuration in the Trino chart values.yaml file                                                                                               |                                     |
 
 Migrations with arguments will not be executed unless that argument is provided (e.g. `./mvnw org.technologybrewery.baton:baton-maven-plugin:baton-migrate -D<argumentName>`). To deactivate any of these migrations, add the following configuration to the `baton-maven-plugin` within your root `pom.xml`:
 
