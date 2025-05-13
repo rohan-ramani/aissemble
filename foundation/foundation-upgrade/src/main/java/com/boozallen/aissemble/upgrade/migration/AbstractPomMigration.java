@@ -8,6 +8,7 @@ package com.boozallen.aissemble.upgrade.migration;
  * This software package is licensed under the Booz Allen Public License. All Rights Reserved.
  * #L%
  */
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.InputLocation;
@@ -15,6 +16,7 @@ import org.apache.maven.model.InputLocationTracker;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.ModelBase;
 import org.apache.maven.model.Profile;
+import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.technologybrewery.baton.BatonException;
@@ -39,7 +41,7 @@ public abstract class AbstractPomMigration extends AbstractAissembleMigration {
     public static final String GUARANTEED_TAG = "<modelVersion>";
 
     protected String indent;
-    
+
     protected void detectAndSetIndent(File file) {
         try (Stream<String> lines = Files.lines(file.toPath())) {
             indent = lines.filter(line -> line.contains(GUARANTEED_TAG))
@@ -109,5 +111,21 @@ public abstract class AbstractPomMigration extends AbstractAissembleMigration {
         InputLocation start = container.getLocation(tag + START);
         InputLocation end = container.getLocation(tag + END);
         return new PomModifications.Deletion(start, end);
+    }
+
+    protected String toGav(Dependency dependency) {
+        String groupId = dependency.getGroupId();
+        if ("${project.groupId}".equals(groupId)) {
+            groupId = getMavenProject().getGroupId();
+        }
+        String version = dependency.getVersion();
+        if ("${project.version}".equals(version)) {
+            version = getMavenProject().getVersion();
+        }
+        return groupId + ":" + dependency.getArtifactId() + ":" + version;
+    }
+
+    protected static String toGav(MavenProject project) {
+        return project.getGroupId() + ":" + project.getArtifactId() + ":" + project.getVersion();
     }
 }

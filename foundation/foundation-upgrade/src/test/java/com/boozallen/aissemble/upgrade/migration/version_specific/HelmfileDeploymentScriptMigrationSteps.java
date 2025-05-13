@@ -22,7 +22,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-public class helmfileDeploymentScriptMigrationSteps extends AbstractMigrationTest {
+public class HelmfileDeploymentScriptMigrationSteps extends AbstractMigrationTest {
 
     @Given("a projects has a deployment script")
     public void aProjectsHasADeploymentScript() {

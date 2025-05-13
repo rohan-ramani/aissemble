@@ -90,7 +90,7 @@
             <groupId>#[[${project.groupId}]]#</groupId>
             <artifactId>${pythonDataRecords}</artifactId>
             <version>#[[${project.version}]]#</version>
-            <type>pom</type>
+            <type>habushu</type>
         </dependency>
         #end
     </dependencies>
