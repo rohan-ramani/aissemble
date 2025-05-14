@@ -90,14 +90,14 @@ function updatePomBasedOnChildDirs {
 
 #---
 ## Runs maven build and captures any manual actions for adding Fermenter executions to the deploy POM and helmfile
-# release additions. It applies these manual actions to the deploy POM and the helmfile.yaml.
+# release additions. It applies these manual actions to the deploy POM and the helmfile.yaml.gotmpl.
 #---
 function runBuildAndApplyManualActions {
   deployInsert="<!-- Add executions for each deployment module -->"
   helmfileInsert="# Add deployment releases here"
   deployOutputStart='executions to test-generator-deploy'
-  helmfileOutputStart='add the following to helmfile.yaml'
-  helmfileAppsOutputStart='add the following to helmfile-apps.yaml'
+  helmfileOutputStart='add the following to helmfile.yaml.gotmpl'
+  helmfileAppsOutputStart='add the following to helmfile-apps.yaml.gotmpl'
   outputEnd='\[WARNING\]'
 
   # $deployOutputStart match at end ensures the match line isn't captured. NF ensures blank lines aren't captured.
@@ -127,13 +127,13 @@ function runBuildAndApplyManualActions {
     releases=$helmfileInsert$'\n'$releases
     releases=$(esc <<< "$releases")
     echo -e "\n INFO: Adding releases to helmfile: \n$releases"
-    sub "s/$helmfileInsert/$releases/" helmfile.yaml
+    sub "s/$helmfileInsert/$releases/" helmfile.yaml.gotmpl
   fi
   if [ -n "$apps" ]; then
     apps=$helmfileInsert$'\n'$apps
     apps=$(esc <<< "$apps")
     echo -e "\n INFO: Adding releases to helmfile-apps: \n$apps"
-    sub "s/$helmfileInsert/$apps/" helmfile-apps.yaml
+    sub "s/$helmfileInsert/$apps/" helmfile-apps.yaml.gotmpl
   fi
   return $updates
 }

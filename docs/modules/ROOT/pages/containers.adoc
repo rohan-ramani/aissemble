@@ -62,7 +62,7 @@ Once the build completes, check the logs for the following information:
 ** You must add the executions/plugins to your `<project-name>-deploy/pom.xml` to activate it in your build. This will ensure the proper generation of deployment resources for your application.
 
 * *Additions to the Helmfile*
-** You must add the appropriate configurations to `helmfile.yaml` to enable deployment of your application. This will include the chart reference, namespace configuration, dependencies, and value file paths.
+** You must add the appropriate configurations to `helmfile.yaml.gotmpl` to enable deployment of your application. This will include the chart reference, namespace configuration, dependencies, and value file paths.
 
 
 Be sure to add each artifact to the Helmfile and Deploy module as appropriate. Once completed, rerun the build with

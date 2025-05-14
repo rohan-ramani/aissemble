@@ -38,7 +38,7 @@ public class HelmfileGenerationMigration extends AbstractHelmfileMigration {
     private static final Logger logger = LoggerFactory.getLogger(HelmfileGenerationMigration.class);
     private static final String VERSION_TAG_REGEX = "(.*)(\\$\\{archetypeVersion})";
     private static final String ARTIFACT_ID_TAG_REGEX = "(.*)(\\$\\{artifactId})(.*)";
-    public static final List<String> HELMFILE_TEMPLATES = List.of("helmfile.yaml", "helmfile-apps.yaml", "environments.yaml");
+    public static final List<String> HELMFILE_TEMPLATES = List.of("helmfile.yaml.gotmpl", "helmfile-apps.yaml.gotmpl", "environments.yaml");
 
     /**
      * Determines whether the migration should execute.

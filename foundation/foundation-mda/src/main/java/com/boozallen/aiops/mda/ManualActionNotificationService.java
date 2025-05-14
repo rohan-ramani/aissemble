@@ -224,10 +224,10 @@ public class ManualActionNotificationService {
 
         final File rootDir = context.getExecutionRootDirectory();
         if (!rootDir.exists() || !helmfileFound(rootDir, true)) {
-            logger.warn("Unable to find helmfile.yaml. Will not be able to direct manual release updates for " +
+            logger.warn("Unable to find helmfile.yaml.gotmpl. Will not be able to direct manual release updates for " +
                     "helmfile.");
         } else {
-            final String helmfilePath = rootDir.toPath().resolve("helmfile-apps.yaml").toString();
+            final String helmfilePath = rootDir.toPath().resolve("helmfile-apps.yaml.gotmpl").toString();
             final String text = "apps/" + appName;
 
             boolean helmfileContainsArtifact = existsInFile(helmfilePath, text);
@@ -281,10 +281,10 @@ public class ManualActionNotificationService {
 
         final File rootDir = context.getExecutionRootDirectory();
         if (!rootDir.exists() || !helmfileFound(rootDir, false)) {
-            logger.warn("Unable to find helmfile.yaml. Will not be able to direct Spark Worker manual release updates" +
+            logger.warn("Unable to find helmfile.yaml.gotmpl. Will not be able to direct Spark Worker manual release updates" +
                     " to for helmfile.");
         } else {
-            final String helmfilePath = rootDir.toPath().resolve("helmfile.yaml").toString();
+            final String helmfilePath = rootDir.toPath().resolve("helmfile.yaml.gotmpl").toString();
             final String text = parentArtifactId + "/" + pipelineArtifactId;
 
             boolean helmfileContainsArtifact = existsInFile(helmfilePath, text);
@@ -619,7 +619,7 @@ public class ManualActionNotificationService {
     }
 
     private boolean helmfileFound(final File rootProjectDirectory, final boolean isApps) {
-        String filename = isApps? "helmfile-apps.yaml": "helmfile.yaml";
+        String filename = isApps? "helmfile-apps.yaml.gotmpl": "helmfile.yaml.gotmpl";
         return MavenUtil.fileExists(rootProjectDirectory, filename);
     }
 
