@@ -38,6 +38,9 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   python${PYTHON_VERSION} \
   python${PYTHON_VERSION}-dev \
   python${PYTHON_VERSION}-distutils \
+#provides ensurepip
+  python${PYTHON_VERSION}-venv \
+  pipx \
 #Patch for CVE-2023-4863: upgrade libwebp7 to 1.3.2+
   && apt-get upgrade -y libwebp7 \
   && ln -s /usr/bin/python${PYTHON_VERSION} /usr/bin/python \
@@ -47,6 +50,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 
 # Pyspark uses `python3` to execute pyspark pipelines. This links out latest python install to that command.
 RUN ln -sf /usr/bin/python3.11 /usr/bin/python3
+# Temporary workaround until Habushu 3 is incorporated
+RUN ln -sf /usr/bin/pipx /usr/bin/pip
 
 # Update gosu (based on https://github.com/tianon/gosu/blob/master/INSTALL.md)
 # Fixes: GO-2023-2185, GO-2023-1840, GO-2023-1568
@@ -65,5 +70,8 @@ RUN chown -R spark:spark $SPARK_HOME
 
 # Fixed the Reflection API breaks java module boundary issue for Java 16+
 ENV JDK_JAVA_OPTIONS='--add-opens java.base/java.lang=ALL-UNNAMED'
+
+# Add pipx install location to PATH
+ENV PATH=/opt/spark/.local/bin:$PATH
 
 USER spark

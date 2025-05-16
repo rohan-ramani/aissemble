@@ -173,12 +173,12 @@ Feature: Generating pipeline resources
     And a "<type>" pipeline using "<implementation>"
     And a dictionary and 0 or more record models
     When the profile "aissemble-maven-modules" is generated
-    Then the pipeline POM has a dependency on "example-data-records"
+    Then the pipeline POM has a "<packaging>" dependency on "example-data-records"
 
     Examples:
-      | type      | implementation        |
-      | data-flow | data-delivery-spark   |
-      | data-flow | data-delivery-pyspark |
+      | type      | implementation        | packaging |
+      | data-flow | data-delivery-spark   | jar       |
+      | data-flow | data-delivery-pyspark | habushu   |
 
   @pipeline-generation @module-generation
   Scenario Outline: Spark and Pyspark pipelines integrate test report generation by default

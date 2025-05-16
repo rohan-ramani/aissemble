@@ -24,6 +24,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.model.Model;
+import org.codehaus.plexus.util.StringUtils;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,6 +154,15 @@ public class DataRecordsModuleStep extends AbstractModelInstanceSteps {
         the_pipeline_pom_has_a_dependency_on(pipeline.getName(), dataModule);
     }
 
+    @Then("the pipeline POM has a {string} dependency on {string}")
+    public void the_pipeline_pom_has_a_packaging_dependency_on(String type, String dataModule) throws Exception {
+        if ("jar".equals(type)) {
+          type = null; // jar is the defaut type, so should not be present in the POM file
+        }
+        BasePipelineDecorator decoratedPipeline = new BasePipelineDecorator(pipeline);
+        assertDependencyPresent(decoratedPipeline.deriveArtifactIdFromCamelCase(), dataModule, type);
+    }
+
     @Then("the pipeline POM has the plugin {string}")
     public void the_pipeline_pom_has_the_plugin(String plugin) throws Exception {
         the_pipeline_pom_has_the_plugin(pipeline.getName(), plugin);
@@ -170,10 +180,7 @@ public class DataRecordsModuleStep extends AbstractModelInstanceSteps {
 
     @Then("{string} has a dependency on {string}")
     public void has_a_dependency_on(String module, String dependency) throws Exception {
-        Path pom = projectDir.resolve(module).resolve("pom.xml");
-        assertTrue("File not created: " + pom, Files.exists(pom) && Files.isRegularFile(pom));
-        boolean hasDependency = queryPom(pom, "/project/dependencies/dependency/artifactId", dependency);
-        assertTrue("Dependency " + dependency + " not found in " + pom, hasDependency);
+        assertDependencyPresent(module, dependency, null);
     }
 
     @Then("{string} has the plugin {string}")
@@ -283,6 +290,17 @@ public class DataRecordsModuleStep extends AbstractModelInstanceSteps {
         Map<String, Notification> fileNotifications = notifications.get(file);
         assertTrue("No notifications of type " + key + " for " + file, fileNotifications.containsKey(key));
         return fileNotifications.get(key);
+    }
+
+    private void assertDependencyPresent(String module, String dependency, String type) throws Exception {
+      Path pom = projectDir.resolve(module).resolve("pom.xml");
+      assertTrue("File not created: " + pom, Files.exists(pom) && Files.isRegularFile(pom));
+      boolean hasDependency = queryPom(pom, "/project/dependencies/dependency/artifactId", dependency);
+      assertTrue("Dependency " + dependency + " not found in " + pom, hasDependency);
+      if (StringUtils.isNotBlank(type)) {
+          String actualType = queryPom(pom, "/project/dependencies/dependency[artifactId='" + dependency + "']/type").item(0).getTextContent();
+          assertEquals("Dependency " + dependency + " does not have expected type in " + pom, type, actualType);
+      }
     }
 
     /**

@@ -113,6 +113,15 @@
             "includes": ["src/main/resources/apps/*/values*.yaml"]
           }
         ]
+      },
+      {
+        "name": "habushu-monorepo-dependency-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.HabushuMonorepoDependencyMigration",
+        "fileSets": [
+          {
+            "includes": ["pom.xml"]
+          }
+        ]
       }
     ]
   },
