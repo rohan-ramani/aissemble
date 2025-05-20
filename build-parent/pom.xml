@@ -583,6 +583,7 @@
                                     </args>
                                     <buildx>
                                         <builderName>default</builderName>
+                                        <!-- use a separate state dir to ensure pre-configured credentials are not deleted -->
                                         <dockerStateDir>~/.docker/fabric8</dockerStateDir>
                                         <platforms>
                                             <platform>${docker.platforms}</platform>
