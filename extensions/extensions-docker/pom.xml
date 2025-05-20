@@ -150,7 +150,6 @@
             <id>gh-build</id>
             <properties>
                 <docker.builder.name>${env.DOCKER_BUILDER_NAME}</docker.builder.name>
-                <docker.builder.stateDir>~/.docker</docker.builder.stateDir>
             </properties>
             <build>
                 <pluginManagement>
@@ -164,7 +163,6 @@
                                         <build>
                                             <buildx>
                                                 <builderName>${docker.builder.name}</builderName>
-                                                <dockerStateDir>${docker.builder.stateDir}</dockerStateDir>
                                             </buildx>
                                         </build>
                                     </image>
