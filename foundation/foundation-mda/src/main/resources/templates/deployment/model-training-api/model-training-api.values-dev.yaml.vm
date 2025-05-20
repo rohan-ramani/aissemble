@@ -1,5 +1,6 @@
 # Dev values for model training api.
 image:
+  imagePullPolicy: IfNotPresent
   dockerRepo: ""
 
 service:
