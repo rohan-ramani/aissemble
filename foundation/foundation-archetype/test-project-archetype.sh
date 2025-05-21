@@ -13,10 +13,12 @@
 set -o pipefail
 echo -e "\n\n **** TESTING ARCHETYPE GENERATION **** \n\n"
 
-if [ $# -ne 1 ]; then
+if [ $# -eq 0 ] || [ $# -gt 2 ]; then
     echo "Incorrect number of arguments. Usage:"
     echo "   test-project-archetype.sh <archetype_version>"
     exit 1
+elif [ -n "$2" ]; then
+  PROFILES="-P$2"
 fi
 
 mkdir -p target/temp
@@ -102,7 +104,7 @@ function runBuildAndApplyManualActions {
 
   # $deployOutputStart match at end ensures the match line isn't captured. NF ensures blank lines aren't captured.
   #TODO: remove docker.skip when Habushu containerization works
-  ./mvnw -Ddocker.skip clean install | \
+  ./mvnw -Ddocker.skip clean install $PROFILES | \
       tee >(awk "BEGIN {output=0} /$outputEnd/ {output=0} NF && output {print} /$deployOutputStart/ {output=1}">deploy.out ) | \
       tee >(awk "BEGIN {output=0} /$outputEnd/ {output=0} NF && output {print} /$helmfileOutputStart/ {output=1}">helmfile.out ) | \
       tee >(awk "BEGIN {output=0} /$outputEnd/ {output=0} NF && output {print} /$helmfileAppsOutputStart/ {output=1}">helmfile-apps.out ) \
@@ -141,6 +143,7 @@ function runBuildAndApplyManualActions {
 
 package='com.bah.aiops'
 echo "Using Project Version: $1"
+echo "Using build profiles: [$PROFILES]"
 echo -e "\nINFO: Generating a new project from the archetype\n"
 rm -rf test-generator
 mvn archetype:generate -B \
@@ -335,12 +338,12 @@ runBuildAndApplyManualActions
 
 #TODO: remove docker.skip when Habushu containerization works
 echo -e "\nINFO: Running final build to ensure success"
-./mvnw -Ddocker.skip clean install || { echo -e '\n\n\t**** MAVEN BUILD FAILED ****\n\n' ; exit 1; }
+./mvnw -Ddocker.skip clean install $PROFILES || { echo -e '\n\n\t**** MAVEN BUILD FAILED ****\n\n' ; exit 1; }
 
 echo -e "\nINFO: Running fermenter generation to check for left over manual actions\n"
 # NOTE: because fermenter results are cached, the build-cache will hide remaining manual actions that were missed in previous steps
 #TODO: remove docker.skip when Habushu containerization works
-./mvnw -Ddocker.skip clean generate-sources -Dmaven.build.cache.skipCache -Dfermenter.display.message.keys=true | tee >(awk '/WARNING/ {print}' > maven-build.log) \
+./mvnw -Ddocker.skip clean generate-sources $PROFILES -Dmaven.build.cache.skipCache -Dfermenter.display.message.keys=true | tee >(awk '/WARNING/ {print}' > maven-build.log) \
     || { echo -e '\n\n\t**** MAVEN BUILD FAILED ****\n\n' ; exit 1; }
 if grep -iq 'Manual action' maven-build.log; then
   echo -e "\n\n **** ERROR: Manual action still found in build **** \n    Look at **archetype/target/temp/test-generator/maven-build.log** to see what the problem was. \n\n"

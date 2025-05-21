@@ -19,9 +19,9 @@ runs:
           libpython3.11
         echo "::endgroup::"
     - name: Install Python
-      uses: gabrielfalcao/pyenv-action@v18
+      uses: actions/setup-python@v5
       with:
-        default: 3.11.4
+        python-version: 3.11.4
     - name: Install Poetry
       uses: snok/install-poetry@v1
       # TODO: REMOVE THIS WHEN ARCHETYPE TESTS USES HABUSHU'S CONTAINERIZE DEPENDENCIES GOAL

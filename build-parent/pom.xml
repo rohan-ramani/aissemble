@@ -971,6 +971,7 @@ To suppress enforce-helm-version rule, you must add following plugin to the root
                             <artifactId>habushu-maven-plugin</artifactId>
                             <version>${version.habushu.plugin}</version>
                             <configuration>
+                                <usePyenv>false</usePyenv>
                                 <deleteVirtualEnv>true</deleteVirtualEnv>
                                 <forceSync>true</forceSync>
                                 <decryptPassword>false</decryptPassword>
