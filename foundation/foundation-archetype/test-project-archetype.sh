@@ -101,7 +101,8 @@ function runBuildAndApplyManualActions {
   outputEnd='\[WARNING\]'
 
   # $deployOutputStart match at end ensures the match line isn't captured. NF ensures blank lines aren't captured.
-  ./mvnw clean install | \
+  #TODO: remove docker.skip when Habushu containerization works
+  ./mvnw -Ddocker.skip clean install | \
       tee >(awk "BEGIN {output=0} /$outputEnd/ {output=0} NF && output {print} /$deployOutputStart/ {output=1}">deploy.out ) | \
       tee >(awk "BEGIN {output=0} /$outputEnd/ {output=0} NF && output {print} /$helmfileOutputStart/ {output=1}">helmfile.out ) | \
       tee >(awk "BEGIN {output=0} /$outputEnd/ {output=0} NF && output {print} /$helmfileAppsOutputStart/ {output=1}">helmfile-apps.out ) \
@@ -332,12 +333,14 @@ cd ../..
 echo -e "\nINFO: Generating project structure for ml pipelines\n"
 runBuildAndApplyManualActions
 
+#TODO: remove docker.skip when Habushu containerization works
 echo -e "\nINFO: Running final build to ensure success"
-./mvnw clean install || { echo -e '\n\n\t**** MAVEN BUILD FAILED ****\n\n' ; exit 1; }
+./mvnw -Ddocker.skip clean install || { echo -e '\n\n\t**** MAVEN BUILD FAILED ****\n\n' ; exit 1; }
 
 echo -e "\nINFO: Running fermenter generation to check for left over manual actions\n"
 # NOTE: because fermenter results are cached, the build-cache will hide remaining manual actions that were missed in previous steps
-./mvnw clean generate-sources -Dmaven.build.cache.skipCache -Dfermenter.display.message.keys=true | tee >(awk '/WARNING/ {print}' > maven-build.log) \
+#TODO: remove docker.skip when Habushu containerization works
+./mvnw -Ddocker.skip clean generate-sources -Dmaven.build.cache.skipCache -Dfermenter.display.message.keys=true | tee >(awk '/WARNING/ {print}' > maven-build.log) \
     || { echo -e '\n\n\t**** MAVEN BUILD FAILED ****\n\n' ; exit 1; }
 if grep -iq 'Manual action' maven-build.log; then
   echo -e "\n\n **** ERROR: Manual action still found in build **** \n    Look at **archetype/target/temp/test-generator/maven-build.log** to see what the problem was. \n\n"

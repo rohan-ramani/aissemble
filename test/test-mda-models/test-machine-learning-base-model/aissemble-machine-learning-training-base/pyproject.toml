@@ -8,8 +8,8 @@ authors = [{name = "Your Name", email = "you@example.com"}]
 requires-python = ">=3.9"
 dynamic = ["version", "dependencies"]
 
-# Ensure that generated code is included in package archives
-include = ["src/aissemble_machine_learning_training_base/generated/**/*"]
+[tool.poetry]
+packages = [{include = "aissemble_machine_learning_training_base", from = "src"}]
 
 [tool.poetry.dependencies]
 aissemble-foundation-pdp-client-python = {path = "../../../../foundation/foundation-security/aissemble-foundation-pdp-client-python", develop = true}

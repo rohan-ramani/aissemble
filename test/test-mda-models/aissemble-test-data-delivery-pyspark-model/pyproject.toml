@@ -8,8 +8,8 @@ authors = [{name = "aiSSEMBLE Baseline Community", email = "aissemble@bah.com"}]
 requires-python = ">=3.9"
 dynamic = ["version", "dependencies"]
 
-# Ensure that generated code is included in package archives
-include = ["src/aissemble_test_data_delivery_pyspark_model/generated/**/*"]
+[tool.poetry]
+packages = [{include = "aissemble_test_data_delivery_pyspark_model", from = "src" }]
 
 [tool.poetry.dependencies]
 confluent-kafka = { version = "2.1.1", optional = true }

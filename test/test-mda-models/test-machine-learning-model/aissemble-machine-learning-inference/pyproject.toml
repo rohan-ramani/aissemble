@@ -6,8 +6,8 @@ authors = [{name = "aiSSEMBLE Baseline Community", email = "aissemble@bah.com"}]
 requires-python = ">=3.9"
 dynamic = ["version", "dependencies"]
 
-# Ensure that generated code is included in package archives
-include = ["src/aissemble_machine_learning_inference/generated/**/*"]
+[tool.poetry]
+packages = [{include = "aissemble_machine_learning_inference", from = "src"}]
 
 [tool.poetry.dependencies]
 aissemble-foundation-pdp-client-python = {path = "../../../../foundation/foundation-security/aissemble-foundation-pdp-client-python", develop = true}
@@ -33,9 +33,6 @@ grpcio-testing = "^1.50.0"
 kappa-maki = ">=1.0.1"
 pylint = "^3.1.0"
 ruff = "^0.11.7"
-
-[tool.pylint.MASTER]
-ignore-patterns = '.*pb2[\S]*.py'
 
 [build-system]
 requires = ["poetry-core>=1.7.0"]

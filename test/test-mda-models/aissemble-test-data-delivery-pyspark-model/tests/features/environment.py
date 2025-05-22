@@ -10,7 +10,6 @@
 import os
 import json
 import time
-import packaging.version
 from importlib import metadata
 from pyspark.sql import SparkSession
 from krausening.logging import LogManager
