@@ -55,7 +55,6 @@ class Facet:
             (OpenLineageBaseFacet,),
             mapping,
         )
-        # pylint: disable-next=not-callable
         custom_lineage_class = attr.s(these=attr_mapping, init=False)(
             custom_lineage_class
         )
