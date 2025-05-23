@@ -1,5 +1,3 @@
-[tool.poetry]
-
 [project]
 name = "aissemble-machine-learning-training-base"
 version = "1.13.0.dev"
@@ -8,8 +6,8 @@ authors = [{name = "Your Name", email = "you@example.com"}]
 requires-python = ">=3.9"
 dynamic = ["version", "dependencies"]
 
-# Ensure that generated code is included in package archives
-include = ["src/aissemble_machine_learning_training_base/generated/**/*"]
+[tool.poetry]
+packages = [{include = "aissemble_machine_learning_training_base", from = "src"}]
 
 [tool.poetry.dependencies]
 aissemble-foundation-pdp-client-python = {path = "../../../../foundation/foundation-security/aissemble-foundation-pdp-client-python", develop = true}
@@ -36,13 +34,14 @@ protobuf = "^3.20.3"
 
 
 [tool.poetry.group.dev.dependencies]
-black = ">=22.1.0"
 behave = ">=1.2.6"
 nose = ">=1.3.7"
 kappa-maki = ">=1.0.1"
-pylint = "^3.1.0"
+ruff = "^0.11.7"
 
 
 [build-system]
 requires = ["poetry-core>=1.7.0"]
 build-backend = "poetry.core.masonry.api"
+
+

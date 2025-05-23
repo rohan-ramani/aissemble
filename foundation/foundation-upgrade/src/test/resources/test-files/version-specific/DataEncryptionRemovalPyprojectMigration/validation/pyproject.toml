@@ -7,8 +7,8 @@ version = "1.0.0.dev"
 description = "Description of package"
 authors = ["Your Name <you@example.com>"]
 
-# Ensure that generated code is included in package archives
-include = ["src/pyspark_pipeline/generated/**/*"]
+[tool.poetry]
+packages = [{include = "pyspark_pipeline", from = "src"}]
 
 [tool.poetry.dependencies]
 verify-1-12-data-records-python = {path = "../../verify-1-12-shared/verify-1-12-data-records-python", develop = true}

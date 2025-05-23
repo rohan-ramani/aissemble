@@ -1,15 +1,13 @@
 #HABUSHU_BUILDER_STAGE - HABUSHU GENERATED CODE (DO NOT MODIFY)
 FROM docker.io/python:3.11 AS habushu_builder
 
-ENV POETRY_CACHE_DIR="/.cache/pypoetry"
+# Install pipx
+RUN python -m ensurepip --upgrade
+RUN python -m pip install --user pipx
 
 # Poetry and supporting plugin installations
-RUN --mount=type=cache,target=/root/.cache/pip \
-    --mount=type=cache,target=/.cache/pypoetry/ \
-    python -m ensurepip --upgrade && \
-    pip install poetry && \
-    poetry self add poetry-monorepo-dependency-plugin && \
-    poetry self add poetry-plugin-bundle
+RUN $HOME/.local/bin/pipx install poetry==2.0.1 && \
+    $HOME/.local/bin/poetry self add poetry-plugin-bundle@1.5.0
 
 WORKDIR /work-dir
 COPY --chown=1001 target/containerize-support ./containerize-support/
@@ -17,11 +15,12 @@ RUN find . -type f -name pyproject.toml -exec sed -i 's|develop[[:blank:]]*=[[:b
 
 USER root
 WORKDIR /work-dir/containerize-support/foundation/aissemble-foundation-versioning-service
+ENV POETRY_CACHE_DIR="/.cache/pypoetry"
 
-# export target project's virtual environment to /opt/venv
-RUN --mount=type=cache,target=/.cache/pypoetry/ \
-    poetry lock && \
-    poetry bundle venv /opt/venv
+# Export target project's virtual environment to /opt/venv
+RUN --mount=type=cache,target=${POETRY_CACHE_DIR} \
+    $HOME/.local/bin/poetry lock && \
+    $HOME/.local/bin/poetry bundle venv /opt/venv
 #HABUSHU_BUILDER_STAGE - HABUSHU GENERATED CODE (END)
 
 FROM docker.io/python:3.11 AS builder
@@ -36,8 +35,9 @@ COPY ./src/main/resources/model_versioning /app/model_versioning
 
 #HABUSHU_FINAL_STAGE - HABUSHU GENERATED CODE (DO NOT MODIFY)
 FROM docker.io/python:3.11-slim AS final
+
 # Copy venv from builder and activate by adding to the path
-COPY --from=habushu_builder --chown=1001 /opt/venv /opt/venv/
+COPY --from=habushu_builder --chown=1001 --chmod=744 /opt/venv /opt/venv/
 ENV PATH="/opt/venv/bin:$PATH"
 #HABUSHU_FINAL_STAGE - HABUSHU GENERATED CODE (END)
 
