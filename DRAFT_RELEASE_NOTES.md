@@ -20,8 +20,7 @@ Spark upgraded from 3.5.4 to 3.5.5. For upgrade information, see the Spark [rele
 New projects generated on version 1.13.0 of aiSSEMBLE will use Poetry 2.x.  With this update, the minimum version of Python supported by aiSSEMBLE is updated from 3.8 to 3.9.
 
 ## Habushu 3.0 upgrade
-Starting with aiSSEMBLE version 1.13.0, newly generated projects will use Habushu [3.0.0](https://github.com/TechnologyBrewery/habushu/releases/tag/habushu-3.0.0). This release includes several significant improvements, most notably support for UV, a modern Python packaging and build tool comparable to Poetry. Because Habushu 3 has dropped support for other containerization approaches, aiSSEMBLE will now use the [containerize-dependencies feature](https://github.com/TechnologyBrewery/habushu/blob/dev/docs/CONFIGURATION_README.md#containerization-configurations) to package PySpark and Machine Learning pipelines. Users should update their `<project-name>-docker/<project-name>-<training-step-name>-docker/src/main/resources/Dockerfile` with the appropriate `#HABUSHU_BUILDER_STAGE` and `#HABUSHU_FINAL_STAGE` tags to utilize the new behavior. For more information, reference the [examples](https://github.com/TechnologyBrewery/habushu/blob/dev/examples/poetry/habushu-poetry-containerize/README.md) provided by Habushu.
-
+Habushu has been upgraded to [version 3.0](https://github.com/TechnologyBrewery/habushu/releases/tag/habushu-3.0.0). Because Habushu 3 has dropped support for other containerization approaches, aiSSEMBLE will now use the [containerize-dependencies feature](https://github.com/TechnologyBrewery/habushu/blob/dev/docs/CONFIGURATION_README.md#containerization-configurations) to package PySpark and Machine Learning pipelines.  The Habushu project has [examples](https://github.com/TechnologyBrewery/habushu/blob/dev/examples/poetry/habushu-poetry-containerize/README.md) to help illustrate how containerization works.
 
 ## Dependency Upgrades
 | Dependency                          | from          | to                                                   | Reason/Note                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -42,6 +41,7 @@ Starting with aiSSEMBLE version 1.13.0, newly generated projects will use Habush
 | org.technologybrewery.habushu       | 2.18.1        | 3.0.0                                                | For upgrade information, see the Habushu [release notes](https://github.com/TechnologyBrewery/habushu/releases)                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | mlflow                              | 2.3.1         | 2.22.0                                               | Resolve Critical/High CVE issue                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | pandas                              | ^1.5.0        | >=1.5.0                                              | Fixes version incompatibility with MLFlow 2.22.0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+
 
 # Breaking Changes
 _Note: instructions for adapting to these changes are outlined in the upgrade instructions below._
@@ -74,7 +74,6 @@ When using a Docker daemon that does not reside in `/var/run` (e.g. running Ranc
 
 | Date<br/>identified | Vulnerability | Severity | Package | Affected <br/>versions | CVE | Fixed <br/>in |
 |---------------------|---------------|----------|---------|------------------------|-----|---------------|
-
 
 # How to Upgrade
 
