@@ -27,7 +27,7 @@ public class RuffTomlFileGenerationMigrationStep extends AbstractMigrationTest {
 
     @Given("a projects does not have a root ruff.toml file")
     public void a_projects_does_not_have_a_root_ruff_toml_file() {
-        setTestFileToVersionMigration("RuffTomlfileGenerationMigration", "pom.xml");
+        setTestFileToVersionMigration("RuffTomlFileGenerationMigration", "pom.xml");
     }
 
     @When("the ruff.toml generation migration is performed")

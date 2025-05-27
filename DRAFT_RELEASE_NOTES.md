@@ -51,6 +51,7 @@ _Note: instructions for adapting to these changes are outlined in the upgrade in
   - `aissemble-fastapi` docker image
 - The default behavior on the `aissemble-infrastructure-chart` has been changed. The ArgoCD chart will no longer be deployed by default. To enable the ArgoCD deployment, follow the **How to Upgrade** section for details.
 - Removed local deployment tool Tilt, and the remote deployment tool ArgoCD as we migrated to use Helmfile as the aiSSEMBLE deployment tool.
+- Habushu is now configured with [`usePyenv`](https://github.com/TechnologyBrewery/habushu/tree/3b885791b347de91b02124633b32b2b723cdd6e2/docs#usepyenv) set to `false` by default in the `ci` profile
 
 # Known Issues
 
@@ -195,6 +196,32 @@ aissemble-infrastructure-chart:
 
 ### For projects that deploy to a custom namespace
 The `aissemble-spark-application` chart has been updated to default the namespace to the release namespace (e.g. provided by `helm install --namespace X`). Unless your project needs the namespace hard-coded, it is recommended to remove `metadata.namespace` from your pipeline's _*-base-values.yaml_ file.  For projects using a GitOps approach that _relies_ on a hard-coded namespace the `metadata.namespace` property will still take precedences over the release namespace.
+
+### For projects that require using PyEnv in CI
+It is recommended that you use Python directly in CI, especially when installing Python from scratch.  If you cannot use Python directly and require version switching (e.g. a
+shared build environment with different version requirements between projects) you can switch the configuration of Habushu back to the previous setting by adding the following to
+your root _pom.xml_:
+
+```xml
+    <profiles>
+        <profile>
+            <id>ci</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.technologybrewery.habushu</groupId>
+                            <artifactId>habushu-maven-plugin</artifactId>
+                            <configuration>
+                                <usePyenv>true</usePyenv>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
+```
 
 ## Final Steps - Required for All Projects
 ### Finalizing the Upgrade
