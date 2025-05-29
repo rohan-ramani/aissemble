@@ -103,12 +103,11 @@ To reduce burden of upgrading aiSSEMBLE, the Baton project is used to automate t
 | maven-build-cache-migration                        | Updates build cache configuration to avoid stale Docker images                                                                                                                                                                                       |                                     |
 | my-sql-connector-yaml-migration                    | Update the my-sql-connector package to use the version with no CVE issue                                                                                                                                                                             |                                     |
 | trino-delta-lake-connector-yaml-migration          | Add the Delta Lake connector configuration in the Trino chart values.yaml file                                                                                                                                                                       |                                     |
-| habushu-monorepo-dependency-migration              | Ensures that all dependencies from Habushu modules on other Habushu modules in the same project are type `habushu`                                                                                                                                   |                                     |
 | ruff-toml-file-generation-migration                | Generates an initial ruff.toml file with a few lines of configuration to make the ruff linting and formatting consistent with prior linting and formatting.  This file can be configured using https://docs.astral.sh/ruff/configuration/ as a guide |                                     |
+| habushu-monorepo-dependency-migration              | Ensures that all dependencies from Habushu modules on other Habushu modules in the same project are type `habushu`                                                                                                                                   |                                     |
+| inference-docker-pom-migration                     | Update ML inference docker image generation to use Habushu's containerize-dependencies goal by adding the goal to the maven POM file                                                                                                                 |                                     |
 | spark-bom-dependency-migration                     | Adds the `aissemble-spark-bom` to data delivery pipelines for centralized Spark, Hadoop, and Hive dependency management and ensures version alignment with the `aissemble-spark` image                                                               |                                     |
 | ml-train-pipeline-docker-migration                 | Adds Habushu `containerize-dependencies` goal to relevant ML training pipeline docker pom files                                                                                                                                                      |                                     |
-| ml-train-image-tag-migration                       | Adds `imagePullPolicy: IfNotPresent` to Model training API dev values files                                                                                                                                                                          |                                     | 
-
 
 Migrations with arguments will not be executed unless that argument is provided (e.g. `./mvnw org.technologybrewery.baton:baton-maven-plugin:baton-migrate -D<argumentName>`). To deactivate any of these migrations, add the following configuration to the `baton-maven-plugin` within your root `pom.xml`:
 
@@ -230,6 +229,28 @@ your root _pom.xml_:
             </build>
         </profile>
     </profiles>
+```
+
+### For projects using Python
+With the Habushu version upgrade to 3.0.0, aiSSEMBLE will leverage Habushu's containerize-dependencies goal for these pipelines. Migrations are in place to automatically update the POM files for these docker modules but not the Dockerfile's themselves. Habushu will insert code in place of the tags `#HABUSHU_BUILDER_STAGE` and `#HABUSHU_FINAL_STAGE`. If they are not present, Habushu will place them at the top and bottom of the Dockerfile so you will need to add these tags into your dockerfile where it makes sense. Visit [Habushu's documentation](https://github.com/TechnologyBrewery/habushu/blob/dev/docs/HABUSHU_LIFECYCLE_README.md#containerize-dependencies) for more information. This is an example of a ML Inference and Ml Training dockerfile with the Habushu tags
+```dockerfile
+ARG DOCKER_BASELINE_REPO_ID
+ARG VERSION_AISSEMBLE
+
+#HABUSHU_BUILDER_STAGE
+
+#HABUSHU_FINAL_STAGE
+
+ENV GIT_PYTHON_REFRESH=quiet
+ENV ENABLE_LINEAGE=true
+
+# Ensure that any needed Krausening properties are copied and KRAUSENING_BASE environment variable is set!
+ENV KRAUSENING_BASE /app/config
+COPY target/krausening/base/ /app/config/
+COPY src/main/resources/krausening/base/ /app/config/
+
+# Start the drivers
+CMD ...
 ```
 
 ## Final Steps - Required for All Projects

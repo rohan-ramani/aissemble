@@ -131,6 +131,24 @@
             "includes": ["pom.xml"]
           }
         ]
+      },
+      {
+        "name": "inference-docker-pom-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.InferenceDockerPomMigration",
+        "fileSets": [
+          {
+            "includes": ["pom.xml"]
+          }
+        ]
+      },
+      {
+        "name": "ml-train-pipeline-docker-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.MlTrainPipelineDockerMigration",
+        "fileSets": [
+          {
+            "includes": ["pom.xml"]
+          }
+        ]
       }
     ]
   },
@@ -183,15 +201,6 @@
       {
         "name": "ruff-toml-file-generation-migration",
         "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.RuffTomlFileGenerationMigration",
-        "fileSets": [
-          {
-            "includes": ["pom.xml"]
-          }
-        ]
-      },
-      {
-        "name": "ml-train-pipeline-docker-migration",
-        "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.MlTrainPipelineDockerMigration",
         "fileSets": [
           {
             "includes": ["pom.xml"]

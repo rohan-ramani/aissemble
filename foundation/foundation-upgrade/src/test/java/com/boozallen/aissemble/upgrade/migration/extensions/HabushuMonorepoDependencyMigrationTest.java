@@ -1,4 +1,4 @@
-package com.boozallen.aissemble.upgrade.migration.version_specific;
+package com.boozallen.aissemble.upgrade.migration.extensions;
 
 /*-
  * #%L
@@ -14,6 +14,8 @@ import org.apache.maven.project.MavenProject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.boozallen.aissemble.upgrade.migration.version_specific.HabushuMonorepoDependencyMigration;
 
 /**
  * HabushuMonorepoDependencyMigrationTest
