@@ -1,30 +1,12 @@
-# Compiled class file
-*.class
-
 # Log file
 *.log
-
-# BlueJ files
-*.ctxt
 
 # IntelliJ files
 *.iml
 *.idea
 
-# Maven files
-**/*/target
-
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
@@ -36,7 +18,7 @@ hs_err_pid*
 generated/
 generated-test/
 
-# Python
+# Build output
 *.pyc
 target
 dist
@@ -45,11 +27,6 @@ poetry.lock
 # the wrapper should download the jar itself
 /.mvn/wrapper/maven-wrapper.jar
 .python-version
-
-# The proto files need to be in a "generated" folder so that when the protoc compiler generates 
-# the grpc files, they get placed into the machine_learning_inference/generated folder
-!resources/proto/machine_learning_inference/generated/inference/grpc/
-resources/proto/machine_learning_inference/generated/inference/grpc/generated
 
 # VSCode
 .vscode/
@@ -113,12 +90,12 @@ extensions/extensions-helm/aissemble-infrastructure-chart/values.yaml
 **/aissemble-machine-learning-inference/tests
 
 ### machine-learning-training
-**/aissemble_machine_learning_training/
-**/aissemble-machine-learning-training/tests
+**/aissemble-machine-learning-training/src/*
+**/aissemble-machine-learning-training/tests/*
 
 ### test-machine-learning-training-base-model
-**/aissemble_machine_learning_training_base/
-**/aissemble-machine-learning-training-base/tests
+**/aissemble-machine-learning-training-base/src/*
+**/aissemble-machine-learning-training-base/tests/*
 
 
 ## Release job files
@@ -131,7 +108,4 @@ foundation/foundation-messaging/foundation-messaging-python/aissemble-foundation
 
 # Keep package files necessary for testing/building
 !foundation/foundation-maven-plugins/mda-maven-plugin/src/test/resources/**/*
-!deequ-*-spark-*.jar
-!mysql-connector-java-*.jar
-!test/src/test/resources/docker/**/*.jar
 !docs/antora-aissemble-ui/build/ui-bundle.zip

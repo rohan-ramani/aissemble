@@ -6,7 +6,7 @@ name = "${packageName}"
 version = "1.0.0.dev"
 description = "${pipeline.description|'Description of package'}"
 authors = [{name = "Your Name", email = "<you@example.com>"}]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 
 [tool.poetry]
 packages = [{include = "${artifactIdPythonCase}", from = "src"}]
@@ -17,7 +17,7 @@ fastapi = ">=0.95.0"
 uvicorn = { version = "^0.18.0", extras = ["standard"]}
 grpcio = "^1.50.0"
 krausening = ">=20"
-pandas = "^1.5.0"
+pandas = ">=1.5.0"
 
 # The latest versions of scipy cap numpy to < 1.26.0, but older versions don't. The recent release of numpy caused
 # scipy to downgrade to a version that is incompatible with the latest version of numpy. Presumably, scipy will release
