@@ -19,11 +19,6 @@ grpcio = "^1.50.0"
 krausening = ">=20"
 pandas = ">=1.5.0"
 
-# The latest versions of scipy cap numpy to < 1.26.0, but older versions don't. The recent release of numpy caused
-# scipy to downgrade to a version that is incompatible with the latest version of numpy. Presumably, scipy will release
-# a new version that is compatible with the latest version of numpy, but until then, we need to explicitly avoid the downgrade.
-scipy = "^1.9.3"
-
 aissemble-foundation-core-python = "${aissemblePythonVersion}"
 aissemble-foundation-pdp-client-python = "${aissemblePythonVersion}"
 
