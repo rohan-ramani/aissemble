@@ -25,6 +25,7 @@ deployment:
           - key: quarkus-properties-file
             path: quarkus-properties-file
   securityContext: {}
+  containerSecurityContext: {}
   # Defaults to the default user in cluster
   serviceAccountName: ''
   automountServiceAccountToken: false
