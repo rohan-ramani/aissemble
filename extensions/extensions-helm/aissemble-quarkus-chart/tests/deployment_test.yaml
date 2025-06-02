@@ -152,3 +152,21 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].resources.limits.cpu
           value: 200m
+  - it: Security Context can be specified for the container
+    set:
+      deployment:
+        securityContext:
+          runAsUser: 50000
+        containerSecurityContext:
+          runAsUser: 1001
+          allowPrivilegedEscalation: false
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.runAsUser
+          value: 50000
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+          value: 1001
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.allowPrivilegedEscalation
+          value: false
