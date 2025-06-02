@@ -21,11 +21,6 @@ pandas = ">=1.5.0"
 # https://stackoverflow.com/questions/74981558/error-updating-python3-pip-attributeerror-module-lib-has-no-attribute-openss
 pyopenssl = ">22.1.0"
 
-# The latest versions of scipy cap numpy to < 1.26.0, but older versions don't. The recent release of numpy caused
-# scipy to downgrade to a version that is incompatible with the latest version of numpy. Presumably, scipy will release
-# a new version that is compatible with the latest version of numpy, but until then, we need to explicitly avoid the downgrade.
-scipy = "^1.9.3"
-
 # If protobuf is not explicitly downgraded and 4.x is transitively used via mlflow, developers
 # may need to set the PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python to achieve backward compatibility
 # with any modules that were generated using protobuf 3.x
