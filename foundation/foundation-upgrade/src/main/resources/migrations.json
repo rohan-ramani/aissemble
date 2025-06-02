@@ -122,6 +122,15 @@
             "includes": ["pom.xml"]
           }
         ]
+      },
+      {
+        "name": "spark-bom-dependency-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.SparkBomDependencyMigration",
+        "fileSets": [
+          {
+            "includes": ["pom.xml"]
+          }
+        ]
       }
     ]
   },

@@ -85,8 +85,6 @@ public class SparkProvidedDependenciesMigration extends AbstractPomMigration {
             builder.append(repeat(indent, 2)).append("<dependency>\n")
                     .append(repeat(indent, 3)).append("<groupId>org.apache.spark</groupId>\n")
                     .append(repeat(indent, 3)).append("<artifactId>").append(depArtifactId).append("</artifactId>\n")
-                    .append(repeat(indent, 3)).append("<version>${version.spark}</version>\n")
-                    .append(repeat(indent, 3)).append("<scope>provided</scope>\n")
                     .append(repeat(indent, 2)).append("</dependency>\n");
         }
         return builder.toString();

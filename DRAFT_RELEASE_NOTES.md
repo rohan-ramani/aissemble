@@ -101,6 +101,7 @@ To reduce burden of upgrading aiSSEMBLE, the Baton project is used to automate t
 | trino-delta-lake-connector-yaml-migration          | Add the Delta Lake connector configuration in the Trino chart values.yaml file                                                                                               |                                     |
 | habushu-monorepo-dependency-migration              | Ensures that all dependencies from Habushu modules on other Habushu modules in the same project are type `habushu`                                                           |                                     |
 | ruff-toml-file-generation-migration                | Generates an initial ruff.toml file with a few lines of configuration to make the ruff linting and formatting consistent with prior linting and formatting.  This file can be configured using https://docs.astral.sh/ruff/configuration/ as a guide |                                     |
+| spark-bom-dependency-migration                     | Adds the `aissemble-spark-bom` to data delivery pipelines for centralized Spark, Hadoop, and Hive dependency management and ensures version alignment with the `aissemble-spark` image|                                     |
 
 Migrations with arguments will not be executed unless that argument is provided (e.g. `./mvnw org.technologybrewery.baton:baton-maven-plugin:baton-migrate -D<argumentName>`). To deactivate any of these migrations, add the following configuration to the `baton-maven-plugin` within your root `pom.xml`:
 
