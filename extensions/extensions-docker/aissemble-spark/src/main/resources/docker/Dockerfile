@@ -40,7 +40,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   python${PYTHON_VERSION}-distutils \
 #provides ensurepip
   python${PYTHON_VERSION}-venv \
-  pipx \
 #Patch for CVE-2023-4863: upgrade libwebp7 to 1.3.2+
   && apt-get upgrade -y libwebp7 \
   && ln -s /usr/bin/python${PYTHON_VERSION} /usr/bin/python \

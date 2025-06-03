@@ -7,9 +7,22 @@
 ARG DOCKER_BASELINE_REPO_ID
 ARG VERSION_AISSEMBLE
 
-FROM ${DOCKER_BASELINE_REPO_ID}boozallen/aissemble-spark:${VERSION_AISSEMBLE}
-
+#if ($pysparkPipelines.size() > 0)
+# The following two lines help work around a Habushu bug that assumes the user is root in the builder
+FROM ${DOCKER_BASELINE_REPO_ID}boozallen/aissemble-spark:${VERSION_AISSEMBLE} AS root_habushu_builder
 USER root
+
+#HABUSHU_BUILDER_STAGE
+
+#HABUSHU_FINAL_STAGE
+
+RUN chown -R spark:spark /opt/venv
+
+#else
+# If no Pyspark pipelines exist then Java based pipelines will still need this FROM statement
+
+FROM ${DOCKER_BASELINE_REPO_ID}boozallen/aissemble-spark:${VERSION_AISSEMBLE}
+#end
 
 #if (${enableSedonaSupport})
 # Add GEOS library
@@ -19,21 +32,8 @@ RUN apt-get update -y && apt-get install -y \
     && apt-get clean
 #end
 
-WORKDIR /
-
-#Install 3rd party Pyspark pipeline dependencies (does nothing if you only have Spark pipelines)
-COPY ./target/dockerbuild/requirements/. /tmp/requirements/
-RUN set -e && files=$(find /tmp/requirements -path '/tmp/requirements/*/*' -name requirements.txt -type f); for file in $files; do python3 -m pip install --no-cache-dir -r $file || exit 1; done;
-
-#Install monorepo Pyspark pipeline dependencies (does nothing if you only have Spark pipelines)
-COPY ./target/dockerbuild/wheels/. /tmp/wheels/
-RUN set -e && files=$(find /tmp/wheels -path '/tmp/wheels/*' -name '*.whl' -type f); for file in $files; do python3 -m pip install --no-cache-dir $file || exit 1; done;
-
 #Pipelines
 COPY --chown=spark:spark --chmod=777 ./target/dockerbuild/. /opt/spark/jobs/pipelines/
-
-#Install Pyspark pipelines (does nothing if you only have Spark pipelines)
-RUN set -e && files=$(find /opt/spark/jobs -path '/opt/spark/jobs/pipelines/*/*' -name '*.tar.gz' -type f); for file in $files; do python3 -m pip install --no-deps --no-cache-dir $file || exit 1; done;
 
 COPY --chown=spark ./src/main/resources/krausening/ ${SPARK_HOME}/krausening/
 
