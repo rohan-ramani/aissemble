@@ -15,3 +15,31 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     && apt-get upgrade -y \
     && apt-get install -y openjdk-17-jdk \
     && update-ca-certificates
+
+ARG PYTHON_VERSION=3.11
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update repositories and add necessary ones
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get -y update \
+    && apt-get install -y software-properties-common \
+    && add-apt-repository universe \
+    && add-apt-repository ppa:deadsnakes/ppa
+
+# Install Python and related packages, and perform cleanup
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update -y && apt-get install --assume-yes \
+    python${PYTHON_VERSION} \
+    python${PYTHON_VERSION}-distutils \
+    python${PYTHON_VERSION}-dev \
+    python${PYTHON_VERSION}-venv \
+    gcc \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -s /usr/bin/python${PYTHON_VERSION} /usr/bin/python
+
+RUN python -m ensurepip --upgrade
+
+ENV PATH=/root/.local/bin:$PATH

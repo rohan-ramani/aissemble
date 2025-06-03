@@ -188,6 +188,15 @@
             "includes": ["pom.xml"]
           }
         ]
+      },
+      {
+        "name": "ml-train-pipeline-docker-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.MlTrainPipelineDockerMigration",
+        "fileSets": [
+          {
+            "includes": ["pom.xml"]
+          }
+        ]
       }
     ]
   }
