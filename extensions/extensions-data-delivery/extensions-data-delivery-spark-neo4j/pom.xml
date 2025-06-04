@@ -39,6 +39,10 @@
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_2.12</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.technologybrewery.krausening</groupId>
+            <artifactId>krausening</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
