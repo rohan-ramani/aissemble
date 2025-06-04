@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  aiSSEMBLE::Foundation::Upgrade
+  %%
+  Copyright (C) 2021 Booz Allen
+  %%
+  This software package is licensed under the Booz Allen Public License. All Rights Reserved.
+  #L%
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>${groupId}</groupId>
-        <artifactId>${parentArtifactId}</artifactId>
-        <version>${version}</version>
-    </parent>
-
-    <artifactId>${artifactId}</artifactId>
-
+    <groupId>com.boozallen</groupId>
+    <artifactId>test-aissemble-machine-learning-inference-docker</artifactId>
+    <version>1.0.0</version>
     <packaging>docker-build</packaging>
 
-    <name>${parentDescriptiveName}::Inference</name>
-    <description>Build for an Inference Docker container to run a compliant inference service</description>
+    <name>aiSSEMBLE::Test::Docker::Inference</name>
+    <description>A POM used for testing InferenceDockerPomMigration</description>
 
     <build>
         <plugins>
@@ -23,7 +28,7 @@
                 <groupId>org.technologybrewery.fermenter</groupId>
                 <artifactId>fermenter-mda</artifactId>
                 <configuration>
-                    <basePackage>${basePackage}</basePackage>
+                    <basePackage>com.boozallen.aissemble</basePackage>
                     <profile>aissemble-inference-docker</profile>
                     <propertyVariables>
                         <dockerProjectRepositoryUrl>${docker.project.repository.url}</dockerProjectRepositoryUrl>
@@ -59,7 +64,7 @@
                             <outputDirectory>${project.build.directory}/krausening/base</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.parent.parent.basedir}/${rootArtifactId}-pipelines/${inferencePipeline.pipelineArtifactId}/${inferencePipeline.stepArtifactId}/src/${inferenceModuleSnakeCase}/resources/krausening/base</directory>
+                                    <directory>${project.parent.parent.basedir}/test-pipelines/test-machine-learning-pipeline/test-aissemble-machine-learning-inference/src/test_aissemble_machine_learning_inference/resources/krausening/base</directory>
                                     <filtering>false</filtering>
                                 </resource>
                             </resources>
@@ -91,12 +96,11 @@
             </plugin>
         </plugins>
     </build>
-
     <dependencies>
         <dependency>
-            <groupId>#[[${project.groupId}]]#</groupId>
-            <artifactId>${inferencePipeline.stepArtifactId}</artifactId>
-            <version>#[[${project.version}]]#</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>test-aissemble-machine-learning-inference</artifactId>
+            <version>${project.version}</version>
             <type>habushu</type>
         </dependency>
     </dependencies>
