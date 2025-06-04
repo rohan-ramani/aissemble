@@ -20,7 +20,7 @@
         <!-- **************** -->
         <!-- Plugins versions -->
         <!-- **************** -->
-        <version.archetype.plugin>3.2.1</version.archetype.plugin>
+        <version.archetype.plugin>3.3.0</version.archetype.plugin>
         <version.assembly.plugin>3.7.1</version.assembly.plugin>
         <version.buildhelper.plugin>3.6.0</version.buildhelper.plugin>
         <version.buildnumber.plugin>3.2.1</version.buildnumber.plugin>
@@ -64,7 +64,7 @@
         <version.kafka.client>3.8.0</version.kafka.client>
         <version.netty.handler>4.1.118.Final</version.netty.handler>
         <version.xstream>1.4.21</version.xstream>
-        <version.keycloak>26.0.6</version.keycloak>
+        <version.keycloak>26.1.2</version.keycloak>
 
         <!-- Java EE Dependencies -->
         <version.jakarta.cdi>4.0.1</version.jakarta.cdi>
@@ -185,18 +185,36 @@
             <artifactId>fermenter-mda</artifactId>
             <version>${version.fermenter}</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.technologybrewery.habushu</groupId>
             <artifactId>habushu-maven-plugin</artifactId>
             <version>${version.habushu.plugin}</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.technologybrewery.baton</groupId>
             <artifactId>baton-maven-plugin</artifactId>
             <version>${version.baton}</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- END: workaround to get maven build cache invalidation on new SNAPSHOTS of commonly updated plugins -->
     </dependencies>

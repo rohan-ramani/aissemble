@@ -52,6 +52,12 @@
             <version>3.3.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>net.masterthought</groupId>
+            <artifactId>cucumber-reporting</artifactId>
+            <version>${version.cucumber.reporting.plugin}</version>
+            <scope>test</scope>
+        </dependency>
         <!-- Supports archetype execution via Groovy Shell -->
         <dependency>
             <groupId>org.apache.maven.wagon</groupId>
@@ -60,9 +66,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>net.masterthought</groupId>
-            <artifactId>cucumber-reporting</artifactId>
-            <version>${version.cucumber.reporting.plugin}</version>
+            <groupId>org.eclipse.aether</groupId>
+            <artifactId>aether-api</artifactId>
+            <version>1.1.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -19,6 +19,10 @@
             <artifactId>postgresql</artifactId>
             <version>${version.postgresql}</version>
         </dependency>
+        <dependency>
+            <groupId>org.technologybrewery.krausening</groupId>
+            <artifactId>krausening</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
