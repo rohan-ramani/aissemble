@@ -10,16 +10,13 @@ package com.boozallen.aissemble.upgrade.migration.version_specific;
  * #L%
  */
 
-import java.io.FileReader;
 import java.io.IOException;
 
-import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import com.boozallen.aissemble.upgrade.migration.AbstractMigrationTest;
 import com.boozallen.aissemble.upgrade.migration.extensions.HabushuMonorepoDependencyMigrationTest;
+import com.boozallen.aissemble.upgrade.migration.utils.MigrationTestUtils;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -33,7 +30,7 @@ public class HabushuContainerizationSteps extends AbstractMigrationTest {
     @Given("a POM with packaging habushu")
     public void aPomWithPackagingHabushu() throws IOException, XmlPullParserException {
         setTestFileToVersionMigration("HabushuMonorepoDependencyMigration", "pom.xml");
-        habushuMonorepoDependencyMigration.setMavenProject(createMavenProjectFromPom());
+        habushuMonorepoDependencyMigration.setMavenProject(MigrationTestUtils.createMavenProjectFromPom(testFile));
     }
 
     @Given("a pom-type dependency on another habushu-packaged module that is in the list of Maven projects")
@@ -45,13 +42,13 @@ public class HabushuContainerizationSteps extends AbstractMigrationTest {
     @Given("an training POM without a Habushu containerize goal")
     public void anTrainingPOMWithoutAHabushuContainerizeGoal() throws IOException, XmlPullParserException {
         setTestFileToVersionMigration("MlTrainPipelineDockerMigration", "pom.xml");
-        trainingDockerPomMigration.setMavenProject(createMavenProjectFromPom());
+        trainingDockerPomMigration.setMavenProject(MigrationTestUtils.createMavenProjectFromPom(testFile));
     }
 
     @Given("an training POM with a Habushu containerize goal")
     public void anTrainingPOMWithAHabushuContainerizeGoal() throws XmlPullParserException, IOException {
         setTestFileToVersionMigration("MlTrainPipelineDockerMigration", "pom-with-containerize.xml");
-        trainingDockerPomMigration.setMavenProject(createMavenProjectFromPom());
+        trainingDockerPomMigration.setMavenProject(MigrationTestUtils.createMavenProjectFromPom(testFile));
     }
 
     @Given("the fermenter-mda plugin has the profile aissemble-training-docker")
@@ -68,13 +65,13 @@ public class HabushuContainerizationSteps extends AbstractMigrationTest {
     @Given("an inference POM without a Habushu containerize goal")
     public void anInferencePOMWithoutAHabushuContainerizeGoal() throws IOException, XmlPullParserException {
         setTestFileToVersionMigration("InferenceDockerPomMigration", "pom.xml");
-        inferenceDockerPomMigration.setMavenProject(createMavenProjectFromPom());
+        inferenceDockerPomMigration.setMavenProject(MigrationTestUtils.createMavenProjectFromPom(testFile));
     }
 
     @Given("an inference POM with a Habushu containerize goal")
     public void anInferencePOMWithAHabushuContainerizeGoal() throws XmlPullParserException, IOException {
         setTestFileToVersionMigration("InferenceDockerPomMigration", "pom-with-containerize.xml");
-        inferenceDockerPomMigration.setMavenProject(createMavenProjectFromPom());
+        inferenceDockerPomMigration.setMavenProject(MigrationTestUtils.createMavenProjectFromPom(testFile));
     }
 
     @Given("the fermenter-mda plugin has the profile aissemble-inference-docker")
@@ -85,7 +82,7 @@ public class HabushuContainerizationSteps extends AbstractMigrationTest {
     @Given("a non ML Inference docker POM files")
     public void aNonMLInferenceDockerPOMFiles() throws XmlPullParserException, IOException {
         setTestFileToVersionMigration("InferenceDockerPomMigration", "non-ml-inference-pom.xml");
-        inferenceDockerPomMigration.setMavenProject(createMavenProjectFromPom());
+        inferenceDockerPomMigration.setMavenProject(MigrationTestUtils.createMavenProjectFromPom(testFile));
     }
 
     @When("the inference docker pom migration executes")
@@ -118,10 +115,5 @@ public class HabushuContainerizationSteps extends AbstractMigrationTest {
     @Then("the inference docker pom migration was skipped")
     public void theInferenceDockerPomMigrationWasSkipped() {
         assertMigrationSkipped();
-    }
-
-    private MavenProject createMavenProjectFromPom() throws IOException, XmlPullParserException {
-        Model model = new MavenXpp3Reader().read(new FileReader(testFile));
-        return new MavenProject(model);
     }
 }

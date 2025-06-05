@@ -10,13 +10,17 @@ package com.boozallen.aissemble.upgrade.migration.utils;
  * #L%
  */
 
-import org.apache.maven.project.MavenProject;
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.yaml.snakeyaml.Yaml;
 
 public final class MigrationTestUtils {
 
@@ -55,5 +59,18 @@ public final class MigrationTestUtils {
         testProject.setParent(testParentProject);
 
         return testProject;
+    }
+
+    /**
+     * Created a MavenProject from a pom file. Can be used to set a migrations MavenProject to be equal to a test pom
+     * file, preventing the need to manually instantiate and set the mavenProject.
+     * NOTE: the resulting maven project will only have its model populated. It is not trivial to populate a full
+     * MavenProject with all the context from a pom file
+     *
+     * @return MavenProject equivalent of a pom file
+     */
+    public static MavenProject createMavenProjectFromPom(File pomfile) throws IOException, XmlPullParserException {
+        Model model = new MavenXpp3Reader().read(new FileReader(pomfile));
+        return new MavenProject(model);
     }
 }
