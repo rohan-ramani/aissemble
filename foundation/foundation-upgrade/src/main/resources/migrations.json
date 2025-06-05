@@ -159,6 +159,15 @@
           }
         ]
       }
+      {
+        "name": "spark-worker-docker-pom-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.SparkWorkerContainerizationPomMigration",
+        "fileSets": [
+          {
+            "includes": ["pom.xml"]
+          }
+        ]
+      }
     ]
   },
   {
