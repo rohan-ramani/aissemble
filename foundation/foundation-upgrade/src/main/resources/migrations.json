@@ -149,6 +149,15 @@
             "includes": ["pom.xml"]
           }
         ]
+      },
+      {
+        "name": "root-dependency-version-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.RootDependencyVersionMigration",
+        "fileSets": [
+          {
+            "includes": ["pom.xml"]
+          }
+        ]
       }
     ]
   },
