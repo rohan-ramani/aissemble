@@ -10,22 +10,21 @@ package com.boozallen.aissemble.upgrade.migration.version_specific;
  * #L%
  */
 
-import java.io.IOException;
-
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-
 import com.boozallen.aissemble.upgrade.migration.AbstractMigrationTest;
 import com.boozallen.aissemble.upgrade.migration.extensions.HabushuMonorepoDependencyMigrationTest;
 import com.boozallen.aissemble.upgrade.migration.utils.MigrationTestUtils;
-
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+
+import java.io.IOException;
 
 public class HabushuContainerizationSteps extends AbstractMigrationTest {
     HabushuMonorepoDependencyMigrationTest habushuMonorepoDependencyMigration = new HabushuMonorepoDependencyMigrationTest();
     MlTrainPipelineDockerMigration trainingDockerPomMigration = new MlTrainPipelineDockerMigration();
     InferenceDockerPomMigration inferenceDockerPomMigration = new InferenceDockerPomMigration();
+    SparkWorkerContainerizationPomMigration sparkWorkerContainerizationPomMigration = new SparkWorkerContainerizationPomMigration();
 
     @Given("a POM with packaging habushu")
     public void aPomWithPackagingHabushu() throws IOException, XmlPullParserException {
@@ -85,6 +84,23 @@ public class HabushuContainerizationSteps extends AbstractMigrationTest {
         inferenceDockerPomMigration.setMavenProject(MigrationTestUtils.createMavenProjectFromPom(testFile));
     }
 
+    @Given("a spark worker POM with a Habushu containerize goal")
+    public void a_spark_worker_pom_with_a_habushu_containerize_goal() throws XmlPullParserException, IOException {
+        setTestFileToVersionMigration("SparkWorkerContainerizationPomMigration", "with-habushu-containerize-plugin-pom.xml");
+        sparkWorkerContainerizationPomMigration.setMavenProject(MigrationTestUtils.createMavenProjectFromPom(testFile));
+    }
+
+    @Given("the fermenter-mda plugin has the profile aissemble-spark-worker-docker")
+    public void the_fermenter_mda_plugin_has_the_profile_aissemble_spark_worker_docker() {
+        // Already covered by test POM file content
+    }
+
+    @Given("a spark worker POM without a Habushu containerize goal")
+    public void a_spark_worker_pom_without_a_habushu_containerize_goal() throws XmlPullParserException, IOException {
+        setTestFileToVersionMigration("SparkWorkerContainerizationPomMigration", "pom.xml");
+        sparkWorkerContainerizationPomMigration.setMavenProject(MigrationTestUtils.createMavenProjectFromPom(testFile));
+    }
+
     @When("the inference docker pom migration executes")
     public void theInferenceDockerPomMigrationExecutes() {
         performMigration(inferenceDockerPomMigration);
@@ -93,6 +109,11 @@ public class HabushuContainerizationSteps extends AbstractMigrationTest {
     @When("the Habushu dependency type migration executes")
     public void theHabushuDependencyTypeMigrationExecutes() {
         performMigration(habushuMonorepoDependencyMigration);
+    }
+
+    @When("the spark worker docker pom migration executes")
+    public void the_spark_worker_docker_pom_migration_executes() {
+        performMigration(sparkWorkerContainerizationPomMigration);
     }
 
     @Then("the type of the monorepo dependency is updated to habushu")
@@ -115,5 +136,16 @@ public class HabushuContainerizationSteps extends AbstractMigrationTest {
     @Then("the inference docker pom migration was skipped")
     public void theInferenceDockerPomMigrationWasSkipped() {
         assertMigrationSkipped();
+    }
+
+    @Then("the spark worker docker pom migration was skipped")
+    public void the_spark_worker_docker_pom_migration_was_skipped() {
+        assertMigrationSkipped();
+    }
+
+    @Then("the spark worker docker POM is updated to use the habushu containerize goal")
+    public void the_spark_worker_docker_pom_is_updated_to_use_the_habushu_containerize_goal() {
+        assertMigrationSuccess();
+        assertTestFileMatchesExpectedFile("Spark Worker Docker POM Containerization did not match");
     }
 }

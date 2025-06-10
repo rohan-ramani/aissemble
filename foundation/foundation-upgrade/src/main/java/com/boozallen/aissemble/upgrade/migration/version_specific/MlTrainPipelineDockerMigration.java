@@ -29,6 +29,8 @@ import org.technologybrewery.baton.util.pom.PomModifications;
 public class MlTrainPipelineDockerMigration extends AbstractContainerizeMigration {
     protected static final Logger logger = LoggerFactory.getLogger(MlTrainPipelineDockerMigration.class);
     private static final String AISSEMBLE_TRAINING_DOCKER = "aissemble-training-docker";
+    // Setting DOCKER_USER to null equates to using the default value
+    protected static final String DOCKER_USER = null;
 
     @Override
     protected boolean shouldExecuteOnFile(File file) {
@@ -44,7 +46,8 @@ public class MlTrainPipelineDockerMigration extends AbstractContainerizeMigratio
         detectAndSetIndent(file);
         PomModifications modifications = new PomModifications();
 
-        String content = habushuPluginWithContainerizationGoal(3);
+        String dockerBase = "${DOCKER_BASELINE_REPO_ID}boozallen/aissemble-nvidia:${VERSION_AISSEMBLE}";
+        String content = habushuPluginWithContainerizationGoal(dockerBase, dockerBase, DOCKER_USER, 3);
         modifications.add(new PomModifications.Insertion(model.getBuild().getLocation("plugins" + END), 3, ignore -> content));
 
         return PomHelper.writeModifications(file, modifications.finalizeMods());

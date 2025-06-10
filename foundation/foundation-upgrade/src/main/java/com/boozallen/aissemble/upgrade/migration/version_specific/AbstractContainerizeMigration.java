@@ -57,7 +57,7 @@ public abstract class AbstractContainerizeMigration extends AbstractPomMigration
         return false;
     }
 
-    protected String habushuPluginWithContainerizationGoal(int indentCount){
+    protected String habushuPluginWithContainerizationGoal(String dockerBuilderBase, String dockerFinalBase, String dockerUser, int indentCount){
         StringBuilder builder = new StringBuilder();
         builder.append(repeat(indent, indentCount)).append("<plugin>\n")
                 .append(repeat(indent, indentCount+1)).append("<groupId>org.technologybrewery.habushu</groupId>\n")
@@ -71,9 +71,14 @@ public abstract class AbstractContainerizeMigration extends AbstractPomMigration
                 .append(repeat(indent, indentCount+3)).append("<phase>prepare-package</phase>\n")
                 .append(repeat(indent, indentCount+3)).append("<configuration>\n")
                 .append(repeat(indent, indentCount+4)).append("<dockerfile>src/main/resources/docker/Dockerfile</dockerfile>\n")
-                .append(repeat(indent, indentCount+4)).append("<dockerBuilderBase>${DOCKER_BASELINE_REPO_ID}boozallen/aissemble-nvidia:${VERSION_AISSEMBLE}</dockerBuilderBase>\n")
-                .append(repeat(indent, indentCount+4)).append("<dockerFinalBase>${DOCKER_BASELINE_REPO_ID}boozallen/aissemble-nvidia:${VERSION_AISSEMBLE}</dockerFinalBase>\n")
-                .append(repeat(indent, indentCount+3)).append("</configuration>\n")
+                .append(repeat(indent, indentCount+4)).append("<dockerBuilderBase>" + dockerBuilderBase + "</dockerBuilderBase>\n")
+                .append(repeat(indent, indentCount+4)).append("<dockerFinalBase>" + dockerFinalBase + "</dockerFinalBase>\n");
+
+        if(dockerUser != null){
+            builder.append(repeat(indent, indentCount+4)).append("<dockerUser>" + dockerUser + "</dockerUser>\n");
+        }
+
+        builder.append(repeat(indent, indentCount+3)).append("</configuration>\n")
                 .append(repeat(indent, indentCount+2)).append("</execution>\n")
                 .append(repeat(indent, indentCount+1)).append("</executions>\n")
                 .append(repeat(indent, indentCount)).append("</plugin>\n");

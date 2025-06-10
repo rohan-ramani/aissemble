@@ -38,3 +38,15 @@ Feature: Habushu Containerization Migration
     Given a non ML Inference docker POM files
     When the inference docker pom migration executes
     Then the inference docker pom migration was skipped
+
+  Scenario: Spark worker docker pom files are updated to leverage the Habushu containerize goal
+    Given a spark worker POM without a Habushu containerize goal
+    And the fermenter-mda plugin has the profile aissemble-spark-worker-docker
+    When the spark worker docker pom migration executes
+    Then the spark worker docker POM is updated to use the habushu containerize goal
+
+  Scenario: Spark worker docker POM file has Habushu containerize goal, the migration should be skipped
+    Given a spark worker POM with a Habushu containerize goal
+    And the fermenter-mda plugin has the profile aissemble-spark-worker-docker
+    When the spark worker docker pom migration executes
+    Then the spark worker docker pom migration was skipped

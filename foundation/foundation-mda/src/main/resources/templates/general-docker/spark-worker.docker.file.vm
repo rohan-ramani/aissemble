@@ -37,6 +37,5 @@ COPY --chown=spark:spark --chmod=777 ./target/dockerbuild/. /opt/spark/jobs/pipe
 
 COPY --chown=spark ./src/main/resources/krausening/ ${SPARK_HOME}/krausening/
 
-# Switch to the spark user (which *is* 1001)
 USER spark
 WORKDIR /opt/spark/work-dir/

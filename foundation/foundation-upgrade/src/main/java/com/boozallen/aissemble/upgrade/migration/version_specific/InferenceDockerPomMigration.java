@@ -23,6 +23,8 @@ import org.technologybrewery.baton.util.pom.PomModifications;
 public class InferenceDockerPomMigration extends AbstractContainerizeMigration {
 
     public static final String AISSEMBLE_INFERENCE_DOCKER = "aissemble-inference-docker";
+    // Setting DOCKER_USER to null equates to using the default value
+    protected static final String DOCKER_USER = null;
 
     /**
      * Determines if the migration should be executed. Will return true if the inference docker pom does not use the
@@ -51,7 +53,8 @@ public class InferenceDockerPomMigration extends AbstractContainerizeMigration {
         PomModifications pomModifications = new PomModifications();
 
         // Safe to assume the pom has build and plugins because "shouldExecuteOnFile" checks the fermenter plugin
-        final String insertContent = habushuPluginWithContainerizationGoal(3);
+        String dockerBase = "${DOCKER_BASELINE_REPO_ID}boozallen/aissemble-nvidia:${VERSION_AISSEMBLE}";
+        final String insertContent = habushuPluginWithContainerizationGoal(dockerBase, dockerBase, DOCKER_USER, 3);
         pomModifications.add(new PomModifications.Insertion(model.getBuild().getLocation("plugins" + END),
                 3, content -> insertContent));
         return PomHelper.writeModifications(file, pomModifications.finalizeMods());
