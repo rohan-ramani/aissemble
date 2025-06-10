@@ -55,7 +55,7 @@
 			<defaultValue>PLACEHOLDER-helm</defaultValue>
 		</requiredProperty>
 		<requiredProperty key="dockerProjectRepositoryUrl">
-			<defaultValue>docker-registry-PLACEHOLDER/repository/</defaultValue>
+			<defaultValue>docker-registry-placeholder/repository/</defaultValue>
 		</requiredProperty>
 	</requiredProperties>
 

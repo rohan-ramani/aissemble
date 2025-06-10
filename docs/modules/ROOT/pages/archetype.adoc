@@ -80,7 +80,7 @@ build and push docker images.
 Please see https://dmp.fabric8.io/#registry[fabric8's documentation on
 registry URLs,role=external,window=_blank].
 
-If not specified, this will default to `docker-registry-PLACEHOLDER/repository` and will need to be updated in your root
+If not specified, this will default to `docker-registry-placeholder/repository` and will need to be updated in your root
 `pom.xml` file prior to pushing your first docker image.
 |
 * `docker.io/mydomain/repository`
