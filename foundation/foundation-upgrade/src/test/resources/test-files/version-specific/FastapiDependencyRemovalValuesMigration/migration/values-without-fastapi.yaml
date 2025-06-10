@@ -10,5 +10,5 @@ aissemble-versioning-chart:
     name: test-name
   image:
     name: test-image-name
-    dockerRepo: docker-registry-PLACEHOLDER/repository/
+    dockerRepo: docker-registry-placeholder/repository/
     tag: latest

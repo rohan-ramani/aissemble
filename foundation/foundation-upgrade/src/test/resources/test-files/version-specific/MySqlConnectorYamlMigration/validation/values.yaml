@@ -3,7 +3,7 @@ metadata:
 sparkApp:
   spec:
     type: Java
-    image: "docker-registry-PLACEHOLDER/repository/test-update-mysql-connector-regression-spark-worker-docker:1.0.0-SNAPSHOT"
+    image: "docker-registry-placeholder/repository/test-update-mysql-connector-regression-spark-worker-docker:1.0.0-SNAPSHOT"
     mainClass: simple.test.SyncSparkPipelineDriver
     mainApplicationFile: "local:///opt/spark/jobs/pipelines/sync-spark-pipeline.jar"
     deps:
