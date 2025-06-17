@@ -61,7 +61,7 @@
         <version.plexus.util>3.5.1</version.plexus.util>
         <version.jackson.mapper.asl>1.9.3</version.jackson.mapper.asl>
         <version.jjwt>0.11.2</version.jjwt>
-        <version.kafka.client>3.8.0</version.kafka.client>
+        <version.kafka.client>3.9.1</version.kafka.client>
         <version.netty.handler>4.1.118.Final</version.netty.handler>
         <version.xstream>1.4.21</version.xstream>
         <version.keycloak>26.1.2</version.keycloak>
