@@ -13,6 +13,10 @@ on:
   schedule:
     - cron: "0 6 * * *" # every day at 6am UTC
 
+permissions:
+  contents: write # Requires 'write' for updating the dependency graph
+  packages: write
+
 jobs:
   build:
     runs-on: arc-runner-set-aissemble

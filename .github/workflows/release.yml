@@ -16,6 +16,10 @@ on:
         required: false
         type: string
 
+permissions:
+  contents: write # Requires 'write' to update Antora docs
+  packages: write
+
 jobs:
   build:
 

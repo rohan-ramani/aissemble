@@ -9,9 +9,10 @@ on:
   schedule:
     - cron: "0 0 * * *"  # every day at midnight
 
-jobs:
+permissions:
+  packages: write
 
-  
+jobs:
   prune_ghcr:
     runs-on: ubuntu-latest
 
