@@ -14,7 +14,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 requests = ">=2.32.2"
-urllib3 = "^1.26.18"
+urllib3 = "^2.5.0"
 
 [tool.poetry.group.dev.dependencies]
 behave = ">=1.2.6"

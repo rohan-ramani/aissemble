@@ -21,9 +21,7 @@ mlflow = ">=2.22.0"
 fastapi = ">=0.95.0"
 uvicorn = {version = "^0.18.0", extras = ["standard"]}
 
-# Poetry export-without-path-deps fails due to a "Dependency walk failed at urllib3 (>=1.26.0)"
-# Adding to resolve the issue; Poetry changes the value from >= -> ^
-urllib3 = "^1.26.18"
+urllib3 = "^2.5.0"
 
 aissemble-foundation-core-python = {path = "../aissemble-foundation-core-python/", develop = true}
 aissemble-foundation-pdp-client-python = {path = "../foundation-security/aissemble-foundation-pdp-client-python/", develop = true}
