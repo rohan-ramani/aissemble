@@ -18,7 +18,7 @@ pydantic = ">=2.8.0"
 
 pyspark = "3.5.5"
 cryptography = ">=42.0.4"
-urllib3 = "^1.26.18"
+urllib3 = "^2.5.0"
 
 aissemble-foundation-core-python = {path = "../../../foundation/aissemble-foundation-core-python/", develop = true}
 aissemble-foundation-transform-core-python = {path = "../../../foundation/foundation-transform/aissemble-foundation-transform-core-python/", develop = true}

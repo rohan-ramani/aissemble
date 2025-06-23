@@ -48,7 +48,7 @@
         <version.postgresql>42.5.5</version.postgresql>
         <version.resteasy>6.2.8.Final</version.resteasy>
         <version.vertx>4.5.9</version.vertx>
-        <version.urllib3>^1.26.18</version.urllib3>
+        <version.urllib3>^2.5.0</version.urllib3>
         <version.fastapi>&gt;=0.95.0</version.fastapi>
         <version.uvicorn>&gt;=0.18.0</version.uvicorn>
         <version.cryptography>&gt;=42.0.4</version.cryptography>

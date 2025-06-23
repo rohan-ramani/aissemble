@@ -162,7 +162,7 @@ class ${pipeline.capitalizedName}Base(ABC):
         #end
         try:
             with mlflow.start_run() as run:
-                self.training_run_id = run.info.run_uuid
+                self.training_run_id = run.info.run_id
     #if ($pipeline.trainingStep.isModelLineageEnabled())
                 event_data = self.create_base_lineage_event_data()
                 default_namespace = self.get_default_namespace()

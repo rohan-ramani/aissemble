@@ -29,7 +29,7 @@ pyopenssl = ">22.1.0"
 # If protobuf is not explicitly downgraded and 4.x is transitively used via mlflow, developers
 # may need to set the PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python to achieve backward compatibility
 # with any modules that were generated using protobuf 3.x
-protobuf = "^3.20.3"
+protobuf = "4.25.8"
 
 confluent-kafka = { version = "2.1.1", optional = true }
 
