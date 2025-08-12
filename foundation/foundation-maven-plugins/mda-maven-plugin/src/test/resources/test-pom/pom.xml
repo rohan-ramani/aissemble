@@ -26,6 +26,8 @@
                     <groupId>com.boozallen.aissemble</groupId>
                     <modelsArtifactId>test</modelsArtifactId>
                     <habushuArtifactVersion>1.0.0.dev0</habushuArtifactVersion>
+                    <!-- Something about the way we are setting up the test Maven session causes scoping issues for dependency-plugin 3.8.1 -->
+                    <mavenDependencyPluginVersion>3.6.1</mavenDependencyPluginVersion>
                 </configuration>
                 <executions>
                     <execution>

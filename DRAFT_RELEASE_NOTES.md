@@ -48,6 +48,7 @@ Habushu has been upgraded to [version 3.0](https://github.com/TechnologyBrewery/
 # Breaking Changes
 _Note: instructions for adapting to these changes are outlined in the upgrade instructions below._
 
+- Release settings are no longer inherited from the baseline
 - The data encryption modules marked for deletion in 1.13.0 have been removed. Follow **How to Upgrade** section for migration instructions. In addition, the following artifacts were removed:
   - extensions-encryption-vault-java java data encryption
   - foundation-encryption-policy-java java encryption policy
@@ -134,7 +135,15 @@ Migrations with arguments will not be executed unless that argument is provided 
     </plugin>
 ```
 
-## Precondition Steps - Required for All Projects
+## Precondition Steps
+
+### For projects using the maven-release-plugin
+Prior to upgrading, generate an effective POM with the `help` plugin and ensure all necessary configurations for the 
+`maven-release-plugin` and `nexus-staging-maven-plugin` are present directly in your project. After upgrading, the
+configuration values inherited from the baseline will no longer be present.
+```shell
+mvn help:effective-pom -Doutput=effective-pom.xml
+```
 
 ### Beginning the Upgrade
 To start your aiSSEMBLE upgrade, update your project's pom.xml to use the 1.13.0 version of the build-parent:

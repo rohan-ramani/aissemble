@@ -76,7 +76,7 @@ jobs:
           <settings>
             <servers>
               <server>
-                <id>ossrh</id>
+                <id>central</id>
                 <username>${{ secrets.SONATYPE_CENTRAL_REPO_TOKEN_USER }}</username>
                 <password>${{ secrets.SONATYPE_CENTRAL_REPO_TOKEN_KEY }}</password>
               </server>

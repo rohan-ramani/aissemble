@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.boozallen.aissemble</groupId>
         <artifactId>aissemble-parent</artifactId>
-        <version>6</version>
+        <version>7</version>
         <relativePath />
     </parent>
 
@@ -31,13 +31,6 @@
             <organizationUrl>https://boozallen.com</organizationUrl>
         </developer>
     </developers>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ghcr.io</id>
-            <url>https://maven.pkg.github.com/boozallen/aissemble</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <modules>
         <module>build-support</module>
@@ -290,11 +283,34 @@
             </build>
         </profile>
         <profile>
-            <!-- inheriting general ossrh-release setup from aissemble-parent -->
-            <id>ossrh-release</id>
+            <id>aissemble-release</id>
             <properties>
                 <maven.build.cache.enabled>false</maven.build.cache.enabled>
             </properties>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.sonatype.central</groupId>
+                            <artifactId>central-publishing-maven-plugin</artifactId>
+                            <configuration>
+                                <waitPollingInterval>15</waitPollingInterval>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <!-- Add the modified pyproject.toml files that Habushu has set to fixed versions. -->
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-scm-plugin</artifactId>
+                            <inherited>false</inherited>
+                            <configuration>
+                                <includes>**/pyproject.toml</includes>
+                                <excludes>**/target/**,**/.venv/**</excludes>
+                                <pushChanges>false</pushChanges>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
         </profile>
     </profiles>
     <build>
@@ -306,26 +322,13 @@
                     <version>${version.exec.maven.plugin}</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <configuration>
-                        <!-- how long to wait for the staging repository to be closed and released -->
-                        <stagingProgressTimeoutMinutes>30</stagingProgressTimeoutMinutes>
-                        <!-- how long to wait between checks for the staging repository to be closed and released -->
-                        <stagingProgressPauseDurationSeconds>15</stagingProgressPauseDurationSeconds>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <!-- This plugin should never run as part of a normal build, and is only ever triggered by
-                      devops/JenkinsRelease.groovy. We configure it here because it's a bit easier to read/edit/verify
-                      in the native POM compared to configuring the execution through groovy code. -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
+                    <!-- Keep downstream projects from inheriting our release setup -->
+                    <inherited>false</inherited>
                     <configuration>
                         <scmCommentPrefix>:bookmark: [maven-release-plugin] </scmCommentPrefix>
-                        <!-- the CI build already compile and verify all the packages so to shorten the release process
-                             we can skip the prepare verify phase. The help plugin allows to skip project execution
-                             completely.-->
+                        <!-- The CI build already runs compile and verify on all the packages so skip prepare verify -->
                         <preparationGoals>help:help</preparationGoals>
 
                         <!-- Because the release plugin doesn't build after updating to the next development snapshot,
@@ -335,20 +338,7 @@
                             added to the dev snapshot update commit. This wasn't noticed until now, because prior to this release
                             we were manually bumping the dev version before we even cut the actual release. -->
                         <completionGoals>org.technologybrewery.habushu:habushu-maven-plugin:initialize-habushu scm:add</completionGoals>
-                        <releaseProfiles>ossrh-release</releaseProfiles>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <!-- This plugin should not run in a normal build. It's called directly during the preparation phase
-                    of the release plugin. This adds the modified pyproject.toml file that Habushu has updated with the
-                    fixed version from the POM files for all python modules. -->
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-scm-plugin</artifactId>
-                    <inherited>false</inherited>
-                    <configuration>
-                        <includes>**/pyproject.toml</includes>
-                        <excludes>**/target/**,**/.venv/**</excludes>
-                        <pushChanges>false</pushChanges>
+                        <releaseProfiles>central-release,aissemble-release</releaseProfiles>
                     </configuration>
                 </plugin>
                 <plugin>
