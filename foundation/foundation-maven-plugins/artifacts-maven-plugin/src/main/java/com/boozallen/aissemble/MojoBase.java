@@ -11,9 +11,7 @@ package com.boozallen.aissemble;
  */
 
 import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.project.MavenProject;
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.Component;
 import org.eclipse.aether.RepositorySystem;
@@ -23,16 +21,10 @@ import org.eclipse.aether.RepositorySystem;
  */
 public abstract class MojoBase extends AbstractMojo {
 
-    @Parameter(defaultValue = "${project}", required = true, readonly = true)
-    MavenProject project;
-
     @Parameter(required = true, readonly = true, defaultValue = "${session}")
     MavenSession mavenSession;
 
     @Component
     RepositorySystem repoSystem;
-
-    @Component
-    BuildPluginManager pluginManager;
 
 }

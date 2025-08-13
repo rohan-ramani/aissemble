@@ -18,9 +18,8 @@
 
     <properties>
         <!-- versions for plugin specific dependencies-->
-        <version.mojo.executor>2.4.0</version.mojo.executor>
+        <version.mojo.executor>2.4.1</version.mojo.executor>
         <version.testing.harness>3.3.0</version.testing.harness>
-        <version.aether>1.1.0</version.aether>
     </properties>
 
     <dependencies>
@@ -90,9 +89,9 @@
             <artifactId>log4j-slf4j2-impl</artifactId>
         </dependency>
         <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            <version>1.11.0</version>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-resolver-provider</artifactId>
+            <version>${version.maven.core}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -156,18 +155,6 @@
             <groupId>org.apache.velocity.tools</groupId>
             <artifactId>velocity-tools-generic</artifactId>
             <version>3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.aether</groupId>
-            <artifactId>aether-connector-basic</artifactId>
-            <version>${version.aether}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.aether</groupId>
-            <artifactId>aether-transport-http</artifactId>
-            <version>${version.aether}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

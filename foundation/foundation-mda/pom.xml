@@ -13,11 +13,6 @@
     <name>aiSSEMBLE::Foundation::MDA</name>
     <description>Model driven architecture artifacts for aiSSEMBLE</description>
 
-    <properties>
-        <version.plexus.component>2.1.0</version.plexus.component>
-        <version.plugin.annotations>3.6.0</version.plugin.annotations>
-    </properties>
-
     <build>
         <resources>
             <resource>

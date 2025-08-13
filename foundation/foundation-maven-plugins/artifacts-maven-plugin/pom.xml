@@ -16,7 +16,8 @@
         <!-- versions for plugin specific dependencies-->
         <version.testing.harness>3.3.0</version.testing.harness>
         <version.cucumber>7.17.0</version.cucumber>
-        <version.aether>1.1.0</version.aether>
+        <!-- must match version pulled in my maven-resolver-provider -->
+        <version.resolver>1.6.3</version.resolver>
     </properties>
 
     <build>
@@ -51,46 +52,16 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.aether</groupId>
-            <artifactId>aether-connector-basic</artifactId>
-            <version>${version.aether}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.aether</groupId>
-            <artifactId>aether-transport-file</artifactId>
-            <version>${version.aether}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.aether</groupId>
-            <artifactId>aether-transport-http</artifactId>
-            <version>${version.aether}</version>
-            <scope>test</scope>
+            <groupId>org.apache.maven.</groupId>
+            <artifactId>maven-resolver-provider</artifactId>
+            <version>${version.maven.core}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
             <version>${version.plugin.plugin}</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven.plugin-testing</groupId>
-            <artifactId>maven-plugin-testing-harness</artifactId>
-            <version>${version.testing.harness}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-archiver</artifactId>
-            <version>${version.plexus.archiver}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-compat</artifactId>
-            <version>${version.maven.core}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
@@ -128,23 +99,12 @@
             <version>3.1</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-resources-plugin</artifactId>
-            <version>${version.maven.resources.plugin}</version>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j2-impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            <version>1.11.0</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Test dependencies: -->
@@ -163,6 +123,38 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-connector-basic</artifactId>
+            <version>${version.resolver}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-transport-file</artifactId>
+            <version>${version.resolver}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-transport-http</artifactId>
+            <version>${version.resolver}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugin-testing</groupId>
+            <artifactId>maven-plugin-testing-harness</artifactId>
+            <version>${version.testing.harness}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!--  Because plugin-testing-harness maintains Maven 2 compatibility,
+                 compat layer is required - should change with Maven 4 -->
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-compat</artifactId>
+            <version>${version.maven.core}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
