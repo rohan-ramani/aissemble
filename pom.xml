@@ -32,6 +32,13 @@
         </developer>
     </developers>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ghcr.io</id>
+            <url>https://maven.pkg.github.com/boozallen/aissemble</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <modules>
         <module>build-support</module>
         <module>build-parent</module>
