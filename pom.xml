@@ -80,7 +80,7 @@
         <version.slf4j>2.0.16</version.slf4j>
         <version.log4j>2.24.0</version.log4j>
         <version.log4j.transform>0.1.0</version.log4j.transform>
-        <version.cucumber.reporting.plugin>5.8.1</version.cucumber.reporting.plugin>
+        <version.cucumber.reporting.plugin>5.9.0</version.cucumber.reporting.plugin>
         <version.javax.inject>1</version.javax.inject>
         <version.rest.assured>5.5.0</version.rest.assured>
     </properties>

@@ -59,7 +59,7 @@ public class TokenSteps {
 
         Claims claims = jwt.getBody();
         assertEquals("Unexpected subject!", expectedSubject, claims.getSubject());
-        assertEquals("Unexpected audience!", expectedAudience, claims.getAudience());
+        assertEquals("Unexpected audience!", expectedAudience, claims.getAudience().iterator().next());
         assertEquals("Unexpected issuer!", expectedIssuer, claims.getIssuer());
     }
 

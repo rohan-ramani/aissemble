@@ -23,12 +23,17 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.JwtParserBuilder;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.InvalidKeyException;
 import org.aeonbits.owner.KrauseningConfigFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.crypto.SecretKey;
+import java.security.Key;
+import java.security.PublicKey;
 import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
@@ -42,22 +47,22 @@ public final class JsonWebTokenUtil {
     private static final Logger logger = LoggerFactory.getLogger(JsonWebTokenUtil.class);
     private static final SecurityConfiguration config = KrauseningConfigFactory.create(SecurityConfiguration.class);
     private static final AissembleKeyStore keyStore = new AissembleKeyStore();
-    private static PolicyDecisionPoint pdp = PolicyDecisionPoint.getInstance();
-    private static AissembleAttributeProvider attributeProvider = new AissembleAttributeProvider();
+    private static final PolicyDecisionPoint pdp = PolicyDecisionPoint.getInstance();
+    private static final AissembleAttributeProvider attributeProvider = new AissembleAttributeProvider();
 
     private JsonWebTokenUtil() {
     }
 
     public static String createToken(String subject, String audience, Collection<? extends AbstractAuthorizationRequest> ruleClaims) {
         JwtBuilder builder = Jwts.builder();
-        builder.setId(UUID.randomUUID().toString());
-        builder.setSubject(subject);
-        builder.setAudience(audience);
+        builder.id(UUID.randomUUID().toString());
+        builder.subject(subject);
+        builder.audience().add(audience);
         Date currentTime = new Date();
-        builder.setNotBefore(new Date(currentTime.getTime() - getSkewInMillis()));
-        builder.setIssuedAt(currentTime);
-        builder.setExpiration(new Date(currentTime.getTime() + getExpirationInMillis() + getSkewInMillis()));
-        builder.setIssuer(getIssuer());
+        builder.notBefore(new Date(currentTime.getTime() - getSkewInMillis()));
+        builder.issuedAt(currentTime);
+        builder.expiration(new Date(currentTime.getTime() + getExpirationInMillis() + getSkewInMillis()));
+        builder.issuer(getIssuer());
         builder.signWith(keyStore.getSigningKey());
 
         if (ruleClaims != null) {
@@ -80,7 +85,7 @@ public final class JsonWebTokenUtil {
                 }
             }
         }
-        builder.setIssuer(getIssuer());
+        builder.issuer(getIssuer());
 
         return builder.compact();
     }
@@ -90,7 +95,7 @@ public final class JsonWebTokenUtil {
 
         if (StringUtils.isNotBlank(token)) {
             Jws<Claims> jwt = JsonWebTokenUtil.parseToken(token);
-            Claims claims = jwt.getBody();
+            Claims claims = jwt.getPayload();
             userId = claims.getSubject();
         }
 
@@ -105,11 +110,11 @@ public final class JsonWebTokenUtil {
      * @return the decoded token. See JJWT for usage details.
      */
     public static Jws<Claims> parseToken(String token) {
-        JwtParser parser = Jwts.parserBuilder()
-                .setSigningKey(keyStore.getSigningKey())
+        JwtParser parser = Jwts.parser()
+                .verifyWith(keyStore.getCertificate().getPublicKey())
                 .build();
 
-        Jws<Claims> jwt = parser.parseClaimsJws(token);
+        Jws<Claims> jwt = parser.parseSignedClaims(token);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Parsed the following JWT: {}", jwt);
@@ -130,7 +135,7 @@ public final class JsonWebTokenUtil {
         String issuer = config.getTokenIssuer();
         if (StringUtils.isBlank(issuer)) {
             if (keyStore.getCertificate() != null) {
-                issuer = keyStore.getCertificate().getIssuerDN().getName();
+                issuer = keyStore.getCertificate().getIssuerX500Principal().getName();
             } else {
                 issuer = "unspecified";
                 logger.warn("No signing certificate found, defaulting to {}", issuer);
