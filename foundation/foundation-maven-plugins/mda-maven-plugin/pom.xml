@@ -20,6 +20,8 @@
         <!-- versions for plugin specific dependencies-->
         <version.mojo.executor>2.4.1</version.mojo.executor>
         <version.testing.harness>3.3.0</version.testing.harness>
+        <!-- must match version pulled in by maven-resolver-provider -->
+        <version.resolver>1.6.3</version.resolver>
     </properties>
 
     <dependencies>
@@ -121,40 +123,19 @@
             <artifactId>commons-io</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- NB: These are only required when the local .m2 repo does not contain the maven-dependency-plugin. They
+          cannot be removed without testing that condition. -->
         <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>dom4j</groupId>
-                    <artifactId>dom4j</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.velocity</groupId>
-                    <artifactId>velocity</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.velocity</groupId>
-                    <artifactId>velocity-tools</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-connector-basic</artifactId>
+            <version>${version.resolver}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-            <version>2.1.4</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity-engine-core</artifactId>
-            <version>2.4.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.velocity.tools</groupId>
-            <artifactId>velocity-tools-generic</artifactId>
-            <version>3.1</version>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-transport-http</artifactId>
+            <version>${version.resolver}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
