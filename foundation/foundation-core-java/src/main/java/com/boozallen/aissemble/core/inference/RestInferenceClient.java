@@ -73,7 +73,8 @@ public class RestInferenceClient implements InferenceClient {
                 servicePort,
                 serviceUrl,
                 route
-        ).sendJson(payload, httpResponseAsyncResult -> {
+        ).sendJson(payload)
+        .onComplete(httpResponseAsyncResult -> {
             if (httpResponseAsyncResult.failed()) {
                 logger.error("An error occurred while calling inference service: " + httpResponseAsyncResult.result().bodyAsString());
                 future.completeExceptionally(new Exception("An error occurred while calling inference service! See logs for details."));

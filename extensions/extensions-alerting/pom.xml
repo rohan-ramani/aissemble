@@ -22,99 +22,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.boozallen.aissemble</groupId>
-                <artifactId>foundation-alerting</artifactId>
-                <version>${project.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>io.smallrye.config</groupId>
-                        <artifactId>smallrye-config</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.boozallen.aissemble</groupId>
-                <artifactId>extensions-messaging-quarkus</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>aissemble-quarkus-bom</artifactId>
                 <version>${project.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.technologybrewery.krausening</groupId>
-                <artifactId>krausening</artifactId>
-                <version>${version.krausening}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.commons</groupId>
-                        <artifactId>commons-lang3</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <!-- Using Smallrye to implement reactive messaging. -->
-            <dependency>
-                <groupId>io.smallrye.reactive</groupId>
-                <artifactId>smallrye-reactive-messaging-provider</artifactId>
-                <version>${version.smallrye.reactive.messaging}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.smallrye.reactive</groupId>
-                <artifactId>mutiny-reactive-streams-operators</artifactId>
-                <version>${version.mutiny}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.smallrye.config</groupId>
-                <artifactId>smallrye-config</artifactId>
-                <version>${version.smallrye.config}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.smallrye.reactive</groupId>
-                <artifactId>smallrye-reactive-messaging-in-memory</artifactId>
-                <version>${version.smallrye.reactive.messaging}</version>
-            </dependency>
-
-            <!-- Jackson dependencies set to the version 2.10.x version accepted by
-                scala. -->
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${version.jackson}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${version.jackson}</version>
-            </dependency>
-
-            <!-- Apache Commons -->
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-collections4</artifactId>
-                <version>4.4</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>3.12.0</version>
-            </dependency>
-
-            <!-- Test dependencies -->
-            <dependency>
-                <groupId>io.cucumber</groupId>
-                <artifactId>cucumber-java</artifactId>
-                <version>${version.cucumber}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.cucumber</groupId>
-                <artifactId>cucumber-junit</artifactId>
-                <version>${version.cucumber}</version>
-                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

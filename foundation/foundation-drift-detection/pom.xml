@@ -8,7 +8,6 @@
         <version>1.13.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.boozallen.aissemble</groupId>
     <artifactId>foundation-drift-detection</artifactId>
 
     <name>aiSSEMBLE::Foundation::Drift Detection</name>
@@ -22,50 +21,6 @@
         <module>foundation-drift-detection-client-java</module>
         <module>aissemble-foundation-drift-detection-client-python</module>
     </modules>
-
-    <dependencyManagement>
-        <dependencies>
-            <!-- Python Dependencies -->
-            <dependency>
-                <groupId>org.technologybrewery.krausening</groupId>
-                <artifactId>krausening-python</artifactId>
-                <version>${version.krausening}</version>
-                <type>zip</type>
-            </dependency>
-
-            <!-- Apache Commons -->
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-collections4</artifactId>
-                <version>4.4</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>3.12.0</version>
-            </dependency>
-
-            <!-- Test dependencies -->
-            <dependency>
-                <groupId>io.cucumber</groupId>
-                <artifactId>cucumber-java</artifactId>
-                <version>${version.cucumber}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.cucumber</groupId>
-                <artifactId>cucumber-junit</artifactId>
-                <version>${version.cucumber}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.thoughtworks.xstream</groupId>
-                <artifactId>xstream</artifactId>
-                <version>${version.xstream}</version>
-                <scope>test</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <build>
         <plugins>

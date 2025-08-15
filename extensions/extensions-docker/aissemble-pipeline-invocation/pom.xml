@@ -85,7 +85,6 @@
                                                 </ports>
                                                 <volumes>
                                                     <bind>
-                                                        <volume>${project.basedir}/src/test/resources/config:/deployments/config</volume>
                                                         <volume>${project.basedir}/src/test/resources/sparkApplicationValues:/deployments/sparkApplicationValues</volume>
                                                     </bind>
                                                 </volumes>

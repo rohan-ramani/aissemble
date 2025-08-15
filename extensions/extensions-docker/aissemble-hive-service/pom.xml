@@ -18,6 +18,7 @@
         <dockerbuild.jars.directory>target/dockerbuild/lib</dockerbuild.jars.directory>
         <dockerbuild.bin.directory>target/dockerbuild/bin</dockerbuild.bin.directory>
         <dockerbuild.patch.directory>target/dockerbuild/patch</dockerbuild.patch.directory>
+        <version.netty>4.1.124.Final</version.netty>
     </properties>
 
     <dependencies>
@@ -138,7 +139,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-codec-http2</artifactId>
-            <version>4.1.117.Final</version>
+            <version>${version.netty}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -216,7 +217,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-handler</artifactId>
-            <version>4.1.118.Final</version>
+            <version>${version.netty}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>

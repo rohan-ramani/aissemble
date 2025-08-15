@@ -18,6 +18,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 krausening = ">=20"
 kafka-python = "^2.0.2"
+# TODO: why not match the Java version? this is very old comparatively
 openlineage-python = {version = "^0.21.1"}
 aissemble-foundation-messaging-python = { path = "../../../foundation-messaging/foundation-messaging-python/aissemble-foundation-messaging-python-client", develop = true}
 

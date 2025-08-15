@@ -4,7 +4,7 @@
 eck-stack:
   eck-elasticsearch:
     enabled: true
-    version: 8.1.2
+    version: 9.1.2
     nameOverride: "elasticsearch"
     fullnameOverride: "elasticsearch"
     http:

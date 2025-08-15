@@ -33,21 +33,21 @@
         <version.help.plugin>3.5.0</version.help.plugin>
         <version.krausening>20</version.krausening>
         <version.plugin.plugin>3.9.0</version.plugin.plugin>
-        <version.quarkus>3.8.6.1</version.quarkus>
+        <version.quarkus>3.15.6</version.quarkus>
         <version.quarkus.plugin>${version.quarkus}</version.quarkus.plugin>
         <version.shade.plugin>3.6.0</version.shade.plugin>
         <version.smallrye.config>3.9.1</version.smallrye.config>
         <version.smallrye.graphql>2.9.1</version.smallrye.graphql>
-        <version.smallrye.reactive.messaging>4.24.0</version.smallrye.reactive.messaging>
+        <version.smallrye.reactive.messaging>4.28.0</version.smallrye.reactive.messaging>
         <version.janino>3.1.12</version.janino>
         <version.jackson>2.15.0</version.jackson>
-        <version.jclouds>2.6.0</version.jclouds>
+        <version.jclouds>2.7.0</version.jclouds>
         <version.maven.core>3.8.6</version.maven.core>
         <version.mutiny>2.6.2</version.mutiny>
         <version.plexus.component>2.1.1</version.plexus.component>
         <version.postgresql>42.5.5</version.postgresql>
-        <version.resteasy>6.2.8.Final</version.resteasy>
-        <version.vertx>4.5.9</version.vertx>
+        <version.resteasy>6.2.12.Final</version.resteasy>
+        <version.vertx>4.5.16</version.vertx>
         <version.urllib3>^2.5.0</version.urllib3>
         <version.fastapi>&gt;=0.95.0</version.fastapi>
         <version.uvicorn>&gt;=0.18.0</version.uvicorn>
@@ -60,11 +60,11 @@
         <version.plexus.archiver>4.10.0</version.plexus.archiver>
         <version.plexus.util>3.5.1</version.plexus.util>
         <version.jackson.mapper.asl>1.9.3</version.jackson.mapper.asl>
-        <version.jjwt>0.11.2</version.jjwt>
+        <version.jjwt>0.12.7</version.jjwt>
         <version.kafka.client>3.9.1</version.kafka.client>
-        <version.netty.handler>4.1.118.Final</version.netty.handler>
+        <version.netty.handler>4.1.124.Final</version.netty.handler>
         <version.xstream>1.4.21</version.xstream>
-        <version.keycloak>26.1.2</version.keycloak>
+        <version.keycloak>26.3.2</version.keycloak>
 
         <!-- Java EE Dependencies -->
         <version.jakarta.cdi>4.0.1</version.jakarta.cdi>
@@ -79,7 +79,7 @@
         <version.scala>2.12.20</version.scala>
         <version.scala.minor>2.12</version.scala.minor>
         <version.delta>3.2.1</version.delta>
-        <version.elasticsearch>8.9.0</version.elasticsearch>
+        <version.elasticsearch>9.1.2</version.elasticsearch>
         <version.sedona>1.7.1</version.sedona>
         <version.geotools.wrapper>1.7.1-28.5</version.geotools.wrapper>
         <version.mysql-connector>9.2.0</version.mysql-connector>
@@ -157,7 +157,26 @@
         <version.snakeyaml>2.0</version.snakeyaml>
 
         <!-- OpenLineage java -->
-        <version.open.lineage.java>1.23.0</version.open.lineage.java>
+        <!-- NB 1.31+ introduces a breaking change around an "optional" root facet. To better adapt to API changes, we
+          could use the builder pattern, i.e. newXyzBuilder() instead of newXyz(args...). So:
+              OpenLineage ol = new OpenLineage(URI.create(producer));
+              ol.newParentRunFacet(
+                  ol.newParentRunFacetRun(pipelineRunId),
+                  ol.newParentRunFacetJob(pipelineJobName, pipelineJobNamespace)
+              );
+          becomes:
+              OpenLineage ol = new OpenLineage(URI.create(producer));
+              ol.newParentRunFacetBuilder()
+                .run(ol.newParentRunFacetRunBuilder()
+                       .runId(pipelineRunId)
+                       .build())
+                .job(ol.newParentRunFacetJobBuilder()
+                       .name(pipelineJobName)
+                       .namespace(pipelineJobNamespace)
+                       .build())
+                .build();
+        -->
+        <version.open.lineage.java>1.30.0</version.open.lineage.java>
     </properties>
 
     <dependencyManagement>
