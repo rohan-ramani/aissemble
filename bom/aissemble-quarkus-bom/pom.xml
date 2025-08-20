@@ -37,6 +37,15 @@
                         <groupId>org.apache.commons</groupId>
                         <artifactId>commons-lang3</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>io.netty</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                    <!-- CVE-2024-10039 -->
+                    <exclusion>
+                        <groupId>org.keycloak</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <!-- Downgrade Scala 2.13 (from Quarkus) to Scala 2.12 -->
@@ -60,6 +69,26 @@
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-clients</artifactId>
                 <version>${version.kafka.client}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec-http2</artifactId>
+                <version>${version.netty.handler}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.keycloak</groupId>
+                <artifactId>keycloak-admin-client</artifactId>
+                <version>26.0.6</version>
+            </dependency>
+            <dependency>
+                <groupId>org.keycloak</groupId>
+                <artifactId>keycloak-core</artifactId>
+                <version>${version.keycloak}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.keycloak</groupId>
+                <artifactId>keycloak-common</artifactId>
+                <version>${version.keycloak}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

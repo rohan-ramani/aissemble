@@ -218,6 +218,18 @@
             <name>s01.oss.sonatype.org-snapshots</name>
             <url>${s01.ossrh.repo.url}/snapshots/</url>
         </repository>
+        <repository>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <!-- allows us to grab patched jackson-mapper-asl for Spark 3 -->
+            <id>red-hat-ga</id>
+            <name>RedHat Repository</name>
+            <url>https://maven.repository.redhat.com/ga</url>
+        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>

@@ -11,6 +11,18 @@
     <name>aiSSEMBLE::Extensions::Docker::Data Lineage HTTP Consumer</name>
     <artifactId>aissemble-data-lineage-http-consumer</artifactId>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>aissemble-quarkus-bom</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>com.boozallen.aissemble</groupId>
@@ -26,6 +38,7 @@
             <type>docker-build</type>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -45,8 +58,6 @@
                         <configuration>
                             <outputDirectory>${project.build.directory}</outputDirectory>
                             <includeArtifactIds>extensions-data-lineage-http-consumer-service</includeArtifactIds>
-                            <type>zip</type>
-                            <classifier>app</classifier>
                             <failOnMissingClassifierArtifact>true</failOnMissingClassifierArtifact>
                         </configuration>
                     </execution>

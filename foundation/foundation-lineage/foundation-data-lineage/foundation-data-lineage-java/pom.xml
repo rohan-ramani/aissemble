@@ -50,6 +50,18 @@
             <groupId>io.openlineage</groupId>
             <artifactId>openlineage-java</artifactId>
             <version>${version.open.lineage.java}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents.client5</groupId>
+                    <artifactId>httpclient5</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- CVE-2025-27820 -->
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>5.4.3</version>
         </dependency>
         <dependency>
             <groupId>org.technologybrewery.krausening</groupId>
@@ -69,6 +81,11 @@
             <groupId>io.smallrye.reactive</groupId>
             <artifactId>smallrye-reactive-messaging-provider</artifactId>
             <version>${version.smallrye.reactive.messaging}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http2</artifactId>
+            <version>${version.netty.handler}</version>
         </dependency>
         <dependency>
             <groupId>io.smallrye.reactive</groupId>

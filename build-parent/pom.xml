@@ -47,7 +47,7 @@
         <version.plexus.component>2.1.1</version.plexus.component>
         <version.postgresql>42.5.5</version.postgresql>
         <version.resteasy>6.2.12.Final</version.resteasy>
-        <version.vertx>4.5.16</version.vertx>
+        <version.vertx>4.5.18</version.vertx>
         <version.urllib3>^2.5.0</version.urllib3>
         <version.fastapi>&gt;=0.95.0</version.fastapi>
         <version.uvicorn>&gt;=0.18.0</version.uvicorn>
@@ -182,13 +182,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- force upgrade jandex from 3.1.6 to 3.2.2 for compatibility with smalrye 4.24-->
-            <!-- NB: this will likely be unnecessary after upgrading to Quarkus 3.14+ -->
-            <dependency>
-                <groupId>io.smallrye</groupId>
-                <artifactId>jandex</artifactId>
-                <version>3.2.2</version>
-            </dependency>
             <dependency>
                 <groupId>net.masterthought</groupId>
                 <artifactId>cucumber-reporting</artifactId>

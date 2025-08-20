@@ -11,6 +11,18 @@
     <name>aiSSEMBLE::Extensions::Docker::Pipeline Invocation</name>
     <artifactId>aissemble-pipeline-invocation</artifactId>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>aissemble-quarkus-bom</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>com.boozallen.aissemble</groupId>
