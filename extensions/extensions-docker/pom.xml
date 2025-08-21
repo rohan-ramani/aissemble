@@ -67,6 +67,29 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <!-- Create an artifact associated with the docker-build packaging so that project
+                                dependency resolving works with images that depend on other docker modules. This
+                                execution will be activated by the actual docker builds by setting phase to install.-->
+                            <id>install-dockerfile</id>
+                            <phase>none</phase>
+                            <goals>
+                                <goal>install-file</goal>
+                            </goals>
+                            <configuration>
+                                <groupId>${project.groupId}</groupId>
+                                <artifactId>${project.artifactId}</artifactId>
+                                <version>${project.version}</version>
+                                <packaging>${project.packaging}</packaging>
+                                <file>src/main/resources/docker/Dockerfile</file>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>

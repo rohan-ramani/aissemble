@@ -16,6 +16,8 @@
             <groupId>com.boozallen.aissemble</groupId>
             <artifactId>extensions-data-lineage-http-consumer-service</artifactId>
             <version>${project.version}</version>
+            <classifier>app</classifier>
+            <type>zip</type>
         </dependency>
         <dependency>
             <groupId>com.boozallen.aissemble</groupId>
@@ -53,6 +55,16 @@
             <plugin>
                 <groupId>${group.fabric8.plugin}</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>install-dockerfile</id>
+                        <phase>install</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

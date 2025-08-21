@@ -20,6 +20,16 @@
 				<groupId>${group.fabric8.plugin}</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>install-dockerfile</id>
+						<phase>install</phase>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
