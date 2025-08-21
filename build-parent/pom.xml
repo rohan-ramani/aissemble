@@ -124,6 +124,7 @@
         <version.jdk.required>${maven.compiler.argument.source}</version.jdk.required>
         <version.jdk.next-unsupported>18</version.jdk.next-unsupported>
         <insecure.repositories>ERROR</insecure.repositories>
+        <enforce.docker.enabled>true</enforce.docker.enabled>
 
         <!-- maven-idea-plugin & maven-eclipse-plugin -->
         <downloadSources>true</downloadSources>
@@ -863,7 +864,7 @@
             </plugins>
         </pluginManagement>
         <plugins>
-            <!-- Check for the minimum version of Java and Maven. Runs during the
+            <!-- Check for the minimum version of Java, Maven, and helm. Checks if docker is executable. Runs during the
                 validate phase. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -938,6 +939,20 @@ To suppress enforce-helm-version rule, you must add following plugin to the root
                                     </message>
                                     <requiredHelmVersion>${version.helm.min}</requiredHelmVersion>
                                 </enforceHelmVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>enforce-docker-executable</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <enforceDockerExecutable>
+                                    <message>To suppress enforce-docker-executable rule, set `enforce.docker.enabled` to false</message>
+                                    <enabled>${enforce.docker.enabled}</enabled>
+                                </enforceDockerExecutable>
                             </rules>
                         </configuration>
                     </execution>
