@@ -81,23 +81,6 @@ update_jars() {
   done < <(find "$updated" -type f -name '*.jar')
 }
 
-
-
-#---
-## Updates Spark's jackson-mapper JAR to a RedHat version
-##
-## @param: the RedHat version name for the JAR
-#---
-update_jackson() {
-  ### The codehaus version of Jackson is defunct, but RedHat has published a patched version
-  JACKSON_VER=$1
-  echo "Updating Jackson to $JACKSON_VER"
-  jackson="https://maven.repository.redhat.com/ga/org/codehaus/jackson/jackson-mapper-asl/$JACKSON_VER/jackson-mapper-asl-$JACKSON_VER.jar"
-  wget -q "$jackson" -P /tmp/jars || exit $?
-  rm $SPARK_JARS/jackson-mapper-asl-*.jar || exit $?
-  mv "/tmp/jars/jackson-mapper-asl-$JACKSON_VER.jar" "$SPARK_JARS" || exit $?
-}
-
 #---
 ## Removes all JARs supporting Mesos functionality from Spark's JARs
 #---
@@ -133,6 +116,5 @@ SPARK_VERSION=$3
 HADOOP_VERSION=$4
 
 update_jars "$PATCH_JARS" "$SPARK_JARS"
-update_jackson '1.9.14.jdk17-redhat-00001'
 remove_mesos
 register_pyspark "$SPARK_HOME" "$SPARK_VERSION"

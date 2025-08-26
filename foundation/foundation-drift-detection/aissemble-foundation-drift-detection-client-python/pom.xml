@@ -30,6 +30,13 @@
             <classifier>app</classifier>
             <type>zip</type>
             <scope>test</scope>
+            <!-- jars are already packaged in zip -->
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

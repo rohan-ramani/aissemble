@@ -31,8 +31,6 @@
         <version.okhttp>3.14.9</version.okhttp>
         <version.parquet>1.15.1</version.parquet>
         <version.zookeeper>3.9.3</version.zookeeper>
-        <!-- Ideally, we'd use version 10.17+, but it's compiled against Java 19 -->
-        <version.derby>10.16.1.1</version.derby>
     </properties>
 
     <dependencyManagement>
@@ -67,6 +65,13 @@
                 <artifactId>spark-hive_2.12</artifactId>
                 <version>${version.spark}</version>
                 <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <!-- Only used for testing, and there is a vulnerability that can only be fixed by upgrading to Java 21 -->
+                        <groupId>org.apache.derby</groupId>
+                        <artifactId>derby</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.spark</groupId>
@@ -109,6 +114,13 @@
                 <artifactId>spark-network-common_2.12</artifactId>
                 <version>${version.spark}</version>
                 <scope>provided</scope>
+                <exclusions>
+                    <!-- not present on Spark docker image -->
+                    <exclusion>
+                        <groupId>com.google.protobuf</groupId>
+                        <artifactId>protobuf-java</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.spark</groupId>
@@ -393,6 +405,13 @@
                 <artifactId>hive-metastore</artifactId>
                 <version>${version.hive.client}</version>
                 <scope>provided</scope>
+                <exclusions>
+                    <!-- not present on Spark docker image -->
+                    <exclusion>
+                        <groupId>com.google.protobuf</groupId>
+                        <artifactId>protobuf-java</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.hive</groupId>
@@ -484,6 +503,12 @@
                 <version>${version.zookeeper}</version>
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-mapper-asl</artifactId>
+                <version>1.9.14.jdk17-redhat-00001</version>
+                <scope>provided</scope>
+            </dependency>
 
             <!-- Custom additions -->
             <dependency>
@@ -503,13 +528,7 @@
             <dependency>
                 <groupId>org.apache.derby</groupId>
                 <artifactId>derby</artifactId>
-                <version>${version.derby}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.derby</groupId>
-                <artifactId>derbytools</artifactId>
-                <version>${version.derby}</version>
+                <version>10.14.2.0</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

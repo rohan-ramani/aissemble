@@ -1,0 +1,26 @@
+name: 'Dependency review'
+on:
+  pull_request_target:
+    branches: [ "dev" ]
+
+permissions:
+  contents: write
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout repository'
+        uses: actions/checkout@v4
+      - name: 'Set up JDK 17'
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: 'Submit Dependency Graph'
+        uses: advanced-security/maven-dependency-submission-action@v4
+      - name: 'Dependency Review'
+        uses: actions/dependency-review-action@v4
+        with:
+          faile-on-severity: moderate
+
