@@ -14,10 +14,6 @@
     <description>Defines a root level project archetype that can then have pipeline archetypes added to it</description>
     <packaging>maven-archetype</packaging>
 
-    <properties>
-        <archetype.profiles></archetype.profiles>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -146,12 +142,6 @@
     
     <profiles>
         <profile>
-            <id>ci</id>
-            <properties>
-                <archetype.profiles>ci</archetype.profiles>
-            </properties>
-        </profile>
-        <profile>
             <id>archetype-test</id>
             <build>
                 <plugins>
@@ -169,7 +159,6 @@
                                     <executable>${project.basedir}/test-project-archetype.sh</executable>
                                     <arguments>
                                         <argument>${project.version}</argument>
-                                        <argument>${archetype.profiles}</argument>
                                     </arguments>
                                 </configuration>
                             </execution>

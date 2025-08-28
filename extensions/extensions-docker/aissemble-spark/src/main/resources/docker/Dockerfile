@@ -48,7 +48,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   && python -m pip install --upgrade cryptography
 
 # Pyspark uses `python3` to execute pyspark pipelines. This links out latest python install to that command.
-RUN ln -sf /usr/bin/python3.11 /usr/bin/python3
+RUN ln -sf /usr/bin/python${PYTHON_VERSION} /usr/bin/python3
 # Temporary workaround until Habushu 3 is incorporated
 RUN ln -sf /usr/bin/pipx /usr/bin/pip
 

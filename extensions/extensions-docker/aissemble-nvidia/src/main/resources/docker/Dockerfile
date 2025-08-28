@@ -38,7 +38,9 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     gcc \
     curl \
     && rm -rf /var/lib/apt/lists/* \
-    && ln -s /usr/bin/python${PYTHON_VERSION} /usr/bin/python
+    && ln -s /usr/bin/python${PYTHON_VERSION} /usr/bin/python \
+    #Habushu containerization uses `python3` to setup virtual env. This links out latest python install to that command.
+    && ln -sf /usr/bin/python${PYTHON_VERSION} /usr/bin/python3
 
 RUN python -m ensurepip --upgrade
 
