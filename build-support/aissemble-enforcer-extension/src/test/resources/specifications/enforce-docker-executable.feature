@@ -12,7 +12,7 @@ Feature: Validate if docker is executable and running
     Given the docker_host environment variable is "present"
     And the location is "unreachable"
     When the docker executable enforcer is called
-    Then an error message is throw with ".*Cannot connect to the Docker daemon at .*. Is the docker daemon running?"
+    Then an error message is throw with ".*Cannot connect to the Docker daemon at the DOCKER_HOST environment variable location .*. Is the docker daemon running?"
 
   Scenario: Docker host environment variable is not present but the default location is present, enforcer is successful
     Given the docker_host environment variable is "absent"
@@ -33,7 +33,7 @@ Feature: Validate if docker is executable and running
     And the docker context value is "rancher-desktop"
     And the default location is "unreachable"
     When the docker executable enforcer is called
-    Then an error message is throw with ".*Environment variable DOCKER_HOST needs to be set to the current Docker context host url (.*)"
+    Then an error message is throw with ".*Environment variable DOCKER_HOST needs to be set to the current Docker context host url.*"
 
   Scenario: The operating system is Windows then a warning is displayed stating the enforcer can not be ran
   and to make sure docker_host is set
