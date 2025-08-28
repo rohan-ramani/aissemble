@@ -136,7 +136,7 @@ jobs:
       # Execute archetype tests
       - name: Run Archetype Tests
         run: |
-          ./mvnw -B clean install -Pci,archetype-test -pl :foundation-archetype
+          ./mvnw -B clean install -Parchetype-test -pl :foundation-archetype
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Submit Dependency Graph
