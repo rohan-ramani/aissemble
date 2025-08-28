@@ -92,8 +92,11 @@ public class EnforceDockerExecutable extends AbstractStandardEnforcerRule {
         // Throw a helpful message to users to set the DOCKER_HOST to the current context
         try {
             dockerContextUri = new URI(getDockerContextUrl(getDockerContextName()));
-            String message = String.format("%s\nEnvironment variable DOCKER_HOST needs to be set to the " +
-                    "current Docker context host url (%s)", this.getMessage(), dockerContextUri);
+            String message = String.format("""
+                    %s
+                    Environment variable DOCKER_HOST needs to be set to the current Docker context host url
+                        export DOCKER_HOST=%s
+                    """, this.getMessage(), dockerContextUri);
             throw new EnforcerRuleException(message);
         } catch (URISyntaxException e) {
             String message = String.format("%s\nCannot connect to the Docker daemon at current Docker context path. " +
@@ -110,8 +113,8 @@ public class EnforceDockerExecutable extends AbstractStandardEnforcerRule {
         } else {
             // If present but not reachable, then fail
             if (!new File(dockerHostUri.getPath()).exists()) {
-                String message = String.format("%s\nCannot connect to the Docker daemon at %s. Is the docker " +
-                        "daemon running?", this.getMessage(), dockerHost);
+                String message = String.format("%s\nCannot connect to the Docker daemon at the DOCKER_HOST " +
+                        "environment variable location %s. Is the docker daemon running?", this.getMessage(), dockerHost);
                 throw new EnforcerRuleException(message);
             }
         }
