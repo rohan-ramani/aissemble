@@ -11,6 +11,7 @@ package com.boozallen.aissemble.alerting.teams.models;
  */
 
 import java.util.List;
+import java.util.Objects;
 
 public class CardContent {
     private String $schema;
@@ -48,5 +49,17 @@ public class CardContent {
 
     public void setBody(List<CardBodyEntry> body) {
         this.body = body;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        CardContent that = (CardContent) o;
+        return Objects.equals(get$schema(), that.get$schema()) && Objects.equals(getType(), that.getType()) && Objects.equals(getVersion(), that.getVersion()) && Objects.equals(getBody(), that.getBody());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(get$schema(), getType(), getVersion(), getBody());
     }
 }

@@ -12,6 +12,8 @@ package com.boozallen.aissemble.alerting.teams.models.entries;
 
 import com.boozallen.aissemble.alerting.teams.models.CardBodyEntry;
 
+import java.util.Objects;
+
 public class TextEntry extends CardBodyEntry {
 
     private String type;
@@ -63,5 +65,17 @@ public class TextEntry extends CardBodyEntry {
 
     public void setWrap(boolean wrap) {
         this.wrap = wrap;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        TextEntry textEntry = (TextEntry) o;
+        return isWrap() == textEntry.isWrap() && Objects.equals(getType(), textEntry.getType()) && Objects.equals(getText(), textEntry.getText()) && Objects.equals(getWeight(), textEntry.getWeight()) && Objects.equals(getSize(), textEntry.getSize());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getType(), getText(), getWeight(), getSize(), isWrap());
     }
 }

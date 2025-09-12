@@ -10,6 +10,8 @@ package com.boozallen.aissemble.alerting.teams.models;
  * #L%
  */
 
+import java.util.Objects;
+
 public class Card {
     private String contentType;
     private String contentUrl;
@@ -37,5 +39,17 @@ public class Card {
 
     public void setContent(CardContent content) {
         this.content = content;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Card card = (Card) o;
+        return Objects.equals(getContentType(), card.getContentType()) && Objects.equals(getContentUrl(), card.getContentUrl()) && Objects.equals(getContent(), card.getContent());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getContentType(), getContentUrl(), getContent());
     }
 }
