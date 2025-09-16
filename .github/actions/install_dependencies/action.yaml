@@ -24,6 +24,9 @@ runs:
         python-version: 3.11.4
     - name: Install Poetry
       uses: snok/install-poetry@v1
+      # temporary fix for the poetry 2.2.0 `poetry show --outdate` issue
+      with:
+        version: 2.1.4
     - name: Install Helm
       shell: bash
       run: |
