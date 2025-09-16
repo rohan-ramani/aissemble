@@ -13,6 +13,7 @@ package com.boozallen.aissemble.alerting.teams.models.entries;
 import com.boozallen.aissemble.alerting.teams.models.CardBodyEntry;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ContainerEntry extends CardBodyEntry {
 
@@ -37,5 +38,17 @@ public class ContainerEntry extends CardBodyEntry {
 
     public void setItems(List<CardBodyEntry> items) {
         this.items = items;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ContainerEntry that = (ContainerEntry) o;
+        return Objects.equals(getType(), that.getType()) && Objects.equals(getItems(), that.getItems());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getType(), getItems());
     }
 }

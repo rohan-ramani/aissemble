@@ -11,6 +11,7 @@ package com.boozallen.aissemble.alerting.teams.models;
  */
 
 import java.util.List;
+import java.util.Objects;
 
 public class CardMessage {
     private String type;
@@ -30,5 +31,17 @@ public class CardMessage {
 
     public void setAttachments(List<Card> attachments) {
         this.attachments = attachments;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        CardMessage that = (CardMessage) o;
+        return Objects.equals(getType(), that.getType()) && Objects.equals(getAttachments(), that.getAttachments());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getType(), getAttachments());
     }
 }

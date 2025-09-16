@@ -15,40 +15,25 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 
-import com.boozallen.aissemble.alerting.slack.cdi.SlackCdiContext;
 import com.boozallen.aissemble.alerting.slack.config.SlackConfig;
 import org.aeonbits.owner.KrauseningConfigFactory;
-import org.jboss.weld.environment.se.WeldContainer;
 
 import com.boozallen.aissemble.alerting.core.Alert;
 import com.boozallen.aissemble.alerting.core.Alert.Status;
-import com.boozallen.aissemble.alerting.core.cdi.AlertingCdiContainer;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 
-import io.cucumber.java.After;
-import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+
 public class SlackAlertingSteps {
-    private WeldContainer container;
+    private final String MESSAGE = "Test slack message, please ignore.";
 
     private ChatPostMessageResponse slackResponse;
 
     private static SlackConfig slackConfig = KrauseningConfigFactory.create(SlackConfig.class);
-
-    @Before("@alerting")
-    public void setUp() {
-        container = AlertingCdiContainer.create(new SlackCdiContext());
-    }
-
-    @After("@alerting")
-    public void tearDown() {
-        if (container != null) {
-            container.close();
-            container = null;
-        }
-    }
 
     @When("an alert is sent to slack")
     public void an_alert_is_sent_to_slack() {
@@ -56,14 +41,28 @@ public class SlackAlertingSteps {
         Alert alert = new Alert();
         alert.setId(UUID.randomUUID());
         alert.setStatus(Status.FAILURE);
-        alert.setMessage("Integration Test Output, please ignore.");
-        slackResponse = SlackClient.sendSlackMessage(alert, slackConfig.getClientHostId());
+        alert.setMessage(MESSAGE);
+        ChatPostMessageResponse response = new ChatPostMessageResponse();
+        response.setOk(true);
+        try (MockedStatic<SlackClient> mockedSlackClient = Mockito.mockStatic(SlackClient.class)) {
+            mockedSlackClient.when(() -> SlackClient.sendSlackMessage(Mockito.any(Alert.class), Mockito.anyString())).thenCallRealMethod();
+            mockedSlackClient.when(() -> SlackClient.sendSlackMessage(getMessage(alert), slackConfig.getClientHostId())).thenReturn(response);
+
+            slackResponse = SlackClient.sendSlackMessage(alert, slackConfig.getClientHostId());
+        }
     }
 
     @Then("the alert is sent to the configured slack channel successfully")
     public void the_alert_is_sent_to_the_configured_slack_channel_successfully() {
         assertNotNull("Slack response was unexpectedly null", slackResponse);
         assertTrue("slack message was sent ok", slackResponse.isOk());
+    }
+
+    private String getMessage(Alert alert) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(slackConfig.getDefaultFailureIcon());
+        builder.append(alert.getMessage());
+        return builder.toString();
     }
 
 }

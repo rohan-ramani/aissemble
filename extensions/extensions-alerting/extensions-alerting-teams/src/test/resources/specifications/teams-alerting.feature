@@ -1,4 +1,4 @@
-@teams @manual
+@teams
 Feature: Alerting -> Teams notifications
 
   As the system, I can send alerts to a configured Microsoft Teams channel
