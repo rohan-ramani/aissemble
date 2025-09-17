@@ -88,7 +88,7 @@ def step_impl(context):
         context.validation_exception = err
 
 
-@then("no Exception should be thrown")
+@then("no exception should be thrown")
 def step_impl(context):
     nt.assert_true(context.validation_exception is None)
 

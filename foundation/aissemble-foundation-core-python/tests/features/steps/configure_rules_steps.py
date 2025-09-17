@@ -78,7 +78,7 @@ def step_impl(context):
     context.policyInput.targets = [expectedTarget]
 
 
-@given("a policy exists with the following targets")
+@given("a policy exists with the following targets:")
 def step_impl(context):
     row1 = context.table[0]
     row2 = context.table[1]
@@ -90,7 +90,7 @@ def step_impl(context):
     context.policyInput.targets = expectedTargets
 
 
-@given("a policy rule specifies the target configurations")
+@given("a policy rule specifies the target configurations:")
 def step_impl(context):
     context.expectedConfigurations = dict()
     for row in context.table:
@@ -102,7 +102,7 @@ def step_impl(context):
 
 
 @given(
-    'a policy rule that uses the class "{className}" with the following configurations'
+    'a policy rule that uses the class "{className}" with the following configurations:'
 )
 def step_impl(context, className):
     configurations = dict()
