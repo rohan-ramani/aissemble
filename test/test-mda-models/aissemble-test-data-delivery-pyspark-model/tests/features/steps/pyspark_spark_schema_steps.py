@@ -150,7 +150,7 @@ def step_impl(context):
     )
 
 
-@given("the following City dataset")
+@given("the following City dataset:")
 def step_impl(context):
     cities = []
     context.schema = CitySchema()
@@ -168,7 +168,7 @@ def step_impl(context):
     context.validated_dataset = context.schema.validate_dataset(context.city_dataset)
 
 
-@then("the result dataset should match")
+@then("the result dataset should match:")
 def step_impl(context):
     rows = []
     for row in context.table:

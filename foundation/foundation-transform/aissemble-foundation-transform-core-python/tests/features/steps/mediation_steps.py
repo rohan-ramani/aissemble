@@ -21,7 +21,7 @@ from data_transform_core.mediator import MediationException
 LogManager.get_instance().get_logger("LoggingMediator").setLevel("DEBUG")
 
 
-@given("the following mediation configurations")
+@given("the following mediation configurations:")
 def step_impl(context):
     context.mediationConfigurations = []
     for row in context.table:
@@ -42,7 +42,7 @@ def step_impl(context, inputType, outputType, className):
     )
 
 
-@given("the following properties")
+@given("the following properties:")
 def step_impl(context):
     properties = []
     for row in context.table:
