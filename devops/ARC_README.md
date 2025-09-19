@@ -5,6 +5,17 @@ creation of self-hosted GitHub action runners.  The following content is largely
 in the GitHub documentation but is preserved here as an audit trail in case the online information changes, since ARC is
 still pre-1.0.
 
+## Table of Contents
+- [Standing up ARC from scratch](#standing-up-arc-from-scratch)
+  - [Creating the Controller](#creating-the-controller)
+  - [Creating the Runner Scale Set](#creating-the-runner-scale-set)
+- [Upgrading ARC or updating configuration](#upgrading-arc-or-updating-configuration)
+  - [Upgrading the ARC version](#upgrading-the-arc-version)
+  - [Updating configuration](#updating-configuration)
+    - [Renewing/replacing the token](#renewingreplacing-the-token)
+    - [Updating the Controller](#updating-the-controller)
+    - [Updating the Runner Set](#updating-the-runner-set)
+
 ## Standing up ARC from scratch
 
 ### Creating the Controller
@@ -54,16 +65,39 @@ helm install arc-runner-set-aissemble oci://ghcr.io/actions/actions-runner-contr
              -f runnerset-values.yaml
 ```
 
-## Upgrading ARC or Updating configuration
+## Upgrading ARC or Updating Configuration
 
-### Controller
+### Upgrading the ARC Version
 
 The controller cannot be upgraded in place according to the Github documentation, so all runnersets in the cluster must
-be uninstalled, then the controller uninstalled, and then the new controller version installed.  A `helm upgrade` to
-simply update the values in the values file has not been tested, so it is unclear if a full uninstall is needed for that
-case.
+be uninstalled, then the controller uninstalled, and then the new controller version installed. Follow the 
+_Standing up ARC from scratch_ section for a more detailed explanation for installation.
 
-### Runner Set
+### Updating Configuration
+
+>[!WARNING]
+>The versions between controller and runner set have to match. Always pass the version flag when updating the
+>configuration of the runner set to avoid an accidental upgrade and version mismatch.
+
+#### Renewing/Replacing the Token
+
+Only the Runner Scale Set needs to be updated to renew or replace the GitHub access token.
+
+```sh
+helm upgrade arc-runner-set-aissemble oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set \
+             --version 0.12.1
+             --namespace gh-actions-aissemble \
+             --set githubConfigSecret.github_token="{TOKEN}" \
+             --post-renderer ./kustomize.sh \
+             -f runnerset-values.yaml
+```
+
+#### Updating the Controller
+
+A `helm upgrade` to simply update the values in the values file has not been tested, so it is unclear if a full
+uninstall is needed as in the version upgrade case.
+
+#### Updating the Runner Set
 
 If the values file has been updated and simply needs to be re-applied, the `--reuse-values` flag can be used to preserve
 the existing GH PAT.  It is unclear whether `--reuse-values` would allow removal of values from the values file, and so
@@ -71,6 +105,7 @@ the token may be required to achieve this.
 
 ```sh
 helm upgrade arc-runner-set-aissemble oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set \
+             --version 0.12.1
              --namespace gh-actions-aissemble \
              --reuse-values \
              --post-renderer ./kustomize.sh \
