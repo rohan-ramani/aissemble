@@ -1,4 +1,4 @@
-FROM docker.io/jenkins/jenkins:lts-jdk17
+FROM docker.io/jenkins/jenkins:lts-jdk21
 
 LABEL org.opencontainers.image.source="https://github.com/boozallen/aissemble"
 ARG TARGETARCH

@@ -122,7 +122,7 @@
         <!-- maven-enforcer-plugin -->
         <version.maven.min>3.9.6</version.maven.min>
         <version.jdk.required>${maven.compiler.argument.source}</version.jdk.required>
-        <version.jdk.next-unsupported>18</version.jdk.next-unsupported>
+        <version.jdk.next-unsupported>22</version.jdk.next-unsupported>
         <insecure.repositories>ERROR</insecure.repositories>
         <enforce.docker.enabled>true</enforce.docker.enabled>
 

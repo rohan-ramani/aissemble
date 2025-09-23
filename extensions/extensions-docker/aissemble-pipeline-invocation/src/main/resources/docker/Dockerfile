@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/openjdk-17-runtime:1.21 AS builder
+FROM registry.access.redhat.com/ubi9/openjdk-21-runtime:1.21 AS builder
 USER root
 
 # Configures the desired version of Helm to install
