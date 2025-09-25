@@ -1,5 +1,5 @@
 ARG METASTORE_VERSION
-FROM registry.access.redhat.com/ubi9/openjdk-17-runtime:1.21 as builder
+FROM registry.access.redhat.com/ubi9/openjdk-21-runtime as builder
 
 ARG METASTORE_VERSION
 ARG HADOOP_VERSION
@@ -45,7 +45,7 @@ RUN sed -i \
 
 RUN find / -type f -name '*derby*.jar' -delete
 
-FROM registry.access.redhat.com/ubi9/openjdk-17-runtime:1.21 as final
+FROM registry.access.redhat.com/ubi9/openjdk-21-runtime as final
 
 LABEL org.opencontainers.image.source="https://github.com/boozallen/aissemble"
 

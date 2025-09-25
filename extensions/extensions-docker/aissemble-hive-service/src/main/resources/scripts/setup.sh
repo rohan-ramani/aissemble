@@ -86,7 +86,7 @@ update_jars() {
 #---
 download_jackson() {
   ### The codehaus version of Jackson is defunct, but RedHat has published a patched version
-  JACKSON_VER='1.9.14.jdk17-redhat-00001'
+  JACKSON_VER='1.9.14.jdk21-redhat-00001'
   echo "Downloading Jackson $JACKSON_VER"
   jackson="https://maven.repository.redhat.com/ga/org/codehaus/jackson/jackson-mapper-asl/$JACKSON_VER/jackson-mapper-asl-$JACKSON_VER.jar"
   wget -q "$jackson" -P "$1/org/codehaus/jackson/jackson-mapper-asl/$JACKSON_VER" || exit $?
