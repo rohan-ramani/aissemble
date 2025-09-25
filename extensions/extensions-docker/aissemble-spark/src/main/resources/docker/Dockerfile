@@ -2,7 +2,7 @@
 #
 ARG SPARK_VERSION
 ARG SCALA_VERSION
-FROM docker.io/apache/spark:${SPARK_VERSION}-scala${SCALA_VERSION}-java17-python3-ubuntu
+FROM docker.io/apache/spark:${SPARK_VERSION}-scala${SCALA_VERSION}-java21-python3-ubuntu
 
 #pull var from global scope to build stage
 ARG SPARK_VERSION
