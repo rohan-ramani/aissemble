@@ -1,4 +1,4 @@
-FROM docker.io/jenkins/ssh-agent:latest-debian-jdk17
+FROM docker.io/jenkins/ssh-agent:latest-debian-jdk21
 
 LABEL org.opencontainers.image.source="https://github.com/boozallen/aissemble"
 ARG TARGETARCH
