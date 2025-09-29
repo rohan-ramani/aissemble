@@ -167,6 +167,15 @@
             "includes": ["pom.xml"]
           }
         ]
+      },
+      {
+        "name": "java-21-upgrade-migration",
+        "implementation": "com.boozallen.aissemble.upgrade.migration.version_specific.Java21UpgradeMigration",
+        "fileSets": [
+          {
+            "includes": ["pom.xml"]
+          }
+        ]
       }
     ]
   },
