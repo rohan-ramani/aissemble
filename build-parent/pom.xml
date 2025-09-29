@@ -121,8 +121,8 @@
 
         <!-- maven-enforcer-plugin -->
         <version.maven.min>3.9.6</version.maven.min>
-        <version.jdk.required>${maven.compiler.argument.source}</version.jdk.required>
-        <version.jdk.next-unsupported>18</version.jdk.next-unsupported>
+        <version.jdk.required>21</version.jdk.required>
+        <version.jdk.next-unsupported>22</version.jdk.next-unsupported>
         <insecure.repositories>ERROR</insecure.repositories>
         <enforce.docker.enabled>true</enforce.docker.enabled>
 
@@ -835,7 +835,7 @@
                             <!--<TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX>YOUR MIRROR OR INTENRAL REPO GOES HERE - e.g., nexus.foobar.com/</TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX>-->
                         </environmentVariables>
                         <!-- Spark needs to use an internal API that has been made inaccessible by default, this is resolved by add-exports.
-                        Apache Hive currently does not support java 17, so the add-opens workaround is used to allow the illegal reflection 
+                        Apache Hive currently does not support java 21, so the add-opens workaround is used to allow the illegal reflection
                         call until Hive updates their compatible Java versions.  
                         https://stackoverflow.com/questions/41265266/how-to-solve-inaccessibleobjectexception-unable-to-make-member-accessible-m?rq=2-->
                         <argLine>
