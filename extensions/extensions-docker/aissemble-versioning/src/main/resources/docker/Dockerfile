@@ -51,7 +51,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list  \
     && apt-get update -y \
-    && apt-get install -y openjdk-11-jre-headless
+    && apt-get install -y openjdk-21-jre-headless
 
 # Copy over Maven
 COPY --from=builder /opt/apache-maven-* /opt/apache-maven
