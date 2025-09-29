@@ -42,10 +42,10 @@ runs:
         echo "Updating helm unittest plugin to latest version..."
         helm plugin install https://github.com/helm-unittest/helm-unittest.git
         echo "::endgroup::"
-    - name: Set up JDK 17
+    - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '21'
         distribution: 'temurin'
     - name: Create Docker Builder Config File
       shell: bash
