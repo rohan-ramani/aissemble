@@ -83,6 +83,9 @@
         <version.cucumber.reporting.plugin>5.9.0</version.cucumber.reporting.plugin>
         <version.javax.inject>1</version.javax.inject>
         <version.rest.assured>5.5.0</version.rest.assured>
+        <maven.compiler.release>21</maven.compiler.release>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
     </properties>
 
     <dependencyManagement>
